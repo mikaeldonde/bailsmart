@@ -391,7 +391,13 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
     <div class="pg" id="p-biens">
       <div class="topb">
         <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Mes biens</div><div class="tbsu" id="biens-sub">...</div></div></div>
-        <div class="tbr"><button class="btn btnp btnsm" onclick="openMo('mo-bien')">+ Ajouter</button></div>
+        <div class="tbr">
+          <div style="display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:6px 11px">
+            <span style="color:var(--mu)">&#128269;</span>
+            <input type="text" id="search-biens" placeholder="Rechercher..." oninput="filterBiens(this.value)" style="background:none;border:none;outline:none;color:var(--tx);font-size:13px;width:120px;font-family:DM Sans,sans-serif">
+          </div>
+          <button class="btn btnp btnsm" onclick="openMo('mo-bien')">+ Ajouter</button>
+        </div>
       </div>
       <div class="cnt">
         <div class="kpi-grid">
@@ -406,7 +412,13 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
     <div class="pg" id="p-locataires">
       <div class="topb">
         <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Locataires</div><div class="tbsu" id="locs-sub">...</div></div></div>
-        <div class="tbr"><button class="btn btnp btnsm" onclick="openMo('mo-loc')">+ Ajouter</button></div>
+        <div class="tbr">
+          <div style="display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:6px 11px">
+            <span style="color:var(--mu)">&#128269;</span>
+            <input type="text" id="search-locs" placeholder="Rechercher..." oninput="filterLocs(this.value)" style="background:none;border:none;outline:none;color:var(--tx);font-size:13px;width:120px;font-family:DM Sans,sans-serif">
+          </div>
+          <button class="btn btnp btnsm" onclick="openMo('mo-loc')">+ Ajouter</button>
+        </div>
       </div>
       <div class="cnt"><div id="locs-list"><div class="loading"><div class="spin"></div></div></div></div>
     </div>
@@ -420,7 +432,13 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
     <div class="pg" id="p-charges">
       <div class="topb">
         <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Charges</div><div class="tbsu" id="charges-sub">...</div></div></div>
-        <div class="tbr"><button class="btn btnp btnsm" onclick="openMo('mo-charge')">+ Ajouter</button></div>
+        <div class="tbr">
+          <div style="display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:6px 11px">
+            <span style="color:var(--mu)">&#128269;</span>
+            <input type="text" id="search-charges" placeholder="Rechercher..." oninput="filterCharges(this.value)" style="background:none;border:none;outline:none;color:var(--tx);font-size:13px;width:120px;font-family:DM Sans,sans-serif">
+          </div>
+          <button class="btn btnp btnsm" onclick="openMo('mo-charge')">+ Ajouter</button>
+        </div>
       </div>
       <div class="cnt">
         <div class="kpi-grid">
@@ -628,24 +646,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
       </div>
     </div>
 
-    <!-- DPE -->
-    <div class="pg" id="p-dpe">
-      <div class="topb">
-        <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">DPE</div><div class="tbsu">Diagnostic de Performance Energetique</div></div></div>
-        <div class="tbr"><button class="btn btnp btnsm" onclick="openMo('mo-dpe')">+ Ajouter DPE</button></div>
-      </div>
-      <div class="cnt">
-        <div class="kpi-grid" style="margin-bottom:14px">
-          <div class="kpi kg"><div class="kico">&#9989;</div><div class="klb">DPE valides</div><div class="kv" id="dpe-ok">-</div><div class="kd dn">Conformes</div></div>
-          <div class="kpi kr"><div class="kico">&#9888;</div><div class="klb">A renouveler</div><div class="kv" id="dpe-warn">-</div><div class="kd dd">Urgents</div></div>
-          <div class="kpi ko"><div class="kico">&#127981;</div><div class="klb">Classe F/G</div><div class="kv" id="dpe-fg">-</div><div class="kd dd">Passoires</div></div>
-          <div class="kpi kb"><div class="kico">&#128203;</div><div class="klb">Total biens</div><div class="kv" id="dpe-total">-</div><div class="kd dn">Enregistres</div></div>
-        </div>
-        <div id="dpe-list"></div>
-      </div>
-    </div>
-
-    <!-- PRE-COMPTABILITE -->
+    <!-- PRE<!-- PRE-COMPTABILITE -->
     <div class="pg" id="p-compta">
       <div class="topb">
         <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Pre-comptabilite</div><div class="tbsu">Bilan et journal</div></div></div>
@@ -950,7 +951,6 @@ function goTo(p, navEl) {
   if (p === 'juridique') loadJuridique();
   if (p === 'annonces') loadAnnonces();
   if (p === 'carte') loadCarte();
-  if (p === 'dpe') loadDPE();
   if (p === 'compta') loadCompta();
 }
 
@@ -2693,6 +2693,32 @@ function exportCompta() {
 
 // ── RENTABILITE in loadBiensV2 ──
 // This adds rentability display - already integrated via calcRentabilite()
+
+
+function filterBiens(query) {
+  var q = query.toLowerCase();
+  document.querySelectorAll('#biens-list .bc').forEach(function(card) {
+    var text = card.textContent.toLowerCase();
+    card.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+function filterLocs(query) {
+  var q = query.toLowerCase();
+  document.querySelectorAll('#locs-list .lc-card').forEach(function(card) {
+    var text = card.textContent.toLowerCase();
+    card.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+function filterCharges(query) {
+  var q = query.toLowerCase();
+  document.querySelectorAll('#charges-list tr').forEach(function(row, i) {
+    if (i === 0) return;
+    var text = row.textContent.toLowerCase();
+    row.style.display = text.includes(q) ? '' : 'none';
+  });
+}
 
 </script>
 </body>
