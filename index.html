@@ -1981,6 +1981,8 @@ async function loadDocuments() {
 // ============================================================
 async function loadBiensV2() {
   var biens = await getBiens(), locs = await getLocs();
+  var dpeResult = await SB.from('dpe').select('*').eq('user_id', CU.id);
+  var dpeData = dpeResult.data || [];
   setKv('bk-loyers', euro(biens.reduce(function(s,b){return s+(b.loyer||0);},0)));
   setKv('bk-nb', biens.length);
   setKv('bk-occ', locs.filter(function(l){return l.bien_id;}).length);
@@ -2009,6 +2011,75 @@ async function loadBiensV2() {
       lr.textContent = 'Locataire: ' + locsBien[0].prenom + ' ' + locsBien[0].nom;
       card.appendChild(lr);
     }
+    // DPE badge
+    var dpe = dpeData.find(function(d){ return d.bien_id === b.id; });
+    var dpeRow = document.createElement('div');
+    dpeRow.style.cssText = 'padding:0 14px 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap';
+    if (dpe) {
+      var dpeCol = {A:'#009B3A',B:'#51B747',C:'#C8D200',D:'#F7B300',E:'#EC6B08',F:'#E03726',G:'#9F1816'}[dpe.classe] || '#999';
+      var dpeBadge = document.createElement('span');
+      dpeBadge.style.cssText = 'background:' + dpeCol + ';color:white;padding:2px 10px;border-radius:5px;font-weight:800;font-size:13px';
+      dpeBadge.textContent = 'DPE ' + dpe.classe;
+      dpeRow.appendChild(dpeBadge);
+      if (dpe.classe_ges) {
+        var gesBadge = document.createElement('span');
+        gesBadge.style.cssText = 'background:var(--s2);color:var(--mu);padding:2px 8px;border-radius:5px;font-size:11px;border:1px solid var(--bd)';
+        gesBadge.textContent = 'GES ' + dpe.classe_ges;
+        dpeRow.appendChild(gesBadge);
+      }
+      if (dpe.date_expiration) {
+        var today = new Date();
+        var exp = new Date(dpe.date_expiration);
+        var in6m = new Date(); in6m.setMonth(in6m.getMonth()+6);
+        if (exp < today) {
+          var expBadge = document.createElement('span');
+          expBadge.className = 'pill dng'; expBadge.textContent = 'DPE expire';
+          dpeRow.appendChild(expBadge);
+        } else if (exp < in6m) {
+          var expBadge2 = document.createElement('span');
+          expBadge2.className = 'pill wn'; expBadge2.textContent = 'Expire bientot';
+          dpeRow.appendChild(expBadge2);
+        }
+      }
+      if (dpe.classe === 'G') {
+        var alertG = document.createElement('span');
+        alertG.className = 'pill dng'; alertG.textContent = 'Interdit 2025';
+        dpeRow.appendChild(alertG);
+      }
+      // Edit DPE button
+      var dpeEditBtn = document.createElement('button');
+      dpeEditBtn.className = 'btn btng btnsm'; dpeEditBtn.style.marginLeft = 'auto';
+      dpeEditBtn.textContent = 'Modifier DPE';
+      dpeEditBtn.dataset.bienId = b.id;
+      dpeEditBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var bId = this.dataset.bienId;
+        var d2 = dpeData.find(function(x){ return x.bien_id === bId; });
+        ge('dpe-bien').value = bId;
+        if (d2) {
+          if (ge('dpe-classe')) ge('dpe-classe').value = d2.classe || 'D';
+          if (ge('dpe-ges')) ge('dpe-ges').value = d2.classe_ges || 'D';
+          if (ge('dpe-kwh')) ge('dpe-kwh').value = d2.kwh || '';
+          if (ge('dpe-co2')) ge('dpe-co2').value = d2.emissions_co2 || '';
+          if (ge('dpe-date-diag')) ge('dpe-date-diag').value = d2.date_diagnostic || '';
+          if (ge('dpe-date-exp')) ge('dpe-date-exp').value = d2.date_expiration || '';
+          if (ge('dpe-diagnostiqueur')) ge('dpe-diagnostiqueur').value = d2.diagnostiqueur || '';
+        }
+        openMo('mo-dpe');
+      });
+      dpeRow.appendChild(dpeEditBtn);
+    } else {
+      var dpeAddBtn = document.createElement('button');
+      dpeAddBtn.className = 'btn btng btnsm'; dpeAddBtn.textContent = '+ Ajouter DPE';
+      dpeAddBtn.dataset.bienId = b.id;
+      dpeAddBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        ge('dpe-bien').value = this.dataset.bienId;
+        openMo('mo-dpe');
+      });
+      dpeRow.appendChild(dpeAddBtn);
+    }
+    card.appendChild(dpeRow);
     var stats = document.createElement('div'); stats.className = 'bcst';
     var s1 = document.createElement('div'); s1.className = 'bcs';
     s1.innerHTML = '<div class="bcsv" style="color:var(--ac)">' + euro(b.loyer) + '</div><div class="bcsl">Loyer/mois</div>';
@@ -2535,6 +2606,7 @@ async function saveDPE() {
   closeMo('mo-dpe');
   toast('DPE enregistre', 'Classe ' + data.classe);
   loadDPE();
+  loadBiensV2();
 }
 
 // ── PRE-COMPTABILITE ──
