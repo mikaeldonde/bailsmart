@@ -2544,8 +2544,37 @@ function openPrintWindow(html, filename) {
   setTimeout(function() { win.print(); }, 500);
 }
 
-function envoyerQuittance() {
-  toast('Email', 'Fonctionnalite email disponible prochainement.');
+async function envoyerQuittance() {
+  var locId = ge('q-loc').value;
+  if (!locId) { toast('Erreur', 'Selectionnez un locataire.'); return; }
+  var loc = _locs.find(function(l){ return l.id === locId; });
+  if (!loc || !loc.email) { toast('Erreur', 'Email du locataire manquant.'); return; }
+  var moisVal = ge('q-mois').value;
+  var mois = moisVal ? formatMois(moisVal) : 'Mois en cours';
+  var loyer = parseFloat(ge('q-loyer').value) || loc.loyer || 0;
+  var charges = parseFloat(ge('q-charges').value) || 0;
+  var html = buildQuittanceHTML(loc.prenom + ' ' + loc.nom, mois, loyer, charges);
+  toast('Envoi en cours...', loc.email);
+  try {
+    var r = await fetch('https://bailsmart.mikaeldonde.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'send_email',
+        to: loc.email,
+        subject: 'Quittance de loyer - ' + mois,
+        html: html
+      })
+    });
+    var data = await r.json();
+    if (data.id) {
+      toast('Email envoye !', 'Quittance envoyee a ' + loc.email);
+    } else {
+      toast('Erreur email', data.message || 'Verifiez la configuration Resend.');
+    }
+  } catch(err) {
+    toast('Erreur', err.message);
+  }
 }
 function genAllQuittances() {
   toast('En cours', 'Generation de toutes les quittances du mois...');
