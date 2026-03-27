@@ -494,6 +494,8 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
             <span style="color:var(--mu)">&#128269;</span>
             <input type="text" id="search-charges" placeholder="Rechercher..." oninput="filterCharges(this.value)" style="background:none;border:none;outline:none;color:var(--tx);font-size:13px;width:110px;font-family:DM Sans,sans-serif">
           </div>
+          <button class="btn btng btnsm" onclick="ge('facture-input').click()" title="Scanner une facture">&#128247;</button>
+          <input type="file" id="facture-input" accept="image/*" capture="environment" style="display:none" onchange="scanFacture(this)">
           <button class="btn btnp btnsm" onclick="openMo('mo-charge')">+ Ajouter</button>
         </div>
       </div>
@@ -662,7 +664,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
         <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Pre-comptabilite</div><div class="tbsu">Bilan et journal</div></div></div>
         <div class="tbr">
           <select class="fi btnsm" id="compta-annee" onchange="loadCompta()" style="width:auto;padding:6px 10px"><option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option></select>
-          <button class="btn btng btnsm" onclick="exportCompta()">Export CSV</button>
+          <button class="btn btng btnsm" onclick="exportFactures()">&#128247; Factures</button><button class="btn btng btnsm" onclick="exportCompta()">Export CSV</button>
         </div>
       </div>
       <div class="cnt">
@@ -680,6 +682,40 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
   </main>
 </div>
 
+
+<div class="mo" id="mo-scan" onclick="if(event.target===this)closeMo('mo-scan')">
+  <div class="mdl">
+    <div class="mti">&#128247; Facture scannee</div>
+    <div class="msu">Verifiez et completez les informations extraites</div>
+    <div id="scan-preview" style="margin-bottom:14px;text-align:center;display:none">
+      <img id="scan-img" style="max-width:100%;max-height:200px;border-radius:9px;border:1px solid var(--bd)" src="">
+    </div>
+    <div id="scan-loading" style="display:none" class="loading"><div class="spin"></div> Analyse en cours...</div>
+    <div id="scan-fields" style="display:none">
+      <div class="fg"><label class="fl">Intitule</label><input class="fi" type="text" id="scan-intitule"></div>
+      <div class="fr2">
+        <div class="fg"><label class="fl">Montant euros</label><input class="fi" type="number" id="scan-montant"></div>
+        <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="scan-date"></div>
+      </div>
+      <div class="fg"><label class="fl">Bien concerne</label><select class="fi" id="scan-bien"><option value="">Tous les biens</option></select></div>
+      <div class="fr2">
+        <div class="fg"><label class="fl">Categorie</label>
+          <select class="fi" id="scan-cat">
+            <option>Taxe fonciere</option><option>Travaux</option><option>Syndic</option>
+            <option>Assurance</option><option>Frais gestion</option><option>Autre</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Deductible</label>
+          <select class="fi" id="scan-ded"><option value="1">Oui</option><option value="0">Non</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="mac">
+      <button class="btn btng btnsm" onclick="closeMo('mo-scan')">Annuler</button>
+      <button class="btn btnp btnsm" id="scan-save-btn" onclick="saveFacture()" style="display:none">Enregistrer la charge</button>
+    </div>
+  </div>
+</div>
 <div class="mo" id="mo-bien" onclick="if(event.target===this)closeMo('mo-bien')">
   <div class="mdl">
     <div class="mti">Ajouter un bien</div><div class="msu">Informations de votre bien</div>
@@ -1137,6 +1173,7 @@ async function loadCharges() {
     db.dataset.type='charge'; db.dataset.id=c.id; db.dataset.label=c.intitule;
     db.addEventListener('click', function(){askDelete(this.dataset.type,this.dataset.id,this.dataset.label);});
     td6.appendChild(db);
+    if(c.photo_url){var ph=document.createElement('a');ph.href=c.photo_url;ph.target='_blank';ph.style.cssText='font-size:16px;cursor:pointer;text-decoration:none';ph.textContent='&#128247;';td6.appendChild(ph);}
     tr.appendChild(td1);tr.appendChild(td2);tr.appendChild(td3);tr.appendChild(td4);tr.appendChild(td5);tr.appendChild(td6);
     tb.appendChild(tr);
   });
@@ -2930,6 +2967,186 @@ function copyAnnonce() {
     document.body.removeChild(ta);
     toast('Copie', 'Annonce copiee.');
   }
+}
+
+
+// ============================================================
+// SCAN FACTURE - Photo vers charge automatique
+// ============================================================
+var _factureFile = null;
+var _factureBase64 = null;
+
+async function scanFacture(input) {
+  var file = input.files[0];
+  if (!file) return;
+  _factureFile = file;
+
+  // Show modal with preview
+  openMo('mo-scan');
+  ge('scan-loading').style.display = 'flex';
+  ge('scan-fields').style.display = 'none';
+  ge('scan-save-btn').style.display = 'none';
+
+  // Show image preview
+  var reader = new FileReader();
+  reader.onload = async function(e) {
+    var dataUrl = e.target.result;
+    _factureBase64 = dataUrl.split(',')[1];
+    var mediaType = file.type || 'image/jpeg';
+
+    ge('scan-img').src = dataUrl;
+    ge('scan-preview').style.display = 'block';
+
+    // Populate bien select
+    var bienSel = ge('scan-bien');
+    bienSel.innerHTML = '<option value="">Tous les biens</option>';
+    _biens.forEach(function(b) {
+      var o = document.createElement('option'); o.value = b.id; o.textContent = b.nom; bienSel.appendChild(o);
+    });
+
+    // Call AI to analyze
+    try {
+      var response = await fetch('https://bailsmart.mikaeldonde.workers.dev', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'analyze_image',
+          image_base64: _factureBase64,
+          media_type: mediaType
+        })
+      });
+
+      var data = await response.json();
+      var text = '';
+      if (data.content && data.content[0] && data.content[0].text) {
+        text = data.content[0].text;
+      }
+
+      // Parse JSON response
+      var parsed = {};
+      try {
+        var clean = text.replace(/```json|```/g, '').trim();
+        parsed = JSON.parse(clean);
+      } catch(e) {
+        parsed = {intitule: 'Facture', montant: null, date: null, categorie: 'Autre'};
+      }
+
+      ge('scan-loading').style.display = 'none';
+      ge('scan-fields').style.display = 'block';
+      ge('scan-save-btn').style.display = 'inline-flex';
+
+      // Fill fields
+      if (ge('scan-intitule')) ge('scan-intitule').value = parsed.intitule || 'Facture';
+      if (ge('scan-montant') && parsed.montant) ge('scan-montant').value = parsed.montant;
+      if (ge('scan-date') && parsed.date) ge('scan-date').value = parsed.date;
+      if (ge('scan-cat') && parsed.categorie) {
+        var opts = ge('scan-cat').options;
+        for (var i = 0; i < opts.length; i++) {
+          if (opts[i].value.toLowerCase().indexOf(parsed.categorie.toLowerCase()) !== -1) {
+            ge('scan-cat').selectedIndex = i; break;
+          }
+        }
+      }
+
+    } catch(err) {
+      ge('scan-loading').style.display = 'none';
+      ge('scan-fields').style.display = 'block';
+      ge('scan-save-btn').style.display = 'inline-flex';
+      ge('scan-intitule').value = 'Facture';
+      toast('Analyse incomplete', 'Completez manuellement.');
+    }
+  };
+  reader.readAsDataURL(file);
+  // Reset input
+  input.value = '';
+}
+
+async function saveFacture() {
+  var intitule = ge('scan-intitule').value.trim();
+  if (!intitule) { toast('Erreur', 'Intitule obligatoire.'); return; }
+
+  var montant = parseFloat(ge('scan-montant').value) || null;
+  var date = ge('scan-date').value || null;
+  var bienId = ge('scan-bien').value || null;
+  var cat = ge('scan-cat').value;
+  var deductible = ge('scan-ded').value === '1';
+
+  var photoUrl = null;
+
+  // Upload photo to Supabase Storage
+  if (_factureFile) {
+    try {
+      var fileName = 'factures/' + CU.id + '/' + Date.now() + '_' + _factureFile.name.replace(/[^a-zA-Z0-9.]/g, '_');
+      var upload = await SB.storage.from('factures').upload(fileName, _factureFile, {
+        contentType: _factureFile.type,
+        upsert: false
+      });
+      if (!upload.error) {
+        var urlData = SB.storage.from('factures').getPublicUrl(fileName);
+        photoUrl = urlData.data.publicUrl;
+      }
+    } catch(e) {}
+  }
+
+  // Save charge
+  var chargeData = {
+    user_id: CU.id,
+    intitule: intitule,
+    montant: montant,
+    date_charge: date,
+    bien_id: bienId,
+    categorie: cat,
+    deductible: deductible,
+    photo_url: photoUrl
+  };
+
+  var r = await SB.from('charges').insert(chargeData);
+  if (r.error) { toast('Erreur', r.error.message); return; }
+
+  closeMo('mo-scan');
+  toast('Charge creee', intitule + (photoUrl ? ' + photo' : ''));
+  _factureFile = null;
+  _factureBase64 = null;
+  loadCharges();
+  loadDashboard();
+}
+
+// Export factures pour comptable
+async function exportFactures() {
+  var charges = await getCharges();
+  var annee = new Date().getFullYear().toString();
+  var chargesAnnee = charges.filter(function(c) {
+    return c.date_charge && c.date_charge.startsWith(annee);
+  });
+
+  if (chargesAnnee.length === 0) {
+    toast('Export', 'Aucune charge pour ' + annee);
+    return;
+  }
+
+  // Build CSV
+  var csv = 'Date,Intitule,Categorie,Montant,Deductible,Photo\n';
+  chargesAnnee.forEach(function(c) {
+    csv += [
+      c.date_charge || '',
+      '"' + (c.intitule || '').replace(/"/g, '""') + '"',
+      c.categorie || '',
+      c.montant || '',
+      c.deductible ? 'Oui' : 'Non',
+      c.photo_url || ''
+    ].join(',') + '\n';
+  });
+
+  var blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'BailSmart_Charges_' + annee + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('Export CSV', chargesAnnee.length + ' charges exportees');
 }
 
 </script>
