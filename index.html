@@ -372,6 +372,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
       <div class="ns">Principal</div>
       <div class="ni on" onclick="goTo('dashboard',this)"><span class="nico">&#9633;</span> Tableau de bord</div>
       <div class="ni" onclick="goTo('biens',this)"><span class="nico">&#127968;</span> Mes biens</div>
+      <div class="ni" onclick="openMo('mo-immeuble')" style="padding-left:24px"><span class="nico">&#127963;</span> + Immeuble</div>
       <div class="ni" onclick="goTo('locataires',this)"><span class="nico">&#128100;</span> Locataires</div>
       <div class="ns">Finances</div>
       <div class="ni" onclick="goTo('loyers',this)"><span class="nico">&#128182;</span> Loyers</div>
@@ -775,6 +776,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
       <div class="fg"><label class="fl">Regime fiscal</label><select class="fi" id="b-regime"><option>Revenus fonciers</option><option>LMNP Micro-BIC</option><option>LMNP Reel</option><option>LMP</option></select></div>
       <div class="fg"><label class="fl">Prix acquisition</label><input class="fi" type="number" id="b-prix" placeholder="180000"></div>
     </div>
+    <div class="fg"><label class="fl">Immeuble (optionnel)</label><select class="fi" id="b-immeuble"><option value="">-- Aucun --</option></select></div>
     <div class="mac"><button class="btn btng btnsm" onclick="closeMo('mo-bien')">Annuler</button><button class="btn btnp btnsm" onclick="saveBien()">Enregistrer</button></div>
   </div>
 </div>
@@ -858,6 +860,21 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
+
+<div class="mo" id="mo-immeuble" onclick="if(event.target===this)closeMo('mo-immeuble')">
+  <div class="mdl">
+    <div class="mti">&#127963; Ajouter un immeuble</div><div class="msu">Regroupez vos biens par immeuble</div>
+    <div class="fg"><label class="fl">Nom de l'immeuble</label><input class="fi" type="text" id="imm-nom" placeholder="Ex: Immeuble Saint-Jean"></div>
+    <div class="fg"><label class="fl">Adresse</label><input class="fi" type="text" id="imm-adresse" placeholder="2b rue Saint-Jean, Orange"></div>
+    <div class="fg"><label class="fl">Charge commune a repartir (optionnel)</label>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <input class="fi" type="number" id="imm-charge-montant" placeholder="Montant euros" style="flex:1">
+        <input class="fi" type="text" id="imm-charge-nom" placeholder="Ex: Taxe fonciere" style="flex:1">
+      </div>
+    </div>
+    <div class="mac"><button class="btn btng btnsm" onclick="closeMo('mo-immeuble')">Annuler</button><button class="btn btnp btnsm" onclick="saveImmeuble()">Enregistrer</button></div>
+  </div>
+</div>
 <div class="mo" id="mo-dpe" onclick="if(event.target===this)closeMo('mo-dpe')">
   <div class="mdl">
     <div class="mti">Ajouter / Modifier DPE</div><div class="msu">Diagnostic de Performance Energetique</div>
@@ -906,6 +923,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
       <div class="fg"><label class="fl">Regime fiscal</label><select class="fi" id="eb-regime"><option>Revenus fonciers</option><option>LMNP Micro-BIC</option><option>LMNP Reel</option><option>LMP</option></select></div>
       <div class="fg"><label class="fl">Prix acquisition</label><input class="fi" type="number" id="eb-prix"></div>
     </div>
+    <div class="fg"><label class="fl">Immeuble (optionnel)</label><select class="fi" id="eb-immeuble"><option value="">-- Aucun --</option></select></div>
     <div class="mac"><button class="btn btng btnsm" onclick="closeMo('mo-edit-bien')">Annuler</button><button class="btn btnp btnsm" onclick="saveEditBien()">Enregistrer</button></div>
   </div>
 </div>
@@ -1024,6 +1042,7 @@ function openMo(id) {
   ge(id).classList.add('on');
   if (id === 'mo-loc' || id === 'mo-paiement' || id === 'mo-charge') populateSel();
   if (id === 'mo-bail' || id === 'mo-edl2') loadDocuments();
+  if (id === 'mo-bien') populateImmeubleSelects();
 }
 function closeMo(id) { ge(id).classList.remove('on'); }
 
@@ -1283,7 +1302,7 @@ async function populateSel() {
 
 async function saveBien() {
   var nom=val('b-nom'); if(!nom){toast('Erreur','Nom obligatoire.');return;}
-  var r=await SB.from('biens').insert({user_id:CU.id,nom:nom,adresse:val('b-adresse'),type:val('b-type'),surface:num('b-surface'),loyer:num('b-loyer'),charges:num('b-charges-val'),regime_fiscal:val('b-regime'),prix_acquisition:num('b-prix')});
+  var r=await SB.from('biens').insert({user_id:CU.id,nom:nom,adresse:val('b-adresse'),type:val('b-type'),surface:num('b-surface'),loyer:num('b-loyer'),charges:num('b-charges-val'),regime_fiscal:val('b-regime'),prix_acquisition:num('b-prix'),immeuble_id:ge('b-immeuble').value||null});
   if(r.error){toast('Erreur',r.error.message);return;}
   closeMo('mo-bien'); toast('Bien ajoute',nom);
   ['b-nom','b-adresse','b-surface','b-loyer','b-charges-val','b-prix'].forEach(function(id){var e=ge(id);if(e)e.value='';});
@@ -1416,6 +1435,9 @@ function editBien(id) {
   ge('eb-charges-val').value = b.charges || '';
   ge('eb-regime').value = b.regime_fiscal || 'Revenus fonciers';
   ge('eb-prix').value = b.prix_acquisition || '';
+  populateImmeubleSelects().then(function() {
+    if (ge('eb-immeuble') && b.immeuble_id) ge('eb-immeuble').value = b.immeuble_id;
+  });
   openMo('mo-edit-bien');
 }
 
@@ -1431,7 +1453,8 @@ async function saveEditBien() {
     loyer: num('eb-loyer'),
     charges: num('eb-charges-val'),
     regime_fiscal: val('eb-regime'),
-    prix_acquisition: num('eb-prix')
+    prix_acquisition: num('eb-prix'),
+    immeuble_id: ge('eb-immeuble') ? (ge('eb-immeuble').value || null) : null
   };
   var r = await SB.from('biens').update(data).eq('id', id).eq('user_id', CU.id);
   if (r.error) { toast('Erreur', r.error.message); return; }
@@ -2006,56 +2029,7 @@ async function loadDocuments() {
 // ============================================================
 // UPDATED loadBiens - with edit button
 // ============================================================
-async function loadBiensV2() {
-  var biens = await getBiens(), locs = await getLocs();
-  setKv('bk-loyers', euro(biens.reduce(function(s,b){return s+(b.loyer||0);},0)));
-  setKv('bk-nb', biens.length);
-  setKv('bk-occ', locs.filter(function(l){return l.bien_id;}).length);
-  var pat = biens.reduce(function(s,b){return s+(b.prix_acquisition||0);},0);
-  setKv('bk-pat', pat >= 1000 ? Math.round(pat/1000)+'k' : euro(pat));
-  setKv('biens-sub', biens.length + ' bien(s)');
-  var container = ge('biens-list'); container.innerHTML = '';
-  if (biens.length === 0) { container.appendChild(makeEmpty('&#127968;', 'Aucun bien', 'Cliquez sur + Ajouter')); return; }
-  biens.forEach(function(b) {
-    var locsBien = locs.filter(function(l){return l.bien_id===b.id;});
-    var card = document.createElement('div'); card.className = 'bc';
-    var top = document.createElement('div'); top.className = 'bctp';
-    var info = document.createElement('div');
-    var nm = document.createElement('div'); nm.className = 'bcnm'; nm.textContent = b.nom;
-    var ad = document.createElement('div'); ad.className = 'bcad'; ad.textContent = b.adresse || '';
-    info.appendChild(nm); info.appendChild(ad);
-    var badges = document.createElement('div'); badges.style.cssText='display:flex;flex-direction:column;gap:4px;align-items:flex-end';
-    var badge = document.createElement('span');
-    badge.className = 'pill ' + (locsBien.length > 0 ? 'ok' : 'wn');
-    badge.textContent = locsBien.length > 0 ? 'Loue' : 'Vacant';
-    badges.appendChild(badge);
-    top.appendChild(info); top.appendChild(badges); card.appendChild(top);
-    if (locsBien.length > 0) {
-      var lr = document.createElement('div');
-      lr.style.cssText = 'padding:0 14px 10px;font-size:12px;color:var(--mu)';
-      lr.textContent = 'Locataire: ' + locsBien[0].prenom + ' ' + locsBien[0].nom;
-      card.appendChild(lr);
-    }
-    var stats = document.createElement('div'); stats.className = 'bcst';
-    var s1 = document.createElement('div'); s1.className = 'bcs';
-    s1.innerHTML = '<div class="bcsv" style="color:var(--ac)">' + euro(b.loyer) + '</div><div class="bcsl">Loyer/mois</div>';
-    var s2 = document.createElement('div'); s2.className = 'bcs';
-    s2.innerHTML = '<div class="bcsv">' + (b.surface ? b.surface + 'm2' : '-') + '</div><div class="bcsl">Surface</div>';
-    var s3 = document.createElement('div'); s3.className = 'bcs';
-    s3.style.cssText = 'display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center';
-    var editBtn = document.createElement('button'); editBtn.className = 'btn btng btnsm';
-    editBtn.textContent = 'Modifier';
-    editBtn.dataset.id = b.id;
-    editBtn.addEventListener('click', function() { editBien(this.dataset.id); });
-    var delBtn = document.createElement('button'); delBtn.className = 'btndel btnsm';
-    delBtn.textContent = 'Supprimer';
-    delBtn.dataset.type = 'bien'; delBtn.dataset.id = b.id; delBtn.dataset.label = b.nom;
-    delBtn.addEventListener('click', function() { askDelete(this.dataset.type, this.dataset.id, this.dataset.label); });
-    s3.appendChild(editBtn); s3.appendChild(delBtn);
-    stats.appendChild(s1); stats.appendChild(s2); stats.appendChild(s3);
-    card.appendChild(stats); container.appendChild(card);
-  });
-}
+
 
 // ============================================================
 // UPDATED loadLocataires - with edit button
@@ -3324,6 +3298,240 @@ function toggleLargeText() {
     }
   } catch(e) {}
 })();
+
+
+// ============================================================
+// IMMEUBLES
+// ============================================================
+var _immeubles = [];
+
+async function getImmeubles() {
+  if (!CU) return [];
+  var r = await SB.from('immeubles').select('*').eq('user_id', CU.id).order('nom');
+  _immeubles = r.data || [];
+  return _immeubles;
+}
+
+async function saveImmeuble() {
+  var nom = ge('imm-nom').value.trim();
+  if (!nom) { toast('Erreur', 'Nom obligatoire.'); return; }
+  var adresse = ge('imm-adresse').value.trim();
+
+  var r = await SB.from('immeubles').insert({
+    user_id: CU.id, nom: nom, adresse: adresse || null
+  }).select().single();
+
+  if (r.error) { toast('Erreur', r.error.message); return; }
+
+  var immId = r.data.id;
+
+  // Handle shared charge if provided
+  var chargeMontant = parseFloat(ge('imm-charge-montant').value) || 0;
+  var chargeNom = ge('imm-charge-nom').value.trim();
+
+  if (chargeMontant > 0 && chargeNom) {
+    // Get all biens for this immeuble - will be empty now, just store for later
+    // We will distribute when biens are linked
+  }
+
+  closeMo('mo-immeuble');
+  ge('imm-nom').value = '';
+  ge('imm-adresse').value = '';
+  ge('imm-charge-montant').value = '';
+  ge('imm-charge-nom').value = '';
+  toast('Immeuble cree', nom);
+  loadBiensV2();
+}
+
+async function distribuerCharge(immId, montantTotal, intitule) {
+  // Get all biens of this immeuble
+  var r = await SB.from('biens').select('*').eq('immeuble_id', immId).eq('user_id', CU.id);
+  var biens = r.data || [];
+  if (biens.length === 0) { toast('Info', 'Aucun bien dans cet immeuble.'); return; }
+
+  var totalSurface = biens.reduce(function(s, b) { return s + (b.surface || 0); }, 0);
+  if (totalSurface === 0) {
+    // Equal split if no surfaces
+    var partEgale = Math.round((montantTotal / biens.length) * 100) / 100;
+    for (var i = 0; i < biens.length; i++) {
+      await SB.from('charges').insert({
+        user_id: CU.id,
+        bien_id: biens[i].id,
+        intitule: intitule + ' (1/' + biens.length + ')',
+        montant: partEgale,
+        categorie: 'Autre',
+        deductible: true,
+        date_charge: new Date().toISOString().split('T')[0]
+      });
+    }
+  } else {
+    for (var j = 0; j < biens.length; j++) {
+      var b = biens[j];
+      var part = Math.round((montantTotal * (b.surface || 0) / totalSurface) * 100) / 100;
+      if (part <= 0) continue;
+      await SB.from('charges').insert({
+        user_id: CU.id,
+        bien_id: b.id,
+        intitule: intitule + ' - ' + b.nom + ' (' + (b.surface || 0) + 'm2)',
+        montant: part,
+        categorie: 'Taxe fonciere',
+        deductible: true,
+        date_charge: new Date().toISOString().split('T')[0]
+      });
+    }
+  }
+  toast('Charges reparties', montantTotal + 'euros sur ' + biens.length + ' biens');
+  loadCharges();
+}
+
+async function populateImmeubleSelects() {
+  var immeubles = await getImmeubles();
+  ['b-immeuble', 'eb-immeuble'].forEach(function(selId) {
+    var sel = ge(selId);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">-- Aucun --</option>';
+    immeubles.forEach(function(imm) {
+      var o = document.createElement('option');
+      o.value = imm.id; o.textContent = imm.nom;
+      sel.appendChild(o);
+    });
+  });
+}
+
+// Updated loadBiensV2 with immeuble grouping
+async function loadBiensV2() {
+  var biens = await getBiens(), locs = await getLocs();
+  var immeubles = await getImmeubles();
+  var dpeResult = await SB.from('dpe').select('*').eq('user_id', CU.id);
+  var dpeData = dpeResult.data || [];
+
+  setKv('bk-loyers', euro(biens.reduce(function(s,b){return s+(b.loyer||0);},0)));
+  setKv('bk-nb', biens.length);
+  setKv('bk-occ', locs.filter(function(l){return l.bien_id;}).length);
+  var pat = biens.reduce(function(s,b){return s+(b.prix_acquisition||0);},0);
+  setKv('bk-pat', pat >= 1000 ? Math.round(pat/1000)+'k' : euro(pat));
+  setKv('biens-sub', biens.length + ' bien(s)');
+
+  // Populate immeuble selects
+  await populateImmeubleSelects();
+
+  var container = ge('biens-list'); container.innerHTML = '';
+  if (biens.length === 0) { container.appendChild(makeEmpty('&#127968;', 'Aucun bien', 'Cliquez sur + Ajouter')); return; }
+
+  // Group biens by immeuble
+  var biensWithImm = biens.filter(function(b){ return b.immeuble_id; });
+  var biensWithout = biens.filter(function(b){ return !b.immeuble_id; });
+
+  // Show immeubles groups
+  immeubles.forEach(function(imm) {
+    var immBiens = biensWithImm.filter(function(b){ return b.immeuble_id === imm.id; });
+    if (immBiens.length === 0) return;
+
+    // Immeuble header
+    var header = document.createElement('div');
+    header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--s2);border-radius:10px;margin-bottom:8px;border:1px solid var(--bd)';
+    var left = document.createElement('div');
+    left.innerHTML = '<div style="font-family:Syne,sans-serif;font-weight:700;font-size:14px;color:var(--wh)">&#127963; ' + imm.nom + '</div>'
+      + '<div style="font-size:11px;color:var(--mu)">' + (imm.adresse||'') + ' &bull; ' + immBiens.length + ' bien(s)</div>';
+    var rightDiv = document.createElement('div'); rightDiv.style.cssText = 'display:flex;gap:6px';
+    var repartBtn = document.createElement('button'); repartBtn.className = 'btn btng btnsm';
+    repartBtn.textContent = 'Repartir charge';
+    repartBtn.addEventListener('click', function() { openRepartModal(imm.id, imm.nom); });
+    rightDiv.appendChild(repartBtn);
+    header.appendChild(left); header.appendChild(rightDiv);
+    container.appendChild(header);
+
+    // Biens of this immeuble
+    var group = document.createElement('div');
+    group.style.cssText = 'margin-left:12px;margin-bottom:14px;border-left:2px solid var(--s3);padding-left:10px';
+    immBiens.forEach(function(b) { group.appendChild(buildBienCard(b, locs, dpeData)); });
+    container.appendChild(group);
+  });
+
+  // Biens without immeuble
+  biensWithout.forEach(function(b) { container.appendChild(buildBienCard(b, locs, dpeData)); });
+}
+
+function openRepartModal(immId, immNom) {
+  var montant = prompt('Montant de la charge commune a repartir (euros) ?\nImmeuble: ' + immNom);
+  if (!montant || isNaN(parseFloat(montant))) return;
+  var intitule = prompt('Intitule de la charge ?\n(Ex: Taxe fonciere 2026)');
+  if (!intitule) return;
+  distribuerCharge(immId, parseFloat(montant), intitule);
+}
+
+function buildBienCard(b, locs, dpeData) {
+  var locsBien = locs.filter(function(l){return l.bien_id===b.id;});
+  var card = document.createElement('div'); card.className = 'bc';
+  var top = document.createElement('div'); top.className = 'bctp';
+  var info = document.createElement('div');
+  var nm = document.createElement('div'); nm.className = 'bcnm'; nm.textContent = b.nom;
+  var ad = document.createElement('div'); ad.className = 'bcad'; ad.textContent = b.adresse || '';
+  info.appendChild(nm); info.appendChild(ad);
+  var badges = document.createElement('div'); badges.style.cssText='display:flex;flex-direction:column;gap:4px;align-items:flex-end';
+  var badge = document.createElement('span');
+  badge.className = 'pill ' + (locsBien.length > 0 ? 'ok' : 'wn');
+  badge.textContent = locsBien.length > 0 ? 'Loue' : 'Vacant';
+  badges.appendChild(badge);
+  top.appendChild(info); top.appendChild(badges); card.appendChild(top);
+  if (locsBien.length > 0) {
+    var lr = document.createElement('div');
+    lr.style.cssText = 'padding:0 14px 10px;font-size:12px;color:var(--mu)';
+    lr.textContent = 'Locataire: ' + locsBien[0].prenom + ' ' + locsBien[0].nom;
+    card.appendChild(lr);
+  }
+  // DPE
+  var dpe = dpeData.find(function(d){ return d.bien_id === b.id; });
+  var dpeRow = document.createElement('div');
+  dpeRow.style.cssText = 'padding:0 14px 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap';
+  if (dpe) {
+    var dpeCol = {A:'#009B3A',B:'#51B747',C:'#C8D200',D:'#F7B300',E:'#EC6B08',F:'#E03726',G:'#9F1816'}[dpe.classe] || '#999';
+    var dpeBadge = document.createElement('span');
+    dpeBadge.style.cssText = 'background:' + dpeCol + ';color:white;padding:2px 10px;border-radius:5px;font-weight:800;font-size:13px';
+    dpeBadge.textContent = 'DPE ' + dpe.classe;
+    dpeRow.appendChild(dpeBadge);
+    if (dpe.classe === 'G') { var ag = document.createElement('span'); ag.className='pill dng'; ag.textContent='Interdit 2025'; dpeRow.appendChild(ag); }
+    var dpeEditBtn = document.createElement('button'); dpeEditBtn.className='btn btng btnsm'; dpeEditBtn.style.marginLeft='auto'; dpeEditBtn.textContent='Modifier DPE';
+    dpeEditBtn.dataset.bienId = b.id;
+    dpeEditBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      ge('dpe-bien').value = this.dataset.bienId;
+      openMo('mo-dpe');
+    });
+    dpeRow.appendChild(dpeEditBtn);
+  } else {
+    var dpeAddBtn = document.createElement('button'); dpeAddBtn.className='btn btng btnsm'; dpeAddBtn.textContent='+ DPE';
+    dpeAddBtn.dataset.bienId = b.id;
+    dpeAddBtn.addEventListener('click', function(e) { e.stopPropagation(); ge('dpe-bien').value = this.dataset.bienId; openMo('mo-dpe'); });
+    dpeRow.appendChild(dpeAddBtn);
+  }
+  card.appendChild(dpeRow);
+  // Stats
+  var rent3 = calcRentabilite(b.loyer, b.charges, b.prix_acquisition);
+  var stats = document.createElement('div'); stats.className = 'bcst';
+  var s1 = document.createElement('div'); s1.className = 'bcs';
+  s1.innerHTML = '<div class="bcsv" style="color:var(--ac)">' + euro(b.loyer) + '</div><div class="bcsl">Loyer/mois</div>';
+  var rentDiv = document.createElement('div'); rentDiv.className = 'bcs';
+  if (rent3) {
+    rentDiv.innerHTML = '<div class="bcsv" style="color:' + rentColor(rent3.nette) + '">' + rent3.nette + '%</div><div class="bcsl">Rentabilite</div>';
+  } else {
+    rentDiv.innerHTML = '<div class="bcsv" style="color:var(--mu)">-</div><div class="bcsl">Rentabilite</div>';
+  }
+  var s2 = document.createElement('div'); s2.className = 'bcs';
+  s2.innerHTML = '<div class="bcsv">' + (b.surface ? b.surface + 'm2' : '-') + '</div><div class="bcsl">Surface</div>';
+  var s3 = document.createElement('div'); s3.className = 'bcs';
+  s3.style.cssText = 'display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center';
+  var editBtn = document.createElement('button'); editBtn.className = 'btn btng btnsm';
+  editBtn.textContent = 'Modifier'; editBtn.dataset.id = b.id;
+  editBtn.addEventListener('click', function() { editBien(this.dataset.id); });
+  var delBtn = document.createElement('button'); delBtn.className = 'btndel btnsm';
+  delBtn.textContent = 'Supprimer'; delBtn.dataset.type = 'bien'; delBtn.dataset.id = b.id; delBtn.dataset.label = b.nom;
+  delBtn.addEventListener('click', function() { askDelete(this.dataset.type, this.dataset.id, this.dataset.label); });
+  s3.appendChild(editBtn); s3.appendChild(delBtn);
+  stats.appendChild(s1); stats.appendChild(rentDiv); stats.appendChild(s2); stats.appendChild(s3);
+  card.appendChild(stats);
+  return card;
+}
 
 </script>
 </body>
