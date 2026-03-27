@@ -3372,10 +3372,9 @@ async function saveEditCharge() {
 // ── GRAND TEXTE ──
 function toggleLargeText() {
   var body = document.body;
-  var isLarge = body.classList.toggle('large-text');
-  var label = ge('font-toggle-label');
-  if (label) label.textContent = isLarge ? 'Texte normal' : 'Grand texte';
-  try { localStorage.setItem('bailsmart_large_text', isLarge ? '1' : '0'); } catch(e) {}
+  body.classList.toggle('large-text');
+  try { localStorage.setItem('bailsmart_large_text', document.body.classList.contains('large-text') ? '1' : '0'); } catch(e) {}
+  updateSwitches();
 }
 
 // Apply saved preference on load
@@ -3383,8 +3382,6 @@ function toggleLargeText() {
   try {
     if (localStorage.getItem('bailsmart_large_text') === '1') {
       document.body.classList.add('large-text');
-      var label = ge('font-toggle-label');
-      if (label) label.textContent = 'Texte normal';
     }
   } catch(e) {}
 })();
@@ -3736,29 +3733,23 @@ async function doBiometric() {
 // Call on page load
 document.addEventListener('DOMContentLoaded', function() {
   checkBiometric();
+  // Apply saved states visually on next tick
+  setTimeout(updateSwitches, 200);
 });
 
 
 
 // ── THEME CLAIR/SOMBRE ──
 function toggleTheme() {
-  var body = document.body;
-  var isLight = body.classList.toggle('light-theme');
-  ge('theme-toggle-label').textContent = isLight ? 'Theme sombre' : 'Theme clair';
-  ge('theme-toggle-ico').textContent = isLight ? '&#9790;' : '&#9728;';
-  try { localStorage.setItem('bailsmart_theme', isLight ? 'light' : 'dark'); } catch(e) {}
+  document.body.classList.toggle('light-theme');
+  try { localStorage.setItem('bailsmart_theme', document.body.classList.contains('light-theme') ? 'light' : 'dark'); } catch(e) {}
+  updateSwitches();
 }
 
 (function() {
   try {
     if (localStorage.getItem('bailsmart_theme') === 'light') {
       document.body.classList.add('light-theme');
-      setTimeout(function() {
-        var lbl = ge('theme-toggle-label');
-        var ico = ge('theme-toggle-ico');
-        if (lbl) lbl.textContent = 'Theme sombre';
-        if (ico) ico.textContent = '☾';
-      }, 100);
     }
   } catch(e) {}
 })();
@@ -3777,47 +3768,28 @@ function loadParametres() {
 }
 
 function updateSwitches() {
-  // Theme switch
   var isLight = document.body.classList.contains('light-theme');
-  var tSwitch = ge('theme-switch');
-  var tDot = ge('theme-switch-dot');
-  if (tSwitch && tDot) {
-    tSwitch.style.background = isLight ? 'var(--ac)' : 'var(--s2)';
-    tDot.style.background = isLight ? 'var(--bg)' : 'var(--mu)';
-    tDot.style.left = isLight ? '25px' : '3px';
-  }
+  var isLarge = document.body.classList.contains('large-text');
+  var hasBio = false;
+  try { hasBio = !!localStorage.getItem('bailsmart_cred_id'); } catch(e) {}
+
+  // Theme switch
+  var tSwitch = ge('theme-switch'), tDot = ge('theme-switch-dot');
+  if (tSwitch) tSwitch.style.background = isLight ? 'var(--ac)' : 'var(--s2)';
+  if (tDot) { tDot.style.background = isLight ? '#fff' : 'var(--mu)'; tDot.style.left = isLight ? '25px' : '3px'; }
 
   // Font switch
-  var isLarge = document.body.classList.contains('large-text');
-  var fSwitch = ge('font-switch');
-  var fDot = ge('font-switch-dot');
-  if (fSwitch && fDot) {
-    fSwitch.style.background = isLarge ? 'var(--ac)' : 'var(--s2)';
-    fDot.style.background = isLarge ? 'var(--bg)' : 'var(--mu)';
-    fDot.style.left = isLarge ? '25px' : '3px';
-  }
+  var fSwitch = ge('font-switch'), fDot = ge('font-switch-dot');
+  if (fSwitch) fSwitch.style.background = isLarge ? 'var(--ac)' : 'var(--s2)';
+  if (fDot) { fDot.style.background = isLarge ? '#fff' : 'var(--mu)'; fDot.style.left = isLarge ? '25px' : '3px'; }
 
-  // Bio status
-  var hasBio = localStorage.getItem('bailsmart_cred_id');
-  var bioText = ge('bio-status-text');
-  var bioBtn = ge('bio-param-btn');
-  if (bioText) bioText.textContent = hasBio ? 'Active - ' + (localStorage.getItem('bailsmart_bio_email')||'') : 'Non configure';
+  // Bio
+  var bioText = ge('bio-status-text'), bioBtn = ge('bio-param-btn');
+  if (bioText) bioText.textContent = hasBio ? 'Active' : 'Non configure';
   if (bioBtn) bioBtn.textContent = hasBio ? 'Desactiver' : 'Activer';
 }
 
-// Override toggleTheme to also update switch
-var _origToggleTheme = toggleTheme;
-function toggleTheme() {
-  _origToggleTheme();
-  updateSwitches();
-}
-
-// Override toggleLargeText to also update switch
-var _origToggleLargeText = toggleLargeText;
-function toggleLargeText() {
-  _origToggleLargeText();
-  updateSwitches();
-}
+// Switches updated via loadParametres when page opens
 
 async function toggleBiometric() {
   var hasBio = localStorage.getItem('bailsmart_cred_id');
