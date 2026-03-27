@@ -3105,12 +3105,17 @@ async function saveFacture() {
     date_charge: date,
     bien_id: bienId,
     categorie: cat,
-    deductible: deductible,
-    photo_url: photoUrl
+    deductible: deductible
   };
+  if (photoUrl) chargeData.photo_url = photoUrl;
 
   var r = await SB.from('charges').insert(chargeData);
-  if (r.error) { toast('Erreur', r.error.message); return; }
+  if (r.error) {
+    // Try without photo_url if column missing
+    delete chargeData.photo_url;
+    var r2 = await SB.from('charges').insert(chargeData);
+    if (r2.error) { toast('Erreur', r2.error.message); return; }
+  }
 
   closeMo('mo-scan');
   toast('Charge creee', intitule + (photoUrl ? ' + photo' : ''));
