@@ -664,7 +664,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
         <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Pre-comptabilite</div><div class="tbsu">Bilan et journal</div></div></div>
         <div class="tbr">
           <select class="fi btnsm" id="compta-annee" onchange="loadCompta()" style="width:auto;padding:6px 10px"><option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option></select>
-          <button class="btn btng btnsm" onclick="exportFactures()">&#128247; Factures</button><button class="btn btng btnsm" onclick="exportCompta()">Export CSV</button>
+          <button class="btn btng btnsm" onclick="exportFactures()">Export factures</button><button class="btn btng btnsm" onclick="exportCompta()">Export CSV</button>
         </div>
       </div>
       <div class="cnt">
@@ -2354,7 +2354,8 @@ async function loadCompta() {
   // Bilan par bien
   var bilan = ge('ct-bilan'); bilan.innerHTML = '';
   var tbl = document.createElement('table'); tbl.className = 'tbl2';
-  tbl.innerHTML = '<thead><tr><th>Bien</th><th>Recettes</th><th>Charges</th><th>Resultat</th><th>Rentabilite</th></tr></thead>';
+  tbl.innerHTML = '<thead><tr><th>Bien</th><th>Recettes</th><th>Charges</th><th>Net</th><th>Rent.</th></tr></thead>';
+  tbl.style.fontSize = '12px';
   var tb = document.createElement('tbody');
   biens.forEach(function(b) {
     var locsBien = locs.filter(function(l){ return l.bien_id === b.id; });
@@ -2365,7 +2366,7 @@ async function loadCompta() {
     var rent = b.prix_acquisition ? ((resultatBien / b.prix_acquisition) * 100).toFixed(2) + '%' : '-';
 
     var tr = document.createElement('tr');
-    var td1 = document.createElement('td'); td1.style.cssText='font-weight:500;color:var(--wh)'; td1.textContent = b.nom;
+    var td1 = document.createElement('td'); td1.style.cssText='font-weight:500;color:var(--wh);font-size:11px;max-width:80px;word-break:break-word'; td1.textContent = b.nom;
     var td2 = document.createElement('td'); td2.style.cssText='color:var(--ac)'; td2.textContent = euro(recettesBien);
     var td3 = document.createElement('td'); td3.style.cssText='color:var(--dg)'; td3.textContent = euro(chargesBien);
     var td4 = document.createElement('td'); td4.style.cssText='font-weight:600;color:' + (resultatBien >= 0 ? 'var(--ac)' : 'var(--dg)'); td4.textContent = euro(resultatBien);
@@ -2373,7 +2374,7 @@ async function loadCompta() {
     tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4); tr.appendChild(td5);
     tb.appendChild(tr);
   });
-  tbl.appendChild(tb); var wrap = document.createElement('div'); wrap.className = 'tw'; wrap.appendChild(tbl); bilan.appendChild(wrap);
+  tbl.appendChild(tb); var wrap = document.createElement('div'); wrap.className = 'tw'; wrap.style.cssText='-webkit-overflow-scrolling:touch'; wrap.appendChild(tbl); bilan.appendChild(wrap);
 
   // Journal
   var journal = ge('ct-journal'); journal.innerHTML = '';
