@@ -3031,11 +3031,26 @@ async function scanFacture(input) {
   var reader = new FileReader();
   reader.onload = async function(e) {
     var dataUrl = e.target.result;
-    _factureBase64 = dataUrl.split(',')[1];
-    var mediaType = file.type || 'image/jpeg';
+    var mediaType = 'image/jpeg';
 
-    ge('scan-img').src = dataUrl;
-    ge('scan-preview').style.display = 'block';
+    // Resize image to max 800px to reduce size
+    var img = new Image();
+    img.onload = async function() {
+      var canvas = document.createElement('canvas');
+      var maxSize = 800;
+      var w = img.width, h = img.height;
+      if (w > maxSize || h > maxSize) {
+        if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+        else { w = Math.round(w * maxSize / h); h = maxSize; }
+      }
+      canvas.width = w; canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      var resized = canvas.toDataURL('image/jpeg', 0.7);
+      _factureBase64 = resized.split(',')[1];
+
+      ge('scan-img').src = resized;
+      ge('scan-preview').style.display = 'block';
 
     // Populate bien select
     var bienSel = ge('scan-bien');
@@ -3118,8 +3133,10 @@ async function scanFacture(input) {
       ge('scan-save-btn').style.display = 'inline-flex';
       ge('scan-intitule').value = 'Facture';
       console.error('Scan error:', err);
-      toast('Analyse incomplete', 'Completez manuellement: ' + (err.message||''));
+      toast('Analyse incomplete', 'Completez manuellement.');
     }
+    }; // end img.onload
+    img.src = dataUrl;
   };
   reader.readAsDataURL(file);
   // Reset input
