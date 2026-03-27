@@ -294,6 +294,36 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
 .edl-piece-content { padding: 12px 14px; background: var(--sf); }
 .fl2r { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--bd); font-size:13px; }
 .fl2r:last-child { border-bottom:none; }
+
+/* ── GRAND TEXTE (seniors) ── */
+.large-text .ni { font-size: 16px; padding: 12px 10px; }
+.large-text .tbti { font-size: 20px; }
+.large-text .tbsu { font-size: 13px; }
+.large-text .fi { font-size: 16px; padding: 12px 14px; }
+.large-text .fl { font-size: 13px; }
+.large-text .btn { font-size: 15px; padding: 12px 18px; }
+.large-text .btnsm { font-size: 14px; padding: 8px 14px; }
+.large-text .tbl2 td { font-size: 15px; padding: 13px 14px; }
+.large-text .tbl2 th { font-size: 12px; }
+.large-text .kv { font-size: 24px; }
+.large-text .klb { font-size: 12px; }
+.large-text .kd { font-size: 13px; }
+.large-text .ct { font-size: 16px; }
+.large-text .bcnm { font-size: 16px; }
+.large-text .bcad { font-size: 13px; }
+.large-text .bcsv { font-size: 16px; }
+.large-text .bcsl { font-size: 12px; }
+.large-text .lc-nm { font-size: 15px; }
+.large-text .lc-bi { font-size: 13px; }
+.large-text .lc-meta { font-size: 13px; }
+.large-text .pill { font-size: 13px; padding: 4px 10px; }
+.large-text .empty-t { font-size: 16px; }
+.large-text .empty-s { font-size: 14px; }
+.large-text .mti { font-size: 18px; }
+.large-text .msu { font-size: 14px; }
+.large-text .fl2r { font-size: 15px; }
+.large-text .un { font-size: 14px; }
+.large-text .upl { font-size: 12px; }
 </style>
 </head>
 <body>
@@ -358,6 +388,10 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
       <div class="ni" onclick="goTo('compta',this)"><span class="nico">&#128202;</span> Pre-comptabilite</div>
     </nav>
     <div class="sbft">
+      <div onclick="toggleLargeText()" id="font-toggle-btn" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;cursor:pointer;margin-bottom:8px;background:var(--s2);border:1px solid var(--bd)">
+        <span style="font-size:18px">&#128269;</span>
+        <span style="font-size:13px;color:var(--mu)" id="font-toggle-label">Grand texte</span>
+      </div>
       <div class="usrp">
         <div class="ava" id="user-ava">?</div>
         <div style="min-width:0;flex:1">
@@ -3269,6 +3303,27 @@ async function saveEditCharge() {
   toast('Charge modifiee', intitule);
   loadCharges(); loadDashboard();
 }
+
+
+// ── GRAND TEXTE ──
+function toggleLargeText() {
+  var body = document.body;
+  var isLarge = body.classList.toggle('large-text');
+  var label = ge('font-toggle-label');
+  if (label) label.textContent = isLarge ? 'Texte normal' : 'Grand texte';
+  try { localStorage.setItem('bailsmart_large_text', isLarge ? '1' : '0'); } catch(e) {}
+}
+
+// Apply saved preference on load
+(function() {
+  try {
+    if (localStorage.getItem('bailsmart_large_text') === '1') {
+      document.body.classList.add('large-text');
+      var label = ge('font-toggle-label');
+      if (label) label.textContent = 'Texte normal';
+    }
+  } catch(e) {}
+})();
 
 </script>
 </body>
