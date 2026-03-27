@@ -3108,7 +3108,10 @@ async function scanFacture(input) {
         debugDiv.style.cssText = 'font-size:10px;color:var(--mu);background:var(--s2);padding:8px;border-radius:6px;margin-bottom:10px;word-break:break-all';
         ge('scan-fields').insertBefore(debugDiv, ge('scan-fields').firstChild);
       }
-      debugDiv.textContent = 'IA: ' + (text || 'vide');
+      var debugText = text || '';
+      if (!debugText && data.error) debugText = 'ERR: ' + JSON.stringify(data.error);
+      if (!debugText) debugText = 'RAW: ' + JSON.stringify(data).substring(0, 200);
+      debugDiv.textContent = debugText;
 
       // Fill fields
       if (ge('scan-intitule')) ge('scan-intitule').value = parsed.intitule || parsed.nom || parsed.fournisseur || 'Facture';
