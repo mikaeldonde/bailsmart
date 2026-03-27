@@ -425,17 +425,72 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
     <div class="pg" id="p-loyers">
       <div class="topb">
         <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Loyers</div><div class="tbsu">Paiements</div></div></div>
-        <div class="tbr"><button class="btn btnp btnsm" onclick="openMo('mo-paiement')">+ Paiement</button></div>
+        <div class="tbr"><button class="btn btng btnsm" onclick="openMo('mo-paiement')">+ Avance</button></div>
       </div>
-      <div class="cnt"><div class="card"><div class="ch"><div class="ct">Historique</div></div><div id="loyers-list"></div></div></div>
-    </div>
+      <div class="cnt">
+        <div class="card" style="margin-bottom:14px">
+          <div class="ch"><div class="ct">Saisie rapide</div></div>
+          <div style="padding:14px 16px">
+            <div class="fr2">
+              <div class="fg"><label class="fl">Locataire</label>
+                <select class="fi" id="quick-loc" onchange="quickFillLoyer()">
+                  <option value="">-- Selectionner --</option>
+                </select>
+              </div>
+              <div class="fg"><label class="fl">Mois</label>
+                <select class="fi" id="quick-mois">
+                  <option value="Janvier 2026">Janvier 2026</option>
+<option value="Fevrier 2026">Fevrier 2026</option>
+<option value="Mars 2026" selected>Mars 2026</option>
+<option value="Avril 2026">Avril 2026</option>
+<option value="Mai 2026">Mai 2026</option>
+<option value="Juin 2026">Juin 2026</option>
+<option value="Juillet 2026">Juillet 2026</option>
+<option value="Aout 2026">Aout 2026</option>
+<option value="Septembre 2026">Septembre 2026</option>
+<option value="Octobre 2026">Octobre 2026</option>
+<option value="Novembre 2026">Novembre 2026</option>
+<option value="Decembre 2026">Decembre 2026</option>
+<option value="Janvier 2025">Janvier 2025</option>
+<option value="Fevrier 2025">Fevrier 2025</option>
+<option value="Mars 2025">Mars 2025</option>
+<option value="Avril 2025">Avril 2025</option>
+<option value="Mai 2025">Mai 2025</option>
+<option value="Juin 2025">Juin 2025</option>
+<option value="Juillet 2025">Juillet 2025</option>
+<option value="Aout 2025">Aout 2025</option>
+<option value="Septembre 2025">Septembre 2025</option>
+<option value="Octobre 2025">Octobre 2025</option>
+<option value="Novembre 2025">Novembre 2025</option>
+<option value="Decembre 2025">Decembre 2025</option>
+                </select>
+              </div>
+            </div>
+            <div class="fr2">
+              <div class="fg"><label class="fl">Montant euros</label>
+                <input class="fi" type="number" id="quick-montant" placeholder="Auto-rempli">
+              </div>
+              <div class="fg"><label class="fl">Statut</label>
+                <select class="fi" id="quick-statut">
+                  <option value="ok">Paye</option>
+                  <option value="pt">Partiel</option>
+                  <option value="lt">Impaye</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn btnp" style="width:100%;justify-content:center;margin-top:6px" onclick="saveQuickLoyer()">Enregistrer le paiement</button>
+          </div>
+        </div>
+        <div class="card"><div class="ch"><div class="ct">Historique</div></div><div id="loyers-list"></div></div>
+      </div>
+    <!-- CHARGES -->
     <div class="pg" id="p-charges">
       <div class="topb">
         <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Charges</div><div class="tbsu" id="charges-sub">...</div></div></div>
         <div class="tbr">
           <div style="display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:6px 11px">
             <span style="color:var(--mu)">&#128269;</span>
-            <input type="text" id="search-charges" placeholder="Rechercher..." oninput="filterCharges(this.value)" style="background:none;border:none;outline:none;color:var(--tx);font-size:13px;width:120px;font-family:DM Sans,sans-serif">
+            <input type="text" id="search-charges" placeholder="Rechercher..." oninput="filterCharges(this.value)" style="background:none;border:none;outline:none;color:var(--tx);font-size:13px;width:110px;font-family:DM Sans,sans-serif">
           </div>
           <button class="btn btnp btnsm" onclick="openMo('mo-charge')">+ Ajouter</button>
         </div>
@@ -443,14 +498,13 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
       <div class="cnt">
         <div class="kpi-grid">
           <div class="kpi kr"><div class="kico">&#128184;</div><div class="klb">Total</div><div class="kv" id="ck-total">-</div><div class="kd dn">Toutes annees</div></div>
-          <div class="kpi ko"><div class="kico">&#128295;</div><div class="klb">Cette annee</div><div class="kv" id="ck-year">-</div><div class="kd dn">2025</div></div>
+          <div class="kpi ko"><div class="kico">&#128295;</div><div class="klb">Cette annee</div><div class="kv" id="ck-year">-</div><div class="kd dn">2026</div></div>
           <div class="kpi kb"><div class="kico">&#9989;</div><div class="klb">Deductibles</div><div class="kv" id="ck-ded">-</div><div class="kd dn">Fiscalement</div></div>
           <div class="kpi kg"><div class="kico">&#128203;</div><div class="klb">Nombre</div><div class="kv" id="ck-nb">-</div><div class="kd dn">Enregistrees</div></div>
         </div>
         <div class="card"><div class="ch"><div class="ct">Toutes les charges</div></div><div id="charges-list"></div></div>
       </div>
     </div>
-
 
     <!-- IRL -->
     <div class="pg" id="p-irl">
@@ -460,6 +514,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
       </div>
       <div class="cnt"><div id="irl-content"><div class="loading"><div class="spin"></div></div></div></div>
     </div>
+
     <!-- FISCALITE -->
     <div class="pg" id="p-fiscalite">
       <div class="topb">
@@ -487,27 +542,19 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
             <div class="fr2">
               <div class="fg"><label class="fl">Tranche marginale (%)</label>
                 <select class="fi" id="f-tmi" onchange="loadFiscalite()">
-                  <option value="0">0%</option>
-                  <option value="11">11%</option>
-                  <option value="30" selected>30%</option>
-                  <option value="41">41%</option>
-                  <option value="45">45%</option>
+                  <option value="0">0%</option><option value="11">11%</option>
+                  <option value="30" selected>30%</option><option value="41">41%</option><option value="45">45%</option>
                 </select>
               </div>
               <div class="fg"><label class="fl">Annee</label>
                 <select class="fi" id="f-annee" onchange="loadFiscalite()">
-                  <option value="2025">2025</option>
-                  <option value="2024">2024</option>
-                  <option value="2023">2023</option>
+                  <option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option>
                 </select>
               </div>
             </div>
           </div>
         </div>
-        <div class="card" id="f-detail-card">
-          <div class="ch"><div class="ct">Detail du calcul</div></div>
-          <div id="f-detail" style="padding:16px"></div>
-        </div>
+        <div class="card"><div class="ch"><div class="ct">Detail du calcul</div></div><div id="f-detail" style="padding:16px"></div></div>
       </div>
     </div>
 
@@ -518,7 +565,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
         <div class="tbr"><button class="btn btnp btnsm" onclick="genAllQuittances()">Tout generer</button></div>
       </div>
       <div class="cnt">
-        <div class="card">
+        <div class="card" style="margin-bottom:14px">
           <div class="ch"><div class="ct">Generer une quittance</div></div>
           <div style="padding:16px">
             <div class="fr2">
@@ -535,10 +582,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
             </div>
           </div>
         </div>
-        <div class="card">
-          <div class="ch"><div class="ct">Historique des quittances</div></div>
-          <div id="q-list"><div class="loading"><div class="spin"></div></div></div>
-        </div>
+        <div class="card"><div class="ch"><div class="ct">Historique</div></div><div id="q-list"><div class="loading"><div class="spin"></div></div></div></div>
       </div>
     </div>
 
@@ -548,18 +592,12 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
         <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Documents</div><div class="tbsu" id="doc-sub">Baux, etats des lieux</div></div></div>
         <div class="tbr">
           <button class="btn btng btnsm" onclick="openMo('mo-bail')">+ Bail</button>
-          <button class="btn btnp btnsm" onclick="openMo('mo-edl')">+ EDL</button>
+          <button class="btn btnp btnsm" onclick="openMo('mo-edl2')">+ EDL</button>
         </div>
       </div>
       <div class="cnt">
-        <div class="card">
-          <div class="ch"><div class="ct">Baux</div></div>
-          <div id="doc-baux"><div class="loading"><div class="spin"></div></div></div>
-        </div>
-        <div class="card">
-          <div class="ch"><div class="ct">Etats des lieux</div></div>
-          <div id="doc-edl"><div class="loading"><div class="spin"></div></div></div>
-        </div>
+        <div class="card" style="margin-bottom:14px"><div class="ch"><div class="ct">Baux</div></div><div id="doc-baux"><div class="loading"><div class="spin"></div></div></div></div>
+        <div class="card"><div class="ch"><div class="ct">Etats des lieux</div></div><div id="doc-edl"><div class="loading"><div class="spin"></div></div></div></div>
       </div>
     </div>
 
@@ -574,7 +612,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
     <!-- ANNONCES IA -->
     <div class="pg" id="p-annonces">
       <div class="topb">
-        <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Annonces IA</div><div class="tbsu">Generation automatique pour Leboncoin et SeLoger</div></div></div>
+        <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Annonces IA</div><div class="tbsu">Generation automatique</div></div></div>
       </div>
       <div class="cnt">
         <div class="card" style="margin-bottom:14px">
@@ -582,52 +620,24 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
           <div style="padding:16px">
             <div class="fg"><label class="fl">Bien a mettre en location</label><select class="fi" id="ann-bien"><option value="">-- Selectionner un bien --</option></select></div>
             <div class="fr2">
-              <div class="fg"><label class="fl">Type d'annonce</label>
-                <select class="fi" id="ann-type">
-                  <option value="standard">Standard</option>
-                  <option value="premium">Premium (plus detaillee)</option>
-                  <option value="court">Courte (reseaux sociaux)</option>
-                </select>
-              </div>
-              <div class="fg"><label class="fl">Plateforme cible</label>
-                <select class="fi" id="ann-plateforme">
-                  <option value="leboncoin">Leboncoin</option>
-                  <option value="seloger">SeLoger</option>
-                  <option value="pap">PAP</option>
-                  <option value="generic">Toutes plateformes</option>
-                </select>
-              </div>
+              <div class="fg"><label class="fl">Type</label><select class="fi" id="ann-type"><option value="standard">Standard</option><option value="premium">Premium</option><option value="court">Courte (reseaux)</option></select></div>
+              <div class="fg"><label class="fl">Plateforme</label><select class="fi" id="ann-plateforme"><option value="leboncoin">Leboncoin</option><option value="seloger">SeLoger</option><option value="pap">PAP</option><option value="generic">Toutes</option></select></div>
             </div>
-            <div class="fg"><label class="fl">Points forts a mettre en avant (optionnel)</label>
-              <input class="fi" type="text" id="ann-points" placeholder="Ex: Vue degagee, renovee en 2024, proche metro...">
-            </div>
-            <div class="fg"><label class="fl">Disponible a partir du</label>
-              <input class="fi" type="date" id="ann-dispo">
-            </div>
-            <button class="btn btnp" id="ann-btn" onclick="genAnnonce()" style="margin-top:4px">
-              &#10024; Generer l'annonce avec l'IA
-            </button>
+            <div class="fg"><label class="fl">Points forts (optionnel)</label><input class="fi" type="text" id="ann-points" placeholder="Vue degagee, renovee en 2024..."></div>
+            <div class="fg"><label class="fl">Disponible a partir du</label><input class="fi" type="date" id="ann-dispo"></div>
+            <button class="btn btnp" id="ann-btn" onclick="genAnnonce()" style="margin-top:4px">&#10024; Generer avec l'IA</button>
           </div>
         </div>
         <div id="ann-result" style="display:none">
           <div class="card">
-            <div class="ch">
-              <div class="ct" id="ann-result-title">Annonce generee</div>
-              <div style="display:flex;gap:8px">
-                <button class="btn btng btnsm" onclick="copyAnnonce()">Copier</button>
-                <button class="btn btng btnsm" onclick="regenAnnonce()">Regenerer</button>
-              </div>
-            </div>
+            <div class="ch"><div class="ct" id="ann-result-title">Annonce generee</div><div style="display:flex;gap:8px"><button class="btn btng btnsm" onclick="copyAnnonce()">Copier</button><button class="btn btng btnsm" onclick="regenAnnonce()">Regenerer</button></div></div>
             <div style="padding:16px">
-              <div id="ann-loading" style="display:none" class="loading"><div class="spin"></div> L'IA redige votre annonce...</div>
+              <div id="ann-loading" style="display:none" class="loading"><div class="spin"></div> Generation en cours...</div>
               <div id="ann-text" style="white-space:pre-wrap;font-size:13px;line-height:1.7;color:var(--tx)"></div>
               <div id="ann-stats" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap"></div>
             </div>
           </div>
-          <div class="card" style="margin-top:14px">
-            <div class="ch"><div class="ct">Conseils pour cette annonce</div></div>
-            <div id="ann-conseils" style="padding:16px;font-size:13px;color:var(--tx);line-height:1.7"></div>
-          </div>
+          <div class="card" style="margin-top:14px"><div class="ch"><div class="ct">Conseils</div></div><div id="ann-conseils" style="padding:16px;font-size:13px;line-height:1.7"></div></div>
         </div>
       </div>
     </div>
@@ -635,27 +645,21 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
     <!-- CARTE -->
     <div class="pg" id="p-carte">
       <div class="topb">
-        <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Carte des biens</div><div class="tbsu">Geolocalisation de votre patrimoine</div></div></div>
+        <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Carte des biens</div><div class="tbsu">Geolocalisation du patrimoine</div></div></div>
         <div class="tbr"><button class="btn btng btnsm" onclick="loadCarte()">Actualiser</button></div>
       </div>
       <div class="cnt">
-        <div class="card" style="margin-bottom:14px">
-          <div id="map-container" style="height:400px;border-radius:9px;overflow:hidden"></div>
-        </div>
+        <div class="card" style="margin-bottom:14px"><div id="map-container" style="height:400px;border-radius:9px;overflow:hidden"></div></div>
         <div id="carte-biens-list"></div>
       </div>
     </div>
 
-    <!-- PRE<!-- PRE-COMPTABILITE -->
+    <!-- PRE-COMPTABILITE -->
     <div class="pg" id="p-compta">
       <div class="topb">
         <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Pre-comptabilite</div><div class="tbsu">Bilan et journal</div></div></div>
         <div class="tbr">
-          <select class="fi btnsm" id="compta-annee" onchange="loadCompta()" style="width:auto;padding:6px 10px">
-            <option value="2026">2026</option>
-            <option value="2025">2025</option>
-            <option value="2024">2024</option>
-          </select>
+          <select class="fi btnsm" id="compta-annee" onchange="loadCompta()" style="width:auto;padding:6px 10px"><option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option></select>
           <button class="btn btng btnsm" onclick="exportCompta()">Export CSV</button>
         </div>
       </div>
@@ -666,18 +670,14 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
           <div class="kpi ko"><div class="kico">&#128201;</div><div class="klb">Resultat net</div><div class="kv" id="ct-resultat">-</div><div class="kd dn">Avant impots</div></div>
           <div class="kpi kb"><div class="kico">&#128200;</div><div class="klb">Rentabilite</div><div class="kv" id="ct-rent">-</div><div class="kd dn">Nette</div></div>
         </div>
-        <div class="card" style="margin-bottom:14px">
-          <div class="ch"><div class="ct">Bilan par bien</div></div>
-          <div id="ct-bilan"></div>
-        </div>
-        <div class="card">
-          <div class="ch"><div class="ct">Journal des operations</div></div>
-          <div id="ct-journal"></div>
-        </div>
+        <div class="card" style="margin-bottom:14px"><div class="ch"><div class="ct">Bilan par bien</div></div><div id="ct-bilan"></div></div>
+        <div class="card"><div class="ch"><div class="ct">Journal des operations</div></div><div id="ct-journal"></div></div>
       </div>
     </div>
+
   </main>
 </div>
+
 <div class="mo" id="mo-bien" onclick="if(event.target===this)closeMo('mo-bien')">
   <div class="mdl">
     <div class="mti">Ajouter un bien</div><div class="msu">Informations de votre bien</div>
@@ -698,6 +698,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
     <div class="mac"><button class="btn btng btnsm" onclick="closeMo('mo-bien')">Annuler</button><button class="btn btnp btnsm" onclick="saveBien()">Enregistrer</button></div>
   </div>
 </div>
+
 <div class="mo" id="mo-loc" onclick="if(event.target===this)closeMo('mo-loc')">
   <div class="mdl">
     <div class="mti">Ajouter un locataire</div><div class="msu">Informations du locataire</div>
@@ -707,10 +708,10 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
     </div>
     <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="ll-email" placeholder="marie@email.com"></div>
     <div class="fg"><label class="fl">Telephone</label><input class="fi" type="tel" id="ll-tel" placeholder="06 12 34 56 78"></div>
-    <div class="fg"><label class="fl">Bien loue</label><select class="fi" id="ll-bien"><option value="">-- Selectionner --</option></select></div>
+    <div class="fg"><label class="fl">Bien loue</label><select class="fi" id="ll-bien" onchange="autofillLoyer()"><option value="">-- Selectionner --</option></select></div>
     <div class="fr2">
-      <div class="fg"><label class="fl">Loyer euros</label><input class="fi" type="number" id="ll-loyer" placeholder="850"></div>
-      <div class="fg"><label class="fl">Depot garantie</label><input class="fi" type="number" id="ll-depot" placeholder="1700"></div>
+      <div class="fg"><label class="fl">Loyer euros</label><input class="fi" type="number" id="ll-loyer" placeholder="Auto-rempli"></div>
+      <div class="fg"><label class="fl">Depot garantie</label><input class="fi" type="number" id="ll-depot" placeholder="Auto-rempli"></div>
     </div>
     <div class="fr2">
       <div class="fg"><label class="fl">Date entree</label><input class="fi" type="date" id="ll-date"></div>
@@ -719,18 +720,20 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
     <div class="mac"><button class="btn btng btnsm" onclick="closeMo('mo-loc')">Annuler</button><button class="btn btnp btnsm" onclick="saveLoc()">Enregistrer</button></div>
   </div>
 </div>
+
 <div class="mo" id="mo-paiement" onclick="if(event.target===this)closeMo('mo-paiement')">
   <div class="mdl">
-    <div class="mti">Enregistrer un paiement</div><div class="msu">Loyer recu</div>
+    <div class="mti">Enregistrer un paiement</div><div class="msu">Saisie avancee</div>
     <div class="fg"><label class="fl">Locataire</label><select class="fi" id="pp-loc"><option value="">-- Selectionner --</option></select></div>
     <div class="fr2">
-      <div class="fg"><label class="fl">Mois</label><input class="fi" type="text" id="pp-mois" placeholder="Mars 2025"></div>
+      <div class="fg"><label class="fl">Mois</label><input class="fi" type="text" id="pp-mois" placeholder="Mars 2026"></div>
       <div class="fg"><label class="fl">Montant euros</label><input class="fi" type="number" id="pp-montant" placeholder="850"></div>
     </div>
     <div class="fg"><label class="fl">Statut</label><select class="fi" id="pp-statut"><option value="ok">Paye</option><option value="pt">Partiel</option><option value="lt">Impaye</option></select></div>
     <div class="mac"><button class="btn btng btnsm" onclick="closeMo('mo-paiement')">Annuler</button><button class="btn btnp btnsm" onclick="savePaiement()">Enregistrer</button></div>
   </div>
 </div>
+
 <div class="mo" id="mo-charge" onclick="if(event.target===this)closeMo('mo-charge')">
   <div class="mdl">
     <div class="mti">Ajouter une charge</div><div class="msu">Depense ou travaux</div>
@@ -747,13 +750,6 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
     <div class="mac"><button class="btn btng btnsm" onclick="closeMo('mo-charge')">Annuler</button><button class="btn btnp btnsm" onclick="saveCharge()">Enregistrer</button></div>
   </div>
 </div>
-<div class="mo" id="mo-confirm" onclick="if(event.target===this)closeMo('mo-confirm')">
-  <div class="mdl" style="max-width:360px">
-    <div class="mti">Confirmer</div>
-    <div class="msu" id="confirm-msg">Supprimer cet element ?</div>
-    <div class="mac"><button class="btn btng btnsm" onclick="closeMo('mo-confirm')">Annuler</button><button class="btndel" id="confirm-ok">Supprimer</button></div>
-  </div>
-</div>
 
 <div class="mo" id="mo-bail" onclick="if(event.target===this)closeMo('mo-bail')">
   <div class="mdl">
@@ -763,7 +759,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
       <div class="fg"><label class="fl">Type de bail</label><select class="fi" id="bail-type-select"><option>Nu 3 ans</option><option>Meuble 1 an</option><option>LMNP</option><option>Mobilite</option><option>Etudiant 9 mois</option><option>Colocation</option></select></div>
     </div>
     <div class="fg"><label class="fl">Locataire</label><select class="fi" id="bail-loc"><option value="">-- Selectionner --</option></select></div>
-    <div class="fg"><label class="fl">Clauses particulieres (optionnel)</label><textarea class="fi" id="bail-clauses" rows="3" placeholder="Animaux interdits, pelouse a entretenir..."></textarea></div>
+    <div class="fg"><label class="fl">Clauses particulieres (optionnel)</label><textarea class="fi" id="bail-clauses" rows="3" placeholder="Animaux interdits..."></textarea></div>
     <div class="mac"><button class="btn btng btnsm" onclick="closeMo('mo-bail')">Annuler</button><button class="btn btnp btnsm" onclick="genBailMulti()">Generer PDF</button></div>
   </div>
 </div>
@@ -782,7 +778,6 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
-
 <div class="mo" id="mo-dpe" onclick="if(event.target===this)closeMo('mo-dpe')">
   <div class="mdl">
     <div class="mti">Ajouter / Modifier DPE</div><div class="msu">Diagnostic de Performance Energetique</div>
@@ -790,21 +785,14 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
     <div class="fr2">
       <div class="fg"><label class="fl">Classe DPE</label>
         <select class="fi" id="dpe-classe">
-          <option value="A">A - Tres performant</option>
-          <option value="B">B - Performant</option>
-          <option value="C">C - Assez performant</option>
-          <option value="D">D - Peu performant</option>
-          <option value="E">E - Energivore</option>
-          <option value="F">F - Tres energivore</option>
+          <option value="A">A - Tres performant</option><option value="B">B - Performant</option>
+          <option value="C">C - Assez performant</option><option value="D">D - Peu performant</option>
+          <option value="E">E - Energivore</option><option value="F">F - Tres energivore</option>
           <option value="G">G - Passoire thermique</option>
         </select>
       </div>
       <div class="fg"><label class="fl">Classe GES</label>
-        <select class="fi" id="dpe-ges">
-          <option value="A">A</option><option value="B">B</option><option value="C">C</option>
-          <option value="D">D</option><option value="E">E</option><option value="F">F</option>
-          <option value="G">G</option>
-        </select>
+        <select class="fi" id="dpe-ges"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select>
       </div>
     </div>
     <div class="fr2">
@@ -815,10 +803,11 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
       <div class="fg"><label class="fl">Date du diagnostic</label><input class="fi" type="date" id="dpe-date-diag"></div>
       <div class="fg"><label class="fl">Date expiration</label><input class="fi" type="date" id="dpe-date-exp"></div>
     </div>
-    <div class="fg"><label class="fl">Nom du diagnostiqueur</label><input class="fi" type="text" id="dpe-diagnostiqueur" placeholder="Cabinet XYZ"></div>
+    <div class="fg"><label class="fl">Diagnostiqueur</label><input class="fi" type="text" id="dpe-diagnostiqueur" placeholder="Cabinet XYZ"></div>
     <div class="mac"><button class="btn btng btnsm" onclick="closeMo('mo-dpe')">Annuler</button><button class="btn btnp btnsm" onclick="saveDPE()">Enregistrer</button></div>
   </div>
 </div>
+
 <div class="mo" id="mo-edit-bien" onclick="if(event.target===this)closeMo('mo-edit-bien')">
   <div class="mdl">
     <div class="mti">Modifier le bien</div><div class="msu">Mettez a jour les informations</div>
@@ -840,6 +829,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
     <div class="mac"><button class="btn btng btnsm" onclick="closeMo('mo-edit-bien')">Annuler</button><button class="btn btnp btnsm" onclick="saveEditBien()">Enregistrer</button></div>
   </div>
 </div>
+
 <div class="mo" id="mo-edit-loc" onclick="if(event.target===this)closeMo('mo-edit-loc')">
   <div class="mdl">
     <div class="mti">Modifier le locataire</div><div class="msu">Mettez a jour les informations</div>
@@ -862,6 +852,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
     <div class="mac"><button class="btn btng btnsm" onclick="closeMo('mo-edit-loc')">Annuler</button><button class="btn btnp btnsm" onclick="saveEditLoc()">Enregistrer</button></div>
   </div>
 </div>
+
 <div class="mo" id="mo-confirm" onclick="if(event.target===this)closeMo('mo-confirm')">
   <div class="mdl" style="max-width:360px">
     <div class="mti">Confirmer</div>
@@ -871,465 +862,110 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
 </div>
 
 <div class="tst" id="tst"><div class="tstt" id="tstt"></div><div class="tstb" id="tstb"></div></div>
+
 <script>
+https://xixnesmwiumbdwmkefjf.supabase.co"
+SUPA_KEY = "sb_publishable_vPvjAzu8nYZXJnGPouGdIw_hJYlLE1f"
 
-var SB = supabase.createClient('https://xixnesmwiumbdwmkefjf.supabase.co', 'sb_publishable_vPvjAzu8nYZXJnGPouGdIw_hJYlLE1f');
-var CU = null;
-var _biens = [];
-var _locs = [];
+# Write the file directly - no f-strings, no format(), no patches
+lines = []
+def w(s): lines.append(s)
 
-function ge(id) { return document.getElementById(id); }
-function val(id) { var e = ge(id); return e ? e.value.trim() : ''; }
-function num(id) { return parseFloat(ge(id).value) || null; }
+w('<!DOCTYPE html>')
+w('<html lang="fr">')
+w('<head>')
+w('<meta charset="UTF-8">')
+w('<meta name="viewport" content="width=device-width, initial-scale=1.0">')
+w('<title>BailSmart</title>')
+w('<meta name="theme-color" content="#0C0F1A">')
+w('<meta name="mobile-web-app-capable" content="yes">')
+w('<meta name="apple-mobile-web-app-capable" content="yes">')
+w('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>')
+w('<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">')
+w('<style>')
 
-function euro(n) {
-  if (!n && n !== 0) return '-';
-  return new Intl.NumberFormat('fr-FR', {style:'currency', currency:'EUR', maximumFractionDigits:0}).format(n);
-}
-
-function toast(t, b) {
-  ge('tstt').textContent = t;
-  ge('tstb').textContent = b || '';
-  var el = ge('tst');
-  el.classList.add('on');
-  setTimeout(function() { el.classList.remove('on'); }, 3400);
-}
-
-function showMsg(txt, type) {
-  var el = ge('amsg');
-  el.textContent = txt;
-  el.className = 'amsg ' + type;
-  el.style.display = 'block';
-}
-
-function makeEmpty(ico, t, s) {
-  var d = document.createElement('div');
-  d.className = 'empty';
-  d.innerHTML = '<div class="empty-ico">' + ico + '</div><div class="empty-t">' + t + '</div><div class="empty-s">' + s + '</div>';
-  return d;
-}
-
-function openMo(id) {
-  ge(id).classList.add('on');
-  if (id === 'mo-loc' || id === 'mo-paiement' || id === 'mo-charge') populateSel();
-  if (id === 'mo-bail' || id === 'mo-edl2') loadDocuments();
-}
-function closeMo(id) { ge(id).classList.remove('on'); }
-
-function toggleSB() {
-  ge('sb').classList.toggle('open');
-  ge('overlay').classList.toggle('show');
-}
-function closeSB() {
-  ge('sb').classList.remove('open');
-  ge('overlay').classList.remove('show');
-}
-window.addEventListener('resize', function() { if (window.innerWidth > 1024) closeSB(); });
-
-function goTo(p, navEl) {
-  document.querySelectorAll('.pg').forEach(function(x) { x.classList.remove('on'); });
-  document.querySelectorAll('.ni').forEach(function(x) { x.classList.remove('on'); });
-  ge('p-' + p).classList.add('on');
-  if (navEl) {
-    navEl.classList.add('on');
-  } else {
-    document.querySelectorAll('.ni').forEach(function(n) {
-      if ((n.getAttribute('onclick') || '').indexOf(p) !== -1) n.classList.add('on');
-    });
-  }
-  closeSB();
-  window.scrollTo(0, 0);
-  if (p === 'dashboard') loadDashboard();
-  if (p === 'biens') loadBiensV2();
-  if (p === 'locataires') loadLocatairesV2();
-  if (p === 'loyers') loadLoyers();
-  if (p === 'charges') loadCharges();
-  if (p === 'fiscalite') loadFiscalite();
-  if (p === 'irl') loadIRL();
-  if (p === 'quittances') loadQuittances();
-  if (p === 'documents') loadDocuments();
-  if (p === 'juridique') loadJuridique();
-  if (p === 'annonces') loadAnnonces();
-  if (p === 'carte') loadCarte();
-  if (p === 'compta') loadCompta();
-}
-
-function switchAuth(mode) {
-  if (mode === 'login') {
-    ge('tab-login').classList.add('on'); ge('tab-signup').classList.remove('on');
-    ge('panel-login').style.display = ''; ge('panel-signup').style.display = 'none';
-  } else {
-    ge('tab-signup').classList.add('on'); ge('tab-login').classList.remove('on');
-    ge('panel-signup').style.display = ''; ge('panel-login').style.display = 'none';
-  }
-  ge('amsg').style.display = 'none';
-}
-
-async function doLogin() {
-  var email = val('l-email'), pwd = ge('l-pwd').value;
-  if (!email || !pwd) { showMsg('Remplissez tous les champs.', 'err'); return; }
-  ge('l-btn').disabled = true; ge('l-btn').textContent = 'Connexion...';
-  var r = await SB.auth.signInWithPassword({email: email, password: pwd});
-  if (r.error) {
-    showMsg('Email ou mot de passe incorrect.', 'err');
-    ge('l-btn').disabled = false; ge('l-btn').textContent = 'Se connecter';
-  }
-}
-
-async function doSignup() {
-  var prenom = val('s-prenom'), nom = val('s-nom'), email = val('s-email'), pwd = ge('s-pwd').value;
-  if (!prenom || !nom || !email || !pwd) { showMsg('Remplissez tous les champs.', 'err'); return; }
-  if (pwd.length < 8) { showMsg('Mot de passe: 8 caracteres minimum.', 'err'); return; }
-  ge('s-btn').disabled = true; ge('s-btn').textContent = 'Creation...';
-  var r = await SB.auth.signUp({email: email, password: pwd, options: {data: {prenom: prenom, nom: nom}}});
-  if (r.error) { showMsg(r.error.message, 'err'); }
-  else { showMsg('Compte cree ! Verifiez votre email.', 'ok'); }
-  ge('s-btn').disabled = false; ge('s-btn').textContent = 'Creer mon compte';
-}
-
-async function doLogout() { await SB.auth.signOut(); }
-
-function showApp(user) {
-  CU = user;
-  ge('splash').style.display = 'none';
-  ge('auth-wrap').style.display = 'none';
-  ge('app-wrap').style.display = 'block';
-  var meta = user.user_metadata || {};
-  var name = ((meta.prenom || '') + ' ' + (meta.nom || '')).trim() || user.email.split('@')[0];
-  ge('user-name').textContent = name;
-  ge('user-email').textContent = user.email;
-  ge('user-ava').textContent = name.charAt(0).toUpperCase();
-  loadDashboard();
-}
-
-function showAuth() {
-  CU = null;
-  ge('splash').style.display = 'none';
-  ge('auth-wrap').style.display = 'flex';
-  ge('app-wrap').style.display = 'none';
-}
-
-SB.auth.onAuthStateChange(function(event, session) {
-  if (session && session.user) { showApp(session.user); }
-  else { showAuth(); }
-});
-
-async function getBiens() {
-  var r = await SB.from('biens').select('*').eq('user_id', CU.id).order('created_at', {ascending: false});
-  _biens = r.data || []; return _biens;
-}
-async function getLocs() {
-  var r = await SB.from('locataires').select('*').eq('user_id', CU.id).order('created_at', {ascending: false});
-  _locs = r.data || []; return _locs;
-}
-async function getCharges() {
-  var r = await SB.from('charges').select('*').eq('user_id', CU.id).order('created_at', {ascending: false});
-  return r.data || [];
-}
-
-function setKv(id, v) { var e = ge(id); if (e) e.textContent = v; }
-
-async function loadDashboard() {
-  var biens = await getBiens(), locs = await getLocs(), charges = await getCharges();
-  setKv('k-loyers', euro(biens.reduce(function(s,b){return s+(b.loyer||0);},0)));
-  setKv('k-biens', biens.length);
-  setKv('k-locs', locs.length);
-  setKv('k-charges', euro(charges.reduce(function(s,c){return s+(c.montant||0);},0)));
-  setKv('dash-sub', biens.length + ' bien(s), ' + locs.length + ' locataire(s)');
-  var db = ge('dash-biens'); db.innerHTML = '';
-  if (biens.length === 0) { db.appendChild(makeEmpty('&#127968;', 'Aucun bien', 'Allez dans Mes biens pour en ajouter')); }
-  else {
-    biens.slice(0,4).forEach(function(b) {
-      var row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--bd)';
-      var l = document.createElement('div');
-      var n = document.createElement('div'); n.style.cssText='font-weight:500;color:var(--wh);font-size:13px'; n.textContent = b.nom;
-      var a = document.createElement('div'); a.style.cssText='font-size:11px;color:var(--mu)'; a.textContent = b.adresse || '';
-      l.appendChild(n); l.appendChild(a);
-      var r2 = document.createElement('div'); r2.style.cssText='font-weight:600;color:var(--ac);font-family:Syne,sans-serif;font-size:13px'; r2.textContent = euro(b.loyer);
-      row.appendChild(l); row.appendChild(r2); db.appendChild(row);
-    });
-  }
-  var dl = ge('dash-locs'); dl.innerHTML = '';
-  if (locs.length === 0) { dl.appendChild(makeEmpty('&#128100;', 'Aucun locataire', '')); }
-  else {
-    locs.slice(0,3).forEach(function(l2) {
-      var bien = biens.find(function(b){return b.id===l2.bien_id;});
-      var row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--bd)';
-      var lft = document.createElement('div');
-      var n = document.createElement('div'); n.style.cssText='font-weight:500;color:var(--wh);font-size:13px'; n.textContent = l2.prenom + ' ' + l2.nom;
-      var b2 = document.createElement('div'); b2.style.cssText='font-size:11px;color:var(--mu)'; b2.textContent = bien ? bien.nom : '-';
-      lft.appendChild(n); lft.appendChild(b2);
-      var amt = document.createElement('div'); amt.style.cssText='font-weight:600;color:var(--ac);font-family:Syne,sans-serif;font-size:13px'; amt.textContent = euro(l2.loyer);
-      row.appendChild(lft); row.appendChild(amt); dl.appendChild(row);
-    });
-  }
-}
+# ---- CSS ---- written as plain lines, no Python format strings ----
+CSS = 
 
 async function loadLoyers() {
+  var locs = await getLocs();
+  var qSel = ge('quick-loc');
+  if (qSel && qSel.options.length <= 1) {
+    locs.forEach(function(l) {
+      var o = document.createElement('option');
+      o.value = l.id;
+      o.textContent = l.prenom + ' ' + l.nom;
+      qSel.appendChild(o);
+    });
+  }
   var r = await SB.from('paiements').select('*, locataires(prenom,nom)').eq('user_id', CU.id).order('created_at', {ascending: false});
   var paiements = r.data || [];
   var container = ge('loyers-list'); container.innerHTML = '';
-  if (paiements.length === 0) { container.appendChild(makeEmpty('&#128182;', 'Aucun paiement', 'Cliquez sur + Paiement')); return; }
+  if (paiements.length === 0) { container.appendChild(makeEmpty('&#128182;', 'Aucun paiement', 'Utilisez la saisie rapide ci-dessus')); return; }
   var tbl = document.createElement('table'); tbl.className = 'tbl2';
   tbl.innerHTML = '<thead><tr><th>Locataire</th><th>Mois</th><th>Montant</th><th>Statut</th><th></th></tr></thead>';
   var tb = document.createElement('tbody');
   paiements.forEach(function(p) {
     var tr = document.createElement('tr');
     var td1 = document.createElement('td'); td1.style.cssText='font-weight:500;color:var(--wh)';
-    td1.textContent = p.locataires ? p.locataires.prenom + ' ' + p.locataires.nom : '-';
+    td1.textContent = p.locataires ? p.locataires.prenom+' '+p.locataires.nom : '-';
     var td2 = document.createElement('td'); td2.textContent = p.mois;
     var td3 = document.createElement('td'); td3.style.cssText='font-weight:600;color:var(--ac)'; td3.textContent = euro(p.montant);
     var td4 = document.createElement('td');
-    var pill = document.createElement('span'); pill.className = 'pill ' + (p.statut==='ok'?'ok':p.statut==='pt'?'wn':'dng');
+    var pill = document.createElement('span'); pill.className='pill '+(p.statut==='ok'?'ok':p.statut==='pt'?'wn':'dng');
     pill.textContent = p.statut==='ok'?'Paye':p.statut==='pt'?'Partiel':'Impaye'; td4.appendChild(pill);
     var td5 = document.createElement('td');
     var db = document.createElement('button'); db.className='btndel btnsm'; db.textContent='X';
     db.dataset.type='paiement'; db.dataset.id=p.id; db.dataset.label=p.mois;
     db.addEventListener('click', function(){askDelete(this.dataset.type,this.dataset.id,this.dataset.label);});
     td5.appendChild(db);
-    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4); tr.appendChild(td5);
+    tr.appendChild(td1);tr.appendChild(td2);tr.appendChild(td3);tr.appendChild(td4);tr.appendChild(td5);
     tb.appendChild(tr);
   });
   tbl.appendChild(tb); var wrap=document.createElement('div'); wrap.className='tw'; wrap.appendChild(tbl); container.appendChild(wrap);
 }
 
-async function loadCharges() {
-  var charges = await getCharges(), biens = await getBiens();
-  var year = new Date().getFullYear().toString();
-  var total=charges.reduce(function(s,c){return s+(c.montant||0);},0);
-  var thisYear=charges.filter(function(c){return c.date_charge&&c.date_charge.startsWith(year);}).reduce(function(s,c){return s+(c.montant||0);},0);
-  var ded=charges.filter(function(c){return c.deductible;}).reduce(function(s,c){return s+(c.montant||0);},0);
-  setKv('ck-total', euro(total)); setKv('ck-year', euro(thisYear)); setKv('ck-ded', euro(ded)); setKv('ck-nb', charges.length);
-  setKv('charges-sub', charges.length + ' charge(s)');
-  var container = ge('charges-list'); container.innerHTML = '';
-  if (charges.length === 0) { container.appendChild(makeEmpty('&#128295;', 'Aucune charge', 'Cliquez sur + Ajouter')); return; }
-  var tbl=document.createElement('table'); tbl.className='tbl2';
-  tbl.innerHTML='<thead><tr><th>Intitule</th><th>Categorie</th><th>Date</th><th>Montant</th><th>Ded.</th><th></th></tr></thead>';
-  var tb=document.createElement('tbody');
-  charges.forEach(function(c) {
-    var bien=biens.find(function(b){return b.id===c.bien_id;});
-    var tr=document.createElement('tr');
-    var td1=document.createElement('td');
-    var nm=document.createElement('div'); nm.style.cssText='font-weight:500;color:var(--wh)'; nm.textContent=c.intitule; td1.appendChild(nm);
-    if(bien){var bs=document.createElement('div'); bs.style.cssText='font-size:11px;color:var(--mu)'; bs.textContent=bien.nom; td1.appendChild(bs);}
-    var td2=document.createElement('td'); td2.textContent=c.categorie||'';
-    var td3=document.createElement('td'); td3.textContent=c.date_charge||'-';
-    var td4=document.createElement('td'); td4.style.cssText='font-weight:600;color:var(--dg)'; td4.textContent='-'+euro(c.montant);
-    var td5=document.createElement('td');
-    var p=document.createElement('span'); p.className='pill '+(c.deductible?'ok':'dng'); p.textContent=c.deductible?'Oui':'Non'; td5.appendChild(p);
-    var td6=document.createElement('td');
-    var db=document.createElement('button'); db.className='btndel btnsm'; db.textContent='X';
-    db.dataset.type='charge'; db.dataset.id=c.id; db.dataset.label=c.intitule;
-    db.addEventListener('click', function(){askDelete(this.dataset.type,this.dataset.id,this.dataset.label);});
-    td6.appendChild(db);
-    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4); tr.appendChild(td5); tr.appendChild(td6);
-    tb.appendChild(tr);
-  });
-  tbl.appendChild(tb); var wrap=document.createElement('div'); wrap.className='tw'; wrap.appendChild(tbl); container.appendChild(wrap);
+
+async function quickFillLoyer() {
+  var locId = ge('quick-loc').value;
+  if (!locId) return;
+  var loc = _locs.find(function(l){ return l.id === locId; });
+  if (loc && loc.loyer) {
+    ge('quick-montant').value = loc.loyer;
+  }
 }
 
-var _pending = null;
-function askDelete(type, id, label) {
-  _pending = {type: type, id: id};
-  ge('confirm-msg').textContent = 'Supprimer ' + label + ' ?';
-  ge('confirm-ok').onclick = doDelete;
-  openMo('mo-confirm');
-}
-async function doDelete() {
-  if (!_pending) return;
-  var tbl = {bien:'biens',loc:'locataires',paiement:'paiements',charge:'charges'}[_pending.type];
-  var r = await SB.from(tbl).delete().eq('id', _pending.id);
-  closeMo('mo-confirm');
+async function saveQuickLoyer() {
+  var locId = ge('quick-loc').value;
+  var mois = ge('quick-mois').value;
+  if (!locId || !mois) { toast('Erreur', 'Selectionnez un locataire et un mois.'); return; }
+  var loc = _locs.find(function(l){ return l.id === locId; });
+  var montant = parseFloat(ge('quick-montant').value) || (loc ? loc.loyer : null);
+  var data = {
+    user_id: CU.id,
+    locataire_id: locId,
+    bien_id: loc ? loc.bien_id : null,
+    mois: mois,
+    montant: montant,
+    statut: ge('quick-statut').value
+  };
+  var r = await SB.from('paiements').insert(data);
   if (r.error) { toast('Erreur', r.error.message); return; }
-  toast('Supprime', ''); _pending = null;
-  if (tbl==='biens'){loadBiensV2();loadDashboard();}
-  else if(tbl==='locataires'){loadLocatairesV2();loadDashboard();}
-  else if(tbl==='paiements') loadLoyers();
-  else{loadCharges();loadDashboard();}
+  toast('Paiement enregistre', mois);
+  ge('quick-montant').value = '';
+  loadLoyers();
 }
 
-async function populateSel() {
-  var biens=await getBiens(), locs=await getLocs();
-  var bSel=ge('ll-bien'), cSel=ge('cc-bien'), pSel=ge('pp-loc');
-  if(bSel){bSel.innerHTML='<option value="">-- Selectionner --</option>'; biens.forEach(function(b){var o=document.createElement('option');o.value=b.id;o.textContent=b.nom;bSel.appendChild(o);});}
-  if(cSel){cSel.innerHTML='<option value="">Tous les biens</option>'; biens.forEach(function(b){var o=document.createElement('option');o.value=b.id;o.textContent=b.nom;cSel.appendChild(o);});}
-  if(pSel){pSel.innerHTML='<option value="">-- Selectionner --</option>'; locs.forEach(function(l){var o=document.createElement('option');o.value=l.id;o.textContent=l.prenom+' '+l.nom;pSel.appendChild(o);});}
-}
-
-async function saveBien() {
-  var nom=val('b-nom'); if(!nom){toast('Erreur','Nom obligatoire.');return;}
-  var r=await SB.from('biens').insert({user_id:CU.id,nom:nom,adresse:val('b-adresse'),type:val('b-type'),surface:num('b-surface'),loyer:num('b-loyer'),charges:num('b-charges-val'),regime_fiscal:val('b-regime'),prix_acquisition:num('b-prix')});
-  if(r.error){toast('Erreur',r.error.message);return;}
-  closeMo('mo-bien'); toast('Bien ajoute',nom);
-  ['b-nom','b-adresse','b-surface','b-loyer','b-charges-val','b-prix'].forEach(function(id){var e=ge(id);if(e)e.value='';});
-  loadBiensV2(); loadDashboard();
-}
-
-async function saveLoc() {
-  var prenom=val('ll-prenom'), nom=val('ll-nom'); if(!prenom||!nom){toast('Erreur','Prenom et nom obligatoires.');return;}
-  var r=await SB.from('locataires').insert({user_id:CU.id,prenom:prenom,nom:nom,email:val('ll-email'),telephone:val('ll-tel'),bien_id:ge('ll-bien').value||null,loyer:num('ll-loyer'),depot_garantie:num('ll-depot'),date_entree:ge('ll-date').value||null,type_bail:val('ll-bail')});
-  if(r.error){toast('Erreur',r.error.message);return;}
-  closeMo('mo-loc'); toast('Locataire ajoute',prenom+' '+nom); loadLocatairesV2(); loadDashboard();
-}
-
-async function savePaiement() {
-  var locId=ge('pp-loc').value, mois=val('pp-mois'); if(!locId||!mois){toast('Erreur','Locataire et mois obligatoires.');return;}
-  var loc=_locs.find(function(l){return l.id===locId;});
-  var r=await SB.from('paiements').insert({user_id:CU.id,locataire_id:locId,bien_id:loc?loc.bien_id:null,mois:mois,montant:num('pp-montant'),statut:ge('pp-statut').value});
-  if(r.error){toast('Erreur',r.error.message);return;}
-  closeMo('mo-paiement'); toast('Paiement enregistre',mois); loadLoyers();
-}
-
-async function saveCharge() {
-  var intitule=val('cc-intitule'); if(!intitule){toast('Erreur','Intitule obligatoire.');return;}
-  var r=await SB.from('charges').insert({user_id:CU.id,intitule:intitule,montant:num('cc-montant'),date_charge:ge('cc-date').value||null,bien_id:ge('cc-bien').value||null,categorie:val('cc-cat'),deductible:ge('cc-ded').value==='1'});
-  if(r.error){toast('Erreur',r.error.message);return;}
-  closeMo('mo-charge'); toast('Charge enregistree',intitule); loadCharges(); loadDashboard();
-}
-
-async function loadFiscalite() {
-  var biens = await getBiens();
-  var charges = await getCharges();
-  var annee = ge('f-annee') ? ge('f-annee').value : new Date().getFullYear().toString();
-  var regime = ge('f-regime') ? ge('f-regime').value : 'reel';
-  var tmi = ge('f-tmi') ? parseInt(ge('f-tmi').value) : 30;
-  var revenusBruts = biens.reduce(function(s,b){ return s + (b.loyer||0)*12; }, 0);
-  var chargesDeductibles = charges.filter(function(c){ return c.deductible; }).reduce(function(s,c){ return s+(c.montant||0); }, 0);
-  var imposable = 0; var abattement = 0; var detail = '';
-  if (regime === 'reel') {
-    imposable = Math.max(0, revenusBruts - chargesDeductibles);
-    detail = '<div class="fl2r"><span>Revenus bruts</span><span style="color:var(--ac)">+' + euro(revenusBruts) + '</span></div>';
-    detail += '<div class="fl2r"><span>Charges deductibles</span><span style="color:var(--dg)">-' + euro(chargesDeductibles) + '</span></div>';
-  } else if (regime === 'microfoncier') {
-    abattement = revenusBruts * 0.30; imposable = revenusBruts * 0.70;
-    detail = '<div class="fl2r"><span>Revenus bruts</span><span style="color:var(--ac)">+' + euro(revenusBruts) + '</span></div>';
-    detail += '<div class="fl2r"><span>Abattement 30%</span><span style="color:var(--dg)">-' + euro(abattement) + '</span></div>';
-  } else if (regime === 'lmnp_micro') {
-    abattement = revenusBruts * 0.50; imposable = revenusBruts * 0.50;
-    detail = '<div class="fl2r"><span>Revenus bruts</span><span style="color:var(--ac)">+' + euro(revenusBruts) + '</span></div>';
-    detail += '<div class="fl2r"><span>Abattement 50%</span><span style="color:var(--dg)">-' + euro(abattement) + '</span></div>';
-  } else {
-    imposable = Math.max(0, revenusBruts - chargesDeductibles);
-    detail = '<div class="fl2r"><span>Revenus bruts</span><span style="color:var(--ac)">+' + euro(revenusBruts) + '</span></div>';
-    detail += '<div class="fl2r"><span>Charges reelles</span><span style="color:var(--dg)">-' + euro(chargesDeductibles) + '</span></div>';
+async function autofillLoyer() {
+  var bienId = ge('ll-bien').value;
+  if (!bienId) return;
+  var bien = _biens.find(function(b){ return b.id === bienId; });
+  if (bien && bien.loyer) {
+    var loyerEl = ge('ll-loyer');
+    if (loyerEl && !loyerEl.value) loyerEl.value = bien.loyer;
+    var depotEl = ge('ll-depot');
+    if (depotEl && !depotEl.value && bien.loyer) depotEl.value = bien.loyer;
   }
-  var ir = imposable * (tmi/100); var ps = imposable * 0.172; var totalImpot = ir + ps;
-  var tauxEffectif = revenusBruts > 0 ? ((totalImpot/revenusBruts)*100).toFixed(1) : 0;
-  var netNet = revenusBruts - chargesDeductibles - totalImpot;
-  setKv('f-bruts', euro(revenusBruts)); setKv('f-charges', euro(chargesDeductibles)); setKv('f-imposable', euro(imposable)); setKv('f-impot', euro(totalImpot));
-  setKv('fisc-sub', 'TMI ' + tmi + '% - Annee ' + annee);
-  detail += '<div class="fl2r"><span>Revenu net imposable</span><span style="color:var(--wh);font-weight:600">' + euro(imposable) + '</span></div>';
-  detail += '<hr style="border-color:var(--bd);margin:12px 0">';
-  detail += '<div class="fl2r"><span>IR (' + tmi + '%)</span><span style="color:var(--dg)">-' + euro(ir) + '</span></div>';
-  detail += '<div class="fl2r"><span>Prelevements sociaux (17,2%)</span><span style="color:var(--dg)">-' + euro(ps) + '</span></div>';
-  detail += '<div class="fl2r"><span>Total impots</span><span style="color:var(--dg);font-weight:600">-' + euro(totalImpot) + '</span></div>';
-  detail += '<div class="fl2r" style="margin-top:10px;padding-top:10px;border-top:2px solid var(--bd)"><span style="font-weight:600">Revenu net net</span><span style="color:var(--ac);font-family:Syne,sans-serif;font-weight:800;font-size:16px">' + euro(netNet) + '</span></div>';
-  detail += '<div class="fl2r"><span>Taux effectif global</span><span style="color:var(--a2);font-weight:600">' + tauxEffectif + '%</span></div>';
-  if (ge('f-detail')) ge('f-detail').innerHTML = detail;
-}
-
-async function loadQuittances() {
-  var locs = await getLocs();
-  var qSel = ge('q-loc');
-  if (qSel) {
-    qSel.innerHTML = '<option value="">-- Selectionner --</option>';
-    locs.forEach(function(l) { var o=document.createElement('option');o.value=l.id;o.textContent=l.prenom+' '+l.nom;qSel.appendChild(o); });
-  }
-  var qMois = ge('q-mois');
-  if (qMois && !qMois.value) { var now=new Date(); qMois.value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0'); }
-  var r = await SB.from('paiements').select('*, locataires(prenom,nom)').eq('user_id', CU.id).order('created_at', {ascending: false});
-  var paiements = r.data || [];
-  var container = ge('q-list'); container.innerHTML = '';
-  if (paiements.length === 0) { container.appendChild(makeEmpty('&#129398;', 'Aucune quittance', 'Generez votre premiere quittance')); return; }
-  var tbl=document.createElement('table'); tbl.className='tbl2';
-  tbl.innerHTML='<thead><tr><th>Locataire</th><th>Mois</th><th>Montant</th><th>Action</th></tr></thead>';
-  var tb=document.createElement('tbody');
-  paiements.forEach(function(p) {
-    var tr=document.createElement('tr');
-    var td1=document.createElement('td'); td1.style.cssText='font-weight:500;color:var(--wh)'; td1.textContent=p.locataires?p.locataires.prenom+' '+p.locataires.nom:'-';
-    var td2=document.createElement('td'); td2.textContent=p.mois;
-    var td3=document.createElement('td'); td3.style.cssText='font-weight:600;color:var(--ac)'; td3.textContent=euro(p.montant);
-    var td4=document.createElement('td');
-    var btn=document.createElement('button'); btn.className='btn btng btnsm'; btn.textContent='PDF';
-    btn.addEventListener('click', function(){genQuittanceFromPaiement(p);});
-    td4.appendChild(btn); tr.appendChild(td1);tr.appendChild(td2);tr.appendChild(td3);tr.appendChild(td4); tb.appendChild(tr);
-  });
-  tbl.appendChild(tb); var wrap=document.createElement('div');wrap.className='tw';wrap.appendChild(tbl); container.appendChild(wrap);
-}
-
-function genQuittanceFromPaiement(p) {
-  var nom = p.locataires ? p.locataires.prenom+' '+p.locataires.nom : 'Locataire';
-  openPrintWindow(buildQuittanceHTML(nom, p.mois, p.montant||0, 0), 'Quittance-'+p.mois);
-}
-
-function genQuittance() {
-  var locId=ge('q-loc').value; if(!locId){toast('Erreur','Selectionnez un locataire.');return;}
-  var loc=_locs.find(function(l){return l.id===locId;}); if(!loc) return;
-  var moisVal=ge('q-mois').value;
-  var mois=moisVal?formatMois(moisVal):'Mois en cours';
-  var loyer=parseFloat(ge('q-loyer').value)||loc.loyer||0;
-  var charges=parseFloat(ge('q-charges').value)||0;
-  openPrintWindow(buildQuittanceHTML(loc.prenom+' '+loc.nom, mois, loyer, charges), 'Quittance-'+loc.nom+'-'+mois);
-}
-
-function formatMois(val) {
-  var parts=val.split('-');
-  var mois=['Janvier','Fevrier','Mars','Avril','Mai','Juin','Juillet','Aout','Septembre','Octobre','Novembre','Decembre'];
-  return mois[parseInt(parts[1])-1]+' '+parts[0];
-}
-
-function buildQuittanceHTML(locNom, mois, loyer, charges) {
-  var bailleur=ge('user-name').textContent; var total=loyer+charges;
-  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Quittance</title><style>body{font-family:Arial,sans-serif;max-width:600px;margin:40px auto;color:#333;font-size:14px;}h1{font-size:20px;text-align:center;margin-bottom:4px;}h2{font-size:14px;text-align:center;color:#666;margin-bottom:30px;font-weight:normal;}table{width:100%;border-collapse:collapse;margin:20px 0;}td{padding:10px 14px;border:1px solid #ddd;}td:first-child{font-weight:600;width:60%;}td:last-child{text-align:right;}.total{font-weight:700;font-size:16px;}.total td{background:#f5f5f5;}.sig{margin-top:50px;display:flex;justify-content:space-between;}.sig-box{text-align:center;width:45%;}.sig-line{border-top:1px solid #333;margin-top:60px;padding-top:6px;font-size:12px;}</style></head><body>'
-    +'<h1>QUITTANCE DE LOYER</h1><h2>'+mois+'</h2>'
-    +'<p><strong>Bailleur :</strong> '+bailleur+'</p><p style="margin-top:6px"><strong>Locataire :</strong> '+locNom+'</p>'
-    +'<p style="margin-top:6px">Je soussigne, '+bailleur+', reconnais avoir recu de '+locNom+' la somme de <strong>'+total.toFixed(2)+' euros</strong> pour le mois de '+mois+' :</p>'
-    +'<table><tr><td>Loyer hors charges</td><td>'+loyer.toFixed(2)+' euro</td></tr>'
-    +'<tr><td>Provisions charges</td><td>'+charges.toFixed(2)+' euro</td></tr>'
-    +'<tr class="total"><td>TOTAL</td><td>'+total.toFixed(2)+' euro</td></tr></table>'
-    +'<p style="font-size:12px;color:#666">Delivree sous reserve de tous droits.</p>'
-    +'<div class="sig"><div class="sig-box"><div class="sig-line">Bailleur<br>'+bailleur+'</div></div><div class="sig-box"><div class="sig-line">Date<br>'+new Date().toLocaleDateString('fr-FR')+'</div></div></div>'
-    +'</body></html>';
-}
-
-function openPrintWindow(html, filename) {
-  var win=window.open('','_blank');
-  if(!win){toast('Erreur','Autorisez les popups pour generer le PDF.');return;}
-  win.document.write(html); win.document.close(); win.focus();
-  setTimeout(function(){win.print();},500);
-}
-
-function envoyerQuittance() { toast('Email', 'Fonctionnalite email disponible prochainement.'); }
-function genAllQuittances() { toast('En cours','Generation de toutes les quittances du mois...'); }
-
-function loadJuridique() {
-  var container=ge('juridique-cnt'); if(!container) return;
-  var sections=[
-    {title:'Preavis de conge',ico:'&#128197;',items:['Bailleur - logement vide : 6 mois (3 mois en zone tendue)','Bailleur - logement meuble : 3 mois','Locataire - logement vide : 3 mois (1 mois zone tendue ou motif valable)','Locataire - logement meuble : 1 mois','Le preavis court a reception de la lettre recommandee']},
-    {title:'Depot de garantie',ico:'&#128184;',items:['Logement vide : maximum 1 mois de loyer HC','Logement meuble : maximum 2 mois de loyer HC','Restitution : 1 mois apres remise des cles (2 mois si retenues)','Retard : majoration de 10% par mois de retard','Bail mobilite : aucun depot autorise']},
-    {title:'Revision IRL',ico:'&#128200;',items:['Revision possible une fois par an a la date anniversaire','IRL T4 2025 : 145,78 (+0,79% sur un an)','Formule : Nouveau loyer = Loyer x IRL nouveau / IRL reference','La revision nest pas automatique : le bailleur doit en informer le locataire','Si non appliquee dans lan : la revision est perdue']},
-    {title:'Charges recuperables',ico:'&#128295;',items:['Taxe ordures menageres : oui','Charges copropriete (liste limitative) : partiellement','Entretien parties communes : oui','Taxe fonciere : non recuperable','Travaux importants (ravalement, toiture) : non recuperable']},
-    {title:'Obligations bailleur',ico:'&#127968;',items:['Logement decent : surface > 9m2, hauteur > 2,20m','DPE obligatoire - classe G interdit depuis jan. 2025','Diagnostics : amiante, plomb, electricite, gaz','Assurance PNO : fortement recommandee','Delivrer etat des lieux entree contradictoire']},
-    {title:'DPE et nouvelles regles 2025',ico:'&#127981;',items:['DPE G : interdiction de location depuis 1er janvier 2025','DPE F : gel du loyer a la relocation (interdiction prevue 2028)','DPE E : interdiction prevue en 2034','MaPrimeRenov : jusqu&#39;a 70% des travaux de renovation','Audit energetique obligatoire pour ventes F et G depuis 2023']}
-  ];
-  container.innerHTML='';
-  sections.forEach(function(s){
-    var card=document.createElement('div'); card.className='card';
-    var ch=document.createElement('div'); ch.className='ch';
-    var ct=document.createElement('div'); ct.className='ct'; ct.innerHTML=s.ico+' '+s.title;
-    ch.appendChild(ct); card.appendChild(ch);
-    var body=document.createElement('div'); body.style.padding='14px 16px';
-    s.items.forEach(function(item){
-      var p=document.createElement('div');
-      p.style.cssText='display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:13px;color:var(--tx)';
-      var dot=document.createElement('span'); dot.style.cssText='color:var(--ac);flex-shrink:0;margin-top:2px'; dot.textContent='•';
-      var txt=document.createElement('span'); txt.textContent=item;
-      p.appendChild(dot); p.appendChild(txt); body.appendChild(p);
-    });
-    card.appendChild(body); container.appendChild(card);
-  });
 }
 
 
@@ -1980,8 +1616,6 @@ async function loadDocuments() {
 // ============================================================
 async function loadBiensV2() {
   var biens = await getBiens(), locs = await getLocs();
-  var dpeResult = await SB.from('dpe').select('*').eq('user_id', CU.id);
-  var dpeData = dpeResult.data || [];
   setKv('bk-loyers', euro(biens.reduce(function(s,b){return s+(b.loyer||0);},0)));
   setKv('bk-nb', biens.length);
   setKv('bk-occ', locs.filter(function(l){return l.bien_id;}).length);
@@ -2010,87 +1644,11 @@ async function loadBiensV2() {
       lr.textContent = 'Locataire: ' + locsBien[0].prenom + ' ' + locsBien[0].nom;
       card.appendChild(lr);
     }
-    // DPE badge
-    var dpe = dpeData.find(function(d){ return d.bien_id === b.id; });
-    var dpeRow = document.createElement('div');
-    dpeRow.style.cssText = 'padding:0 14px 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap';
-    if (dpe) {
-      var dpeCol = {A:'#009B3A',B:'#51B747',C:'#C8D200',D:'#F7B300',E:'#EC6B08',F:'#E03726',G:'#9F1816'}[dpe.classe] || '#999';
-      var dpeBadge = document.createElement('span');
-      dpeBadge.style.cssText = 'background:' + dpeCol + ';color:white;padding:2px 10px;border-radius:5px;font-weight:800;font-size:13px';
-      dpeBadge.textContent = 'DPE ' + dpe.classe;
-      dpeRow.appendChild(dpeBadge);
-      if (dpe.classe_ges) {
-        var gesBadge = document.createElement('span');
-        gesBadge.style.cssText = 'background:var(--s2);color:var(--mu);padding:2px 8px;border-radius:5px;font-size:11px;border:1px solid var(--bd)';
-        gesBadge.textContent = 'GES ' + dpe.classe_ges;
-        dpeRow.appendChild(gesBadge);
-      }
-      if (dpe.date_expiration) {
-        var today = new Date();
-        var exp = new Date(dpe.date_expiration);
-        var in6m = new Date(); in6m.setMonth(in6m.getMonth()+6);
-        if (exp < today) {
-          var expBadge = document.createElement('span');
-          expBadge.className = 'pill dng'; expBadge.textContent = 'DPE expire';
-          dpeRow.appendChild(expBadge);
-        } else if (exp < in6m) {
-          var expBadge2 = document.createElement('span');
-          expBadge2.className = 'pill wn'; expBadge2.textContent = 'Expire bientot';
-          dpeRow.appendChild(expBadge2);
-        }
-      }
-      if (dpe.classe === 'G') {
-        var alertG = document.createElement('span');
-        alertG.className = 'pill dng'; alertG.textContent = 'Interdit 2025';
-        dpeRow.appendChild(alertG);
-      }
-      // Edit DPE button
-      var dpeEditBtn = document.createElement('button');
-      dpeEditBtn.className = 'btn btng btnsm'; dpeEditBtn.style.marginLeft = 'auto';
-      dpeEditBtn.textContent = 'Modifier DPE';
-      dpeEditBtn.dataset.bienId = b.id;
-      dpeEditBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        var bId = this.dataset.bienId;
-        var d2 = dpeData.find(function(x){ return x.bien_id === bId; });
-        ge('dpe-bien').value = bId;
-        if (d2) {
-          if (ge('dpe-classe')) ge('dpe-classe').value = d2.classe || 'D';
-          if (ge('dpe-ges')) ge('dpe-ges').value = d2.classe_ges || 'D';
-          if (ge('dpe-kwh')) ge('dpe-kwh').value = d2.kwh || '';
-          if (ge('dpe-co2')) ge('dpe-co2').value = d2.emissions_co2 || '';
-          if (ge('dpe-date-diag')) ge('dpe-date-diag').value = d2.date_diagnostic || '';
-          if (ge('dpe-date-exp')) ge('dpe-date-exp').value = d2.date_expiration || '';
-          if (ge('dpe-diagnostiqueur')) ge('dpe-diagnostiqueur').value = d2.diagnostiqueur || '';
-        }
-        openMo('mo-dpe');
-      });
-      dpeRow.appendChild(dpeEditBtn);
-    } else {
-      var dpeAddBtn = document.createElement('button');
-      dpeAddBtn.className = 'btn btng btnsm'; dpeAddBtn.textContent = '+ Ajouter DPE';
-      dpeAddBtn.dataset.bienId = b.id;
-      dpeAddBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        ge('dpe-bien').value = this.dataset.bienId;
-        openMo('mo-dpe');
-      });
-      dpeRow.appendChild(dpeAddBtn);
-    }
-    card.appendChild(dpeRow);
     var stats = document.createElement('div'); stats.className = 'bcst';
     var s1 = document.createElement('div'); s1.className = 'bcs';
     s1.innerHTML = '<div class="bcsv" style="color:var(--ac)">' + euro(b.loyer) + '</div><div class="bcsl">Loyer/mois</div>';
     var s2 = document.createElement('div'); s2.className = 'bcs';
-    var rent3 = calcRentabilite(b.loyer, b.charges, b.prix_acquisition);
     s2.innerHTML = '<div class="bcsv">' + (b.surface ? b.surface + 'm2' : '-') + '</div><div class="bcsl">Surface</div>';
-    var rentDiv = document.createElement('div'); rentDiv.className = 'bcs';
-    if (rent3) {
-      rentDiv.innerHTML = '<div class="bcsv" style="color:' + rentColor(rent3.nette) + '">' + rent3.nette + '%</div><div class="bcsl">Rentabilite nette</div>';
-    } else {
-      rentDiv.innerHTML = '<div class="bcsv" style="color:var(--mu)">-</div><div class="bcsl">Rentabilite</div>';
-    }
     var s3 = document.createElement('div'); s3.className = 'bcs';
     s3.style.cssText = 'display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center';
     var editBtn = document.createElement('button'); editBtn.className = 'btn btng btnsm';
@@ -2102,7 +1660,7 @@ async function loadBiensV2() {
     delBtn.dataset.type = 'bien'; delBtn.dataset.id = b.id; delBtn.dataset.label = b.nom;
     delBtn.addEventListener('click', function() { askDelete(this.dataset.type, this.dataset.id, this.dataset.label); });
     s3.appendChild(editBtn); s3.appendChild(delBtn);
-    stats.appendChild(s1); stats.appendChild(rentDiv); stats.appendChild(s2); stats.appendChild(s3);
+    stats.appendChild(s1); stats.appendChild(s2); stats.appendChild(s3);
     card.appendChild(stats); container.appendChild(card);
   });
 }
@@ -2157,162 +1715,39 @@ async function loadLocatairesV2() {
   });
 }
 
-
-// ============================================================
-// ANNONCES IA
-// ============================================================
-var _lastAnnonce = '';
-var _lastBienForAnnonce = null;
-
-async function loadAnnonces() {
-  var biens = await getBiens();
-  var sel = ge('ann-bien');
-  if (!sel) return;
-  sel.innerHTML = '<option value="">-- Selectionner un bien --</option>';
-  biens.forEach(function(b) {
-    var o = document.createElement('option');
-    o.value = b.id;
-    o.textContent = b.nom + (b.adresse ? ' - ' + b.adresse : '');
-    sel.appendChild(o);
+async function loadCharges() {
+  var charges = await getCharges(), biens = await getBiens();
+  var year = new Date().getFullYear().toString();
+  var total=charges.reduce(function(s,c){return s+(c.montant||0);},0);
+  var thisYear=charges.filter(function(c){return c.date_charge&&c.date_charge.startsWith(year);}).reduce(function(s,c){return s+(c.montant||0);},0);
+  var ded=charges.filter(function(c){return c.deductible;}).reduce(function(s,c){return s+(c.montant||0);},0);
+  setKv('ck-total', euro(total)); setKv('ck-year', euro(thisYear)); setKv('ck-ded', euro(ded)); setKv('ck-nb', charges.length);
+  setKv('charges-sub', charges.length + ' charge(s)');
+  var container = ge('charges-list'); container.innerHTML = '';
+  if (charges.length === 0) { container.appendChild(makeEmpty('&#128295;', 'Aucune charge', 'Cliquez sur + Ajouter')); return; }
+  var tbl=document.createElement('table'); tbl.className='tbl2';
+  tbl.innerHTML='<thead><tr><th>Intitule</th><th>Categorie</th><th>Date</th><th>Montant</th><th>Ded.</th><th></th></tr></thead>';
+  var tb=document.createElement('tbody');
+  charges.forEach(function(c) {
+    var bien=biens.find(function(b){return b.id===c.bien_id;});
+    var tr=document.createElement('tr');
+    var td1=document.createElement('td');
+    var nm=document.createElement('div'); nm.style.cssText='font-weight:500;color:var(--wh)'; nm.textContent=c.intitule; td1.appendChild(nm);
+    if(bien){var bs=document.createElement('div'); bs.style.cssText='font-size:11px;color:var(--mu)'; bs.textContent=bien.nom; td1.appendChild(bs);}
+    var td2=document.createElement('td'); td2.textContent=c.categorie||'';
+    var td3=document.createElement('td'); td3.textContent=c.date_charge||'-';
+    var td4=document.createElement('td'); td4.style.cssText='font-weight:600;color:var(--dg)'; td4.textContent='-'+euro(c.montant);
+    var td5=document.createElement('td');
+    var p=document.createElement('span'); p.className='pill '+(c.deductible?'ok':'dng'); p.textContent=c.deductible?'Oui':'Non'; td5.appendChild(p);
+    var td6=document.createElement('td');
+    var db=document.createElement('button'); db.className='btndel btnsm'; db.textContent='X';
+    db.dataset.type='charge'; db.dataset.id=c.id; db.dataset.label=c.intitule;
+    db.addEventListener('click', function(){askDelete(this.dataset.type,this.dataset.id,this.dataset.label);});
+    td6.appendChild(db);
+    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4); tr.appendChild(td5); tr.appendChild(td6);
+    tb.appendChild(tr);
   });
-  // Set default date to today
-  var dispo = ge('ann-dispo');
-  if (dispo && !dispo.value) {
-    dispo.value = new Date().toISOString().split('T')[0];
-  }
-}
-
-async function genAnnonce() {
-  var bienId = ge('ann-bien').value;
-  if (!bienId) { toast('Erreur', 'Selectionnez un bien.'); return; }
-
-  var bien = _biens.find(function(b){ return b.id === bienId; });
-  if (!bien) return;
-  _lastBienForAnnonce = bien;
-
-  var typeAnnonce = ge('ann-type').value;
-  var plateforme = ge('ann-plateforme').value;
-  var pointsForts = val('ann-points');
-  var dispoDate = ge('ann-dispo').value;
-  var dispoStr = dispoDate ? new Date(dispoDate).toLocaleDateString('fr-FR') : 'immediatement';
-
-  // Show result area + loading
-  ge('ann-result').style.display = 'block';
-  ge('ann-loading').style.display = 'flex';
-  ge('ann-text').textContent = '';
-  ge('ann-stats').innerHTML = '';
-  ge('ann-conseils').innerHTML = '';
-
-  var btn = ge('ann-btn');
-  btn.disabled = true;
-  btn.textContent = 'Generation en cours...';
-
-  // Build prompt
-  var platformeLabel = {leboncoin:'Leboncoin',seloger:'SeLoger',pap:'PAP',generic:'toutes plateformes'}[plateforme] || plateforme;
-  var typeLabel = {standard:'standard',premium:'detaillee et premium',court:'courte pour les reseaux sociaux'}[typeAnnonce] || typeAnnonce;
-
-  var prompt = 'Tu es un expert immobilier francais specialise dans la redaction d\'annonces de location.\n\n'
-    + 'Redige une annonce de location ' + typeLabel + ' pour ' + platformeLabel + ' avec ces informations :\n\n'
-    + '- Type de bien : ' + (bien.type || 'Appartement') + '\n'
-    + '- Adresse : ' + (bien.adresse || 'Non precisee') + '\n'
-    + '- Surface : ' + (bien.surface ? bien.surface + ' m2' : 'Non precisee') + '\n'
-    + '- Loyer : ' + (bien.loyer ? bien.loyer + ' euros hors charges' : 'A definir') + '\n'
-    + '- Charges : ' + (bien.charges ? bien.charges + ' euros/mois' : 'Non precisees') + '\n'
-    + '- Regime fiscal : ' + (bien.regime_fiscal || 'Non precise') + '\n'
-    + '- Disponible : ' + dispoStr + '\n'
-    + (pointsForts ? '- Points forts : ' + pointsForts + '\n' : '')
-    + '\nContraintes :\n'
-    + '- Ecris en francais, avec un ton professionnel et attractif\n'
-    + '- Commence par un titre accrocheur en majuscules\n'
-    + '- Mentionne les informations cles (surface, loyer, charges, dispo)\n'
-    + (typeAnnonce === 'court' ? '- Maximum 500 caracteres\n' : '- Entre 300 et 600 mots\n')
-    + '- Termine par les conditions de location (garant, revenus demandes)\n'
-    + '- Ajoute une ligne "CONTACT : [Nom du bailleur]"\n\n'
-    + 'Ensuite, sur une nouvelle ligne separee par "---CONSEILS---", donne 3 conseils specifiques pour optimiser cette annonce sur ' + platformeLabel + '.';
-
-  try {
-    var response = await fetch('https://bailsmart.mikaeldonde.workers.dev', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    var data = await response.json();
-    console.log('API response:', JSON.stringify(data).substring(0, 200));
-    var fullText = '';
-    if (data.content && data.content[0] && data.content[0].text) {
-      fullText = data.content[0].text;
-    } else if (data.error) {
-      ge('ann-loading').style.display = 'none';
-      ge('ann-text').textContent = 'Erreur API: ' + (data.error.message || JSON.stringify(data.error));
-      btn.disabled = false;
-      btn.textContent = '\u2728 Generer l\u0027annonce avec l\u0027IA';
-      return;
-    }
-
-    ge('ann-loading').style.display = 'none';
-
-    // Split annonce and conseils
-    var parts = fullText.split('---CONSEILS---');
-    var annonce = parts[0].trim();
-    var conseils = parts[1] ? parts[1].trim() : '';
-
-    _lastAnnonce = annonce;
-
-    ge('ann-text').textContent = annonce;
-    ge('ann-result-title').textContent = 'Annonce pour ' + platformeLabel + ' - ' + (bien.nom || 'Bien');
-
-    // Stats
-    var stats = ge('ann-stats');
-    stats.innerHTML = '';
-    var charCount = annonce.length;
-    var wordCount = annonce.split(/\s+/).filter(function(w){ return w.length > 0; }).length;
-
-    var s1 = document.createElement('span'); s1.className = 'pill inf'; s1.textContent = charCount + ' caracteres';
-    var s2 = document.createElement('span'); s2.className = 'pill inf'; s2.textContent = wordCount + ' mots';
-    var s3 = document.createElement('span'); s3.className = 'pill ' + (charCount <= 2000 ? 'ok' : 'wn');
-    s3.textContent = charCount <= 2000 ? 'Taille OK' : 'Trop long';
-    stats.appendChild(s1); stats.appendChild(rentDiv); stats.appendChild(s2); stats.appendChild(s3);
-
-    // Conseils
-    if (conseils) {
-      ge('ann-conseils').innerHTML = '<div style="white-space:pre-wrap;line-height:1.8">' + conseils.replace(/\n/g, '<br>') + '</div>';
-    }
-
-    toast('Annonce generee', 'Par Claude IA');
-
-  } catch(err) {
-    ge('ann-loading').style.display = 'none';
-    ge('ann-text').textContent = 'Erreur : ' + (err.message || 'Impossible de contacter l\'IA.');
-    toast('Erreur', 'Verifiez votre connexion.');
-  }
-
-  btn.disabled = false;
-  btn.textContent = '\u2728 Generer l\'annonce avec l\'IA';
-}
-
-function regenAnnonce() {
-  genAnnonce();
-}
-
-function copyAnnonce() {
-  if (!_lastAnnonce) return;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(_lastAnnonce).then(function() {
-      toast('Copie', 'Annonce copiee dans le presse-papier.');
-    });
-  } else {
-    // Fallback
-    var ta = document.createElement('textarea');
-    ta.value = _lastAnnonce;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    toast('Copie', 'Annonce copiee.');
-  }
+  tbl.appendChild(tb); var wrap=document.createElement('div'); wrap.className='tw'; wrap.appendChild(tbl); container.appendChild(wrap);
 }
 
 
@@ -2605,7 +2040,6 @@ async function saveDPE() {
   closeMo('mo-dpe');
   toast('DPE enregistre', 'Classe ' + data.classe);
   loadDPE();
-  loadBiensV2();
 }
 
 // ── PRE-COMPTABILITE ──
@@ -2695,6 +2129,620 @@ function exportCompta() {
 // This adds rentability display - already integrated via calcRentabilite()
 
 
+// ══════════════════════════════
+// FISCALITE
+// ══════════════════════════════
+async function loadFiscalite() {
+  var biens = await getBiens();
+  var charges = await getCharges();
+  var annee = ge('f-annee') ? ge('f-annee').value : new Date().getFullYear().toString();
+  var regime = ge('f-regime') ? ge('f-regime').value : 'reel';
+  var tmi = ge('f-tmi') ? parseInt(ge('f-tmi').value) : 30;
+
+  var revenusBruts = biens.reduce(function(s,b){ return s + (b.loyer||0)*12; }, 0);
+  var chargesDeductibles = charges.filter(function(c){ return c.deductible; }).reduce(function(s,c){ return s+(c.montant||0); }, 0);
+
+  var imposable = 0;
+  var abattement = 0;
+  var detail = '';
+
+  if (regime === 'reel') {
+    imposable = Math.max(0, revenusBruts - chargesDeductibles);
+    detail = '<div class="fl2r"><span>Revenus bruts</span><span style="color:var(--ac)">+' + euro(revenusBruts) + '</span></div>';
+    detail += '<div class="fl2r"><span>Charges deductibles</span><span style="color:var(--dg)">-' + euro(chargesDeductibles) + '</span></div>';
+    detail += '<div class="fl2r"><span>Revenu net imposable</span><span style="color:var(--wh);font-weight:600">' + euro(imposable) + '</span></div>';
+  } else if (regime === 'microfoncier') {
+    abattement = revenusBruts * 0.30;
+    imposable = revenusBruts * 0.70;
+    detail = '<div class="fl2r"><span>Revenus bruts</span><span style="color:var(--ac)">+' + euro(revenusBruts) + '</span></div>';
+    detail += '<div class="fl2r"><span>Abattement 30%</span><span style="color:var(--dg)">-' + euro(abattement) + '</span></div>';
+    detail += '<div class="fl2r"><span>Revenu net imposable</span><span style="color:var(--wh);font-weight:600">' + euro(imposable) + '</span></div>';
+  } else if (regime === 'lmnp_micro') {
+    abattement = revenusBruts * 0.50;
+    imposable = revenusBruts * 0.50;
+    detail = '<div class="fl2r"><span>Revenus bruts</span><span style="color:var(--ac)">+' + euro(revenusBruts) + '</span></div>';
+    detail += '<div class="fl2r"><span>Abattement 50%</span><span style="color:var(--dg)">-' + euro(abattement) + '</span></div>';
+    detail += '<div class="fl2r"><span>Revenu net imposable</span><span style="color:var(--wh);font-weight:600">' + euro(imposable) + '</span></div>';
+  } else {
+    imposable = Math.max(0, revenusBruts - chargesDeductibles);
+    detail = '<div class="fl2r"><span>Revenus bruts</span><span style="color:var(--ac)">+' + euro(revenusBruts) + '</span></div>';
+    detail += '<div class="fl2r"><span>Charges reelles</span><span style="color:var(--dg)">-' + euro(chargesDeductibles) + '</span></div>';
+    detail += '<div class="fl2r"><span>Revenu net imposable</span><span style="color:var(--wh);font-weight:600">' + euro(imposable) + '</span></div>';
+  }
+
+  var ir = imposable * (tmi / 100);
+  var ps = imposable * 0.172;
+  var totalImpot = ir + ps;
+  var tauxEffectif = revenusBruts > 0 ? ((totalImpot / revenusBruts) * 100).toFixed(1) : 0;
+  var netNet = revenusBruts - chargesDeductibles - totalImpot;
+
+  setKv('f-bruts', euro(revenusBruts));
+  setKv('f-charges', euro(chargesDeductibles));
+  setKv('f-imposable', euro(imposable));
+  setKv('f-impot', euro(totalImpot));
+  setKv('fisc-sub', 'TMI ' + tmi + '% - Annee ' + annee);
+
+  detail += '<hr style="border-color:var(--bd);margin:12px 0">';
+  detail += '<div class="fl2r"><span>IR (' + tmi + '%)</span><span style="color:var(--dg)">-' + euro(ir) + '</span></div>';
+  detail += '<div class="fl2r"><span>Prelevements sociaux (17,2%)</span><span style="color:var(--dg)">-' + euro(ps) + '</span></div>';
+  detail += '<div class="fl2r"><span>Total impots</span><span style="color:var(--dg);font-weight:600">-' + euro(totalImpot) + '</span></div>';
+  detail += '<div class="fl2r" style="margin-top:10px;padding-top:10px;border-top:2px solid var(--bd)"><span style="font-weight:600">Revenu net net</span><span style="color:var(--ac);font-family:Syne,sans-serif;font-weight:800;font-size:16px">' + euro(netNet) + '</span></div>';
+  detail += '<div class="fl2r"><span>Taux effectif global</span><span style="color:var(--a2);font-weight:600">' + tauxEffectif + '%</span></div>';
+
+  if (ge('f-detail')) ge('f-detail').innerHTML = detail;
+}
+
+// ══════════════════════════════
+// QUITTANCES
+// ══════════════════════════════
+async function loadQuittances() {
+  var locs = await getLocs();
+  var biens = await getBiens();
+  var qSel = ge('q-loc');
+  if (qSel) {
+    qSel.innerHTML = '<option value="">-- Selectionner --</option>';
+    locs.forEach(function(l) {
+      var o = document.createElement('option');
+      o.value = l.id;
+      o.textContent = l.prenom + ' ' + l.nom;
+      qSel.appendChild(o);
+    });
+  }
+  // Set default month to current
+  var qMois = ge('q-mois');
+  if (qMois && !qMois.value) {
+    var now = new Date();
+    qMois.value = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  }
+
+  // Load history from paiements
+  var r = await SB.from('paiements').select('*, locataires(prenom,nom)').eq('user_id', CU.id).order('created_at', {ascending: false});
+  var paiements = r.data || [];
+  var container = ge('q-list'); container.innerHTML = '';
+  if (paiements.length === 0) {
+    container.appendChild(makeEmpty('&#129398;', 'Aucune quittance', 'Generez votre premiere quittance'));
+    return;
+  }
+  var tbl = document.createElement('table'); tbl.className = 'tbl2';
+  tbl.innerHTML = '<thead><tr><th>Locataire</th><th>Mois</th><th>Montant</th><th>Actions</th></tr></thead>';
+  var tb = document.createElement('tbody');
+  paiements.forEach(function(p) {
+    var tr = document.createElement('tr');
+    var td1 = document.createElement('td'); td1.style.cssText='font-weight:500;color:var(--wh)';
+    td1.textContent = p.locataires ? p.locataires.prenom + ' ' + p.locataires.nom : '-';
+    var td2 = document.createElement('td'); td2.textContent = p.mois;
+    var td3 = document.createElement('td'); td3.style.cssText='font-weight:600;color:var(--ac)'; td3.textContent = euro(p.montant);
+    var td4 = document.createElement('td');
+    var dlBtn = document.createElement('button'); dlBtn.className='btn btng btnsm'; dlBtn.textContent='PDF';
+    dlBtn.addEventListener('click', function() { genQuittanceFromPaiement(p); });
+    td4.appendChild(dlBtn);
+    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4);
+    tb.appendChild(tr);
+  });
+  tbl.appendChild(tb);
+  var wrap = document.createElement('div'); wrap.className = 'tw'; wrap.appendChild(tbl);
+  container.appendChild(wrap);
+}
+
+function genQuittanceFromPaiement(p) {
+  var nom = p.locataires ? p.locataires.prenom + ' ' + p.locataires.nom : 'Locataire';
+  var html = buildQuittanceHTML(nom, p.mois, p.montant, 0);
+  openPrintWindow(html, 'Quittance-' + p.mois);
+}
+
+function genQuittance() {
+  var locId = ge('q-loc').value;
+  if (!locId) { toast('Erreur', 'Selectionnez un locataire.'); return; }
+  var loc = _locs.find(function(l){ return l.id === locId; });
+  if (!loc) return;
+  var moisVal = ge('q-mois').value;
+  var mois = moisVal ? formatMois(moisVal) : 'Mois en cours';
+  var loyer = parseFloat(ge('q-loyer').value) || loc.loyer || 0;
+  var charges = parseFloat(ge('q-charges').value) || 0;
+  var html = buildQuittanceHTML(loc.prenom + ' ' + loc.nom, mois, loyer, charges);
+  openPrintWindow(html, 'Quittance-' + loc.nom + '-' + mois);
+}
+
+function formatMois(val) {
+  var parts = val.split('-');
+  var mois = ['Janvier','Fevrier','Mars','Avril','Mai','Juin','Juillet','Aout','Septembre','Octobre','Novembre','Decembre'];
+  return mois[parseInt(parts[1])-1] + ' ' + parts[0];
+}
+
+function buildQuittanceHTML(locNom, mois, loyer, charges) {
+  var bailleur = ge('user-name').textContent;
+  var total = loyer + charges;
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Quittance</title><style>body{font-family:Arial,sans-serif;max-width:600px;margin:40px auto;color:#333;font-size:14px;}h1{font-size:20px;text-align:center;margin-bottom:4px;}h2{font-size:14px;text-align:center;color:#666;margin-bottom:30px;font-weight:normal;}table{width:100%;border-collapse:collapse;margin:20px 0;}td{padding:10px 14px;border:1px solid #ddd;}td:first-child{font-weight:600;width:60%;}td:last-child{text-align:right;}.total{font-weight:700;font-size:16px;}.total td{background:#f5f5f5;}.sig{margin-top:50px;display:flex;justify-content:space-between;}.sig-box{text-align:center;width:45%;}.sig-line{border-top:1px solid #333;margin-top:60px;padding-top:6px;font-size:12px;}</style></head><body>'
+    + '<h1>QUITTANCE DE LOYER</h1>'
+    + '<h2>' + mois + '</h2>'
+    + '<p><strong>Bailleur :</strong> ' + bailleur + '</p>'
+    + '<p style="margin-top:6px"><strong>Locataire :</strong> ' + locNom + '</p>'
+    + '<p style="margin-top:6px">Je soussigne, ' + bailleur + ', bailleur, reconnais avoir recu de ' + locNom + ', locataire, la somme de <strong>' + total.toFixed(2) + ' euros</strong> au titre du loyer du mois de ' + mois + ', se decomposant comme suit :</p>'
+    + '<table><tr><td>Loyer hors charges</td><td>' + loyer.toFixed(2) + ' €</td></tr>'
+    + '<tr><td>Provisions pour charges</td><td>' + charges.toFixed(2) + ' €</td></tr>'
+    + '<tr class="total"><td>TOTAL</td><td>' + total.toFixed(2) + ' €</td></tr></table>'
+    + '<p style="font-size:12px;color:#666">Cette quittance est delivree sous reserve de tous droits et encaissements de la somme indiquee.</p>'
+    + '<div class="sig"><div class="sig-box"><div class="sig-line">Signature du bailleur<br>' + bailleur + '</div></div><div class="sig-box"><div class="sig-line">Date<br>' + new Date().toLocaleDateString('fr-FR') + '</div></div></div>'
+    + '</body></html>';
+}
+
+function openPrintWindow(html, filename) {
+  var win = window.open('', '_blank');
+  if (!win) { toast('Erreur', 'Autorisez les popups pour generer le PDF.'); return; }
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(function() { win.print(); }, 500);
+}
+
+async function envoyerQuittance() {
+  var locId = ge('q-loc').value;
+  if (!locId) { toast('Erreur', 'Selectionnez un locataire.'); return; }
+  var loc = _locs.find(function(l){ return l.id === locId; });
+  if (!loc || !loc.email) { toast('Erreur', 'Email du locataire manquant.'); return; }
+  var moisVal = ge('q-mois').value;
+  var mois = moisVal ? formatMois(moisVal) : 'Mois en cours';
+  var loyer = parseFloat(ge('q-loyer').value) || loc.loyer || 0;
+  var charges = parseFloat(ge('q-charges').value) || 0;
+  var html = buildQuittanceHTML(loc.prenom + ' ' + loc.nom, mois, loyer, charges);
+  toast('Envoi...', 'Email en cours vers ' + loc.email);
+  try {
+    var r = await fetch('https://bailsmart.mikaeldonde.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'send_email',
+        to: loc.email,
+        subject: 'Quittance de loyer - ' + mois,
+        html: html
+      })
+    });
+    var data = await r.json();
+    if (data.id) {
+      toast('Email envoye', 'Quittance envoyee a ' + loc.email);
+    } else {
+      toast('Erreur email', data.message || 'Verifiez la configuration.');
+    }
+  } catch(err) {
+    toast('Erreur', err.message);
+  }
+}
+function genAllQuittances() {
+  toast('En cours', 'Generation de toutes les quittances du mois...');
+}
+
+// ══════════════════════════════
+// DOCUMENTS - BAIL
+// ══════════════════════════════
+async function loadDocuments() {
+  var locs = await getLocs();
+  var biens = await getBiens();
+
+  // Populate selects in modals
+  var bSel = ge('bail-loc'), eSel = ge('edl-loc');
+  if (bSel) {
+    bSel.innerHTML = '<option value="">-- Selectionner --</option>';
+    locs.forEach(function(l){ var o=document.createElement('option'); o.value=l.id; o.textContent=l.prenom+' '+l.nom; bSel.appendChild(o); });
+  }
+  if (eSel) {
+    eSel.innerHTML = '<option value="">-- Selectionner --</option>';
+    locs.forEach(function(l){ var o=document.createElement('option'); o.value=l.id; o.textContent=l.prenom+' '+l.nom; eSel.appendChild(o); });
+  }
+
+  // Show docs list
+  var baux = ge('doc-baux'), edlDiv = ge('doc-edl');
+  if (baux) {
+    baux.innerHTML = '';
+    if (locs.length === 0) {
+      baux.appendChild(makeEmpty('&#128196;', 'Aucun locataire', 'Ajoutez des locataires pour generer des baux'));
+    } else {
+      locs.forEach(function(l) {
+        var bien = biens.find(function(b){ return b.id===l.bien_id; });
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--bd)';
+        var info = document.createElement('div');
+        var nm = document.createElement('div'); nm.style.cssText='font-weight:500;color:var(--wh);font-size:13px'; nm.textContent=l.prenom+' '+l.nom;
+        var bi = document.createElement('div'); bi.style.cssText='font-size:11px;color:var(--mu)'; bi.textContent=(bien?bien.nom:'-')+' - '+(l.type_bail||'');
+        info.appendChild(nm); info.appendChild(bi);
+        var btn = document.createElement('button'); btn.className='btn btng btnsm'; btn.textContent='Generer bail';
+        btn.addEventListener('click', function() { genBailForLoc(l, bien); });
+        row.appendChild(info); row.appendChild(btn); baux.appendChild(row);
+      });
+    }
+  }
+
+  if (edlDiv) {
+    edlDiv.innerHTML = '';
+    if (locs.length === 0) {
+      edlDiv.appendChild(makeEmpty('&#128196;', 'Aucun locataire', 'Ajoutez des locataires pour generer des EDL'));
+    } else {
+      locs.forEach(function(l) {
+        var bien = biens.find(function(b){ return b.id===l.bien_id; });
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--bd)';
+        var info = document.createElement('div');
+        var nm = document.createElement('div'); nm.style.cssText='font-weight:500;color:var(--wh);font-size:13px'; nm.textContent=l.prenom+' '+l.nom;
+        var bi = document.createElement('div'); bi.style.cssText='font-size:11px;color:var(--mu)'; bi.textContent=bien?bien.nom:'-';
+        info.appendChild(nm); info.appendChild(bi);
+        var acts = document.createElement('div'); acts.style.cssText='display:flex;gap:6px';
+        var btn1 = document.createElement('button'); btn1.className='btn btng btnsm'; btn1.textContent='EDL Entree';
+        btn1.addEventListener('click', function() { genEDLForLoc(l, bien, 'entree'); });
+        var btn2 = document.createElement('button'); btn2.className='btn btng btnsm'; btn2.textContent='EDL Sortie';
+        btn2.addEventListener('click', function() { genEDLForLoc(l, bien, 'sortie'); });
+        acts.appendChild(btn1); acts.appendChild(btn2); row.appendChild(info); row.appendChild(acts); edlDiv.appendChild(row);
+      });
+    }
+  }
+}
+
+function genBail() {
+  var locId = ge('bail-loc').value;
+  if (!locId) { toast('Erreur', 'Selectionnez un locataire.'); return; }
+  var loc = _locs.find(function(l){ return l.id===locId; });
+  if (!loc) return;
+  var bien = _biens.find(function(b){ return b.id===loc.bien_id; });
+  genBailForLoc(loc, bien);
+  closeMo('mo-bail');
+}
+
+function genBailForLoc(loc, bien) {
+  var bailleur = ge('user-name').textContent;
+  var loyer = loc.loyer || 0;
+  var depot = loc.depot_garantie || loyer;
+  var dateEntree = loc.date_entree || new Date().toLocaleDateString('fr-FR');
+  var typeBail = loc.type_bail || 'Nu 3 ans';
+  var adresse = bien ? (bien.adresse || bien.nom) : 'Adresse non renseignee';
+  var surface = bien ? (bien.surface ? bien.surface + ' m2' : 'Non renseignee') : 'Non renseignee';
+
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bail de location</title>'
+    + '<style>body{font-family:Arial,sans-serif;max-width:700px;margin:30px auto;color:#333;font-size:13px;line-height:1.6;}h1{text-align:center;font-size:18px;text-transform:uppercase;margin-bottom:6px;}h2{font-size:14px;margin:20px 0 8px;text-transform:uppercase;border-bottom:1px solid #ccc;padding-bottom:4px;}h3{font-size:13px;margin:14px 0 6px;}p{margin:6px 0;}.sig-area{display:flex;justify-content:space-between;margin-top:60px;}.sig-box{width:45%;text-align:center;}.sig-line{border-top:1px solid #333;margin-top:80px;padding-top:6px;font-size:12px;}</style></head><body>'
+    + '<h1>CONTRAT DE BAIL DE LOCATION</h1>'
+    + '<p style="text-align:center;color:#666">' + typeBail + '</p>'
+    + '<h2>Article 1 - Les parties</h2>'
+    + '<p><strong>Bailleur :</strong> ' + bailleur + '</p>'
+    + '<p><strong>Locataire :</strong> ' + loc.prenom + ' ' + loc.nom + (loc.email ? ' - ' + loc.email : '') + (loc.telephone ? ' - ' + loc.telephone : '') + '</p>'
+    + '<h2>Article 2 - Le logement</h2>'
+    + '<p><strong>Adresse :</strong> ' + adresse + '</p>'
+    + '<p><strong>Surface :</strong> ' + surface + '</p>'
+    + '<p><strong>Type :</strong> ' + (bien ? (bien.type || '') : '') + '</p>'
+    + '<h2>Article 3 - Duree du bail</h2>'
+    + '<p>Le present bail est consenti pour une duree de <strong>' + (typeBail.includes('1 an') ? '1 an' : '3 ans') + '</strong> a compter du <strong>' + dateEntree + '</strong>.</p>'
+    + '<h2>Article 4 - Loyer et charges</h2>'
+    + '<p>Le loyer mensuel est fixe a <strong>' + loyer.toFixed(2) + ' euros hors charges</strong>.</p>'
+    + '<p>Les charges mensuelles sont fixees a <strong>' + (loc.charges || 0) + ' euros</strong>.</p>'
+    + '<p>Le loyer est payable le 1er de chaque mois.</p>'
+    + '<h2>Article 5 - Depot de garantie</h2>'
+    + '<p>Un depot de garantie de <strong>' + depot.toFixed(2) + ' euros</strong> est verse a la signature.</p>'
+    + '<h2>Article 6 - Obligations du locataire</h2>'
+    + '<p>Le locataire s\'engage a : user du logement paisiblement, payer le loyer aux echeances convenues, souscrire une assurance habitation, ne pas sous-louer sans accord du bailleur.</p>'
+    + '<h2>Article 7 - Obligations du bailleur</h2>'
+    + '<p>Le bailleur s\'engage a : delivrer un logement decent, assurer la jouissance paisible, prendre en charge les reparations importantes.</p>'
+    + '<div class="sig-area"><div class="sig-box"><div class="sig-line">Signature du bailleur<br><strong>' + bailleur + '</strong></div></div><div class="sig-box"><div class="sig-line">Signature du locataire<br><strong>' + loc.prenom + ' ' + loc.nom + '</strong></div></div></div>'
+    + '<p style="margin-top:20px;font-size:11px;color:#666">Fait en deux exemplaires originaux - ' + new Date().toLocaleDateString('fr-FR') + '</p>'
+    + '</body></html>';
+
+  openPrintWindow(html, 'Bail-' + loc.nom);
+}
+
+function genEDL() {
+  var locId = ge('edl-loc').value;
+  if (!locId) { toast('Erreur', 'Selectionnez un locataire.'); return; }
+  var loc = _locs.find(function(l){ return l.id===locId; });
+  if (!loc) return;
+  var bien = _biens.find(function(b){ return b.id===loc.bien_id; });
+  var type = ge('edl-type').value;
+  genEDLForLoc(loc, bien, type);
+  closeMo('mo-edl');
+}
+
+function genEDLForLoc(loc, bien, type) {
+  var bailleur = ge('user-name').textContent;
+  var adresse = bien ? (bien.adresse || bien.nom) : 'Adresse non renseignee';
+  var typeLabel = type === 'entree' ? 'ENTREE' : 'SORTIE';
+
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Etat des lieux</title>'
+    + '<style>body{font-family:Arial,sans-serif;max-width:700px;margin:30px auto;color:#333;font-size:13px;line-height:1.6;}h1{text-align:center;font-size:18px;text-transform:uppercase;margin-bottom:6px;}h2{font-size:14px;margin:20px 0 8px;text-transform:uppercase;border-bottom:1px solid #ccc;padding-bottom:4px;}table{width:100%;border-collapse:collapse;margin:10px 0;}td,th{border:1px solid #ccc;padding:8px 10px;font-size:12px;}th{background:#f0f0f0;font-weight:600;text-align:left;}.sig-area{display:flex;justify-content:space-between;margin-top:60px;}.sig-box{width:45%;text-align:center;}.sig-line{border-top:1px solid #333;margin-top:80px;padding-top:6px;font-size:12px;}</style></head><body>'
+    + '<h1>ETAT DES LIEUX ' + typeLabel + '</h1>'
+    + '<p><strong>Adresse :</strong> ' + adresse + '</p>'
+    + '<p><strong>Bailleur :</strong> ' + bailleur + '</p>'
+    + '<p><strong>Locataire :</strong> ' + loc.prenom + ' ' + loc.nom + '</p>'
+    + '<p><strong>Date :</strong> ' + new Date().toLocaleDateString('fr-FR') + '</p>'
+    + '<h2>Releve des compteurs</h2>'
+    + '<table><tr><th>Compteur</th><th>Index</th><th>Observations</th></tr>'
+    + '<tr><td>Electricite</td><td>_____________</td><td>_______________________________</td></tr>'
+    + '<tr><td>Eau froide</td><td>_____________</td><td>_______________________________</td></tr>'
+    + '<tr><td>Eau chaude</td><td>_____________</td><td>_______________________________</td></tr>'
+    + '<tr><td>Gaz</td><td>_____________</td><td>_______________________________</td></tr></table>'
+    + '<h2>Etat des pieces</h2>'
+    + '<table><tr><th>Piece</th><th>Sols</th><th>Murs/Plafonds</th><th>Menuiseries</th><th>Etat general</th><th>Observations</th></tr>'
+    + '<tr><td>Entree/Couloir</td><td>______</td><td>______</td><td>______</td><td>______</td><td>________________________</td></tr>'
+    + '<tr><td>Sejour/Salon</td><td>______</td><td>______</td><td>______</td><td>______</td><td>________________________</td></tr>'
+    + '<tr><td>Cuisine</td><td>______</td><td>______</td><td>______</td><td>______</td><td>________________________</td></tr>'
+    + '<tr><td>Chambre 1</td><td>______</td><td>______</td><td>______</td><td>______</td><td>________________________</td></tr>'
+    + '<tr><td>Chambre 2</td><td>______</td><td>______</td><td>______</td><td>______</td><td>________________________</td></tr>'
+    + '<tr><td>Salle de bain</td><td>______</td><td>______</td><td>______</td><td>______</td><td>________________________</td></tr>'
+    + '<tr><td>WC</td><td>______</td><td>______</td><td>______</td><td>______</td><td>________________________</td></tr></table>'
+    + '<h2>Cles remises</h2>'
+    + '<table><tr><th>Type</th><th>Nombre</th><th>Observations</th></tr>'
+    + '<tr><td>Cles porte entree</td><td>______</td><td>________________________</td></tr>'
+    + '<tr><td>Cles boite aux lettres</td><td>______</td><td>________________________</td></tr>'
+    + '<tr><td>Badges/telecommandes</td><td>______</td><td>________________________</td></tr></table>'
+    + '<div class="sig-area"><div class="sig-box"><div class="sig-line">Signature du bailleur<br><strong>' + bailleur + '</strong></div></div><div class="sig-box"><div class="sig-line">Signature du locataire<br><strong>' + loc.prenom + ' ' + loc.nom + '</strong></div></div></div>'
+    + '</body></html>';
+
+  openPrintWindow(html, 'EDL-' + typeLabel + '-' + loc.nom);
+}
+
+// ══════════════════════════════
+// JURIDIQUE
+// ══════════════════════════════
+function loadJuridique() {
+  var container = ge('juridique-cnt');
+  if (!container) return;
+
+  var sections = [
+    {
+      title: 'Preavi de conge',
+      ico: '&#128197;',
+      items: [
+        'Bailleur - logement vide : 6 mois de preavis (3 mois en zone tendue)',
+        'Bailleur - logement meuble : 3 mois de preavis',
+        'Locataire - logement vide : 3 mois (1 mois en zone tendue ou motif valable)',
+        'Locataire - logement meuble : 1 mois',
+        'Le preavis court a reception de la lettre recommandee'
+      ]
+    },
+    {
+      title: 'Depot de garantie',
+      ico: '&#128184;',
+      items: [
+        'Logement vide : maximum 1 mois de loyer hors charges',
+        'Logement meuble : maximum 2 mois de loyer hors charges',
+        'Restitution : 1 mois apres remise des cles (2 mois si retenues)',
+        'Retard de restitution : majoration de 10% par mois de retard',
+        'Interet : pas d\'interet si restitution dans les delais'
+      ]
+    },
+    {
+      title: 'Revision du loyer (IRL)',
+      ico: '&#128200;',
+      items: [
+        'Revision possible une fois par an a la date anniversaire du bail',
+        'Indice de Reference des Loyers (IRL) publie par l\'INSEE chaque trimestre',
+        'Formule : Nouveau loyer = Loyer actuel x IRL nouveau / IRL ancien',
+        'IRL Q3 2024 : 143,67 (reference courante)',
+        'La revision n\'est pas automatique : le bailleur doit en informer le locataire'
+      ]
+    },
+    {
+      title: 'Charges recuperables',
+      ico: '&#128295;',
+      items: [
+        'Taxe sur les ordures menageres : oui',
+        'Charges de copropriete : partiellement (liste limitative)',
+        'Entretien des parties communes : oui',
+        'Taxe fonciere : non recuperable',
+        'Travaux importants (ravalement, toiture) : non recuperable',
+        'Reparations locatives (selon liste du decret de 1987) : a la charge du locataire'
+      ]
+    },
+    {
+      title: 'Obligations du bailleur',
+      ico: '&#127968;',
+      items: [
+        'Logement decent : surface > 9m2, hauteur > 2,20m, DPE classe A a F (G interdit)',
+        'Delivrer un logement en bon etat de reparations',
+        'Assurer la jouissance paisible du logement',
+        'Diagnostics obligatoires : DPE, amiante, plomb, electricite, gaz',
+        'Assurance PNO (Proprietaire Non Occupant) : fortement recommandee'
+      ]
+    },
+    {
+      title: 'DPE et nouvelles regles',
+      ico: '&#127981;',
+      items: [
+        'DPE G : interdiction de location depuis le 1er janvier 2025',
+        'DPE F : gel du loyer a la relocation depuis 2022 (interdiction 2028)',
+        'DPE E : interdiction de location prevue en 2034',
+        'Renovation energetique : MaPrimeRenov jusqu\'a 70% des travaux',
+        'Audit energetique obligatoire pour les ventes F et G depuis 2023'
+      ]
+    }
+  ];
+
+  container.innerHTML = '';
+  sections.forEach(function(s) {
+    var card = document.createElement('div'); card.className = 'card';
+    var header = document.createElement('div'); header.className = 'ch';
+    var title = document.createElement('div'); title.className = 'ct';
+    title.innerHTML = s.ico + ' ' + s.title;
+    header.appendChild(title); card.appendChild(header);
+    var body = document.createElement('div'); body.style.padding = '14px 16px';
+    s.items.forEach(function(item) {
+      var p = document.createElement('div');
+      p.style.cssText = 'display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:13px;color:var(--tx);';
+      var dot = document.createElement('span'); dot.style.cssText='color:var(--ac);flex-shrink:0;margin-top:2px'; dot.textContent='•';
+      var txt = document.createElement('span'); txt.textContent = item;
+      p.appendChild(dot); p.appendChild(txt); body.appendChild(p);
+    });
+    card.appendChild(body); container.appendChild(card);
+  });
+}
+
+
+// ============================================================
+// ANNONCES IA
+// ============================================================
+var _lastAnnonce = '';
+var _lastBienForAnnonce = null;
+
+async function loadAnnonces() {
+  var biens = await getBiens();
+  var sel = ge('ann-bien');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">-- Selectionner un bien --</option>';
+  biens.forEach(function(b) {
+    var o = document.createElement('option');
+    o.value = b.id;
+    o.textContent = b.nom + (b.adresse ? ' - ' + b.adresse : '');
+    sel.appendChild(o);
+  });
+  // Set default date to today
+  var dispo = ge('ann-dispo');
+  if (dispo && !dispo.value) {
+    dispo.value = new Date().toISOString().split('T')[0];
+  }
+}
+
+async function genAnnonce() {
+  var bienId = ge('ann-bien').value;
+  if (!bienId) { toast('Erreur', 'Selectionnez un bien.'); return; }
+
+  var bien = _biens.find(function(b){ return b.id === bienId; });
+  if (!bien) return;
+  _lastBienForAnnonce = bien;
+
+  var typeAnnonce = ge('ann-type').value;
+  var plateforme = ge('ann-plateforme').value;
+  var pointsForts = val('ann-points');
+  var dispoDate = ge('ann-dispo').value;
+  var dispoStr = dispoDate ? new Date(dispoDate).toLocaleDateString('fr-FR') : 'immediatement';
+
+  // Show result area + loading
+  ge('ann-result').style.display = 'block';
+  ge('ann-loading').style.display = 'flex';
+  ge('ann-text').textContent = '';
+  ge('ann-stats').innerHTML = '';
+  ge('ann-conseils').innerHTML = '';
+
+  var btn = ge('ann-btn');
+  btn.disabled = true;
+  btn.textContent = 'Generation en cours...';
+
+  // Build prompt
+  var platformeLabel = {leboncoin:'Leboncoin',seloger:'SeLoger',pap:'PAP',generic:'toutes plateformes'}[plateforme] || plateforme;
+  var typeLabel = {standard:'standard',premium:'detaillee et premium',court:'courte pour les reseaux sociaux'}[typeAnnonce] || typeAnnonce;
+
+  var prompt = 'Tu es un expert immobilier francais specialise dans la redaction d\'annonces de location.\n\n'
+    + 'Redige une annonce de location ' + typeLabel + ' pour ' + platformeLabel + ' avec ces informations :\n\n'
+    + '- Type de bien : ' + (bien.type || 'Appartement') + '\n'
+    + '- Adresse : ' + (bien.adresse || 'Non precisee') + '\n'
+    + '- Surface : ' + (bien.surface ? bien.surface + ' m2' : 'Non precisee') + '\n'
+    + '- Loyer : ' + (bien.loyer ? bien.loyer + ' euros hors charges' : 'A definir') + '\n'
+    + '- Charges : ' + (bien.charges ? bien.charges + ' euros/mois' : 'Non precisees') + '\n'
+    + '- Regime fiscal : ' + (bien.regime_fiscal || 'Non precise') + '\n'
+    + '- Disponible : ' + dispoStr + '\n'
+    + (pointsForts ? '- Points forts : ' + pointsForts + '\n' : '')
+    + '\nContraintes :\n'
+    + '- Ecris en francais, avec un ton professionnel et attractif\n'
+    + '- Commence par un titre accrocheur en majuscules\n'
+    + '- Mentionne les informations cles (surface, loyer, charges, dispo)\n'
+    + (typeAnnonce === 'court' ? '- Maximum 500 caracteres\n' : '- Entre 300 et 600 mots\n')
+    + '- Termine par les conditions de location (garant, revenus demandes)\n'
+    + '- Ajoute une ligne "CONTACT : [Nom du bailleur]"\n\n'
+    + 'Ensuite, sur une nouvelle ligne separee par "---CONSEILS---", donne 3 conseils specifiques pour optimiser cette annonce sur ' + platformeLabel + '.';
+
+  try {
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    var data = await response.json();
+    var fullText = '';
+    if (data.content && data.content[0] && data.content[0].text) {
+      fullText = data.content[0].text;
+    }
+
+    ge('ann-loading').style.display = 'none';
+
+    // Split annonce and conseils
+    var parts = fullText.split('---CONSEILS---');
+    var annonce = parts[0].trim();
+    var conseils = parts[1] ? parts[1].trim() : '';
+
+    _lastAnnonce = annonce;
+
+    ge('ann-text').textContent = annonce;
+    ge('ann-result-title').textContent = 'Annonce pour ' + platformeLabel + ' - ' + (bien.nom || 'Bien');
+
+    // Stats
+    var stats = ge('ann-stats');
+    stats.innerHTML = '';
+    var charCount = annonce.length;
+    var wordCount = annonce.split(/\s+/).filter(function(w){ return w.length > 0; }).length;
+
+    var s1 = document.createElement('span'); s1.className = 'pill inf'; s1.textContent = charCount + ' caracteres';
+    var s2 = document.createElement('span'); s2.className = 'pill inf'; s2.textContent = wordCount + ' mots';
+    var s3 = document.createElement('span'); s3.className = 'pill ' + (charCount <= 2000 ? 'ok' : 'wn');
+    s3.textContent = charCount <= 2000 ? 'Taille OK' : 'Trop long';
+    stats.appendChild(s1); stats.appendChild(s2); stats.appendChild(s3);
+
+    // Conseils
+    if (conseils) {
+      ge('ann-conseils').innerHTML = '<div style="white-space:pre-wrap;line-height:1.8">' + conseils.replace(/\n/g, '<br>') + '</div>';
+    }
+
+    toast('Annonce generee', 'Par Claude IA');
+
+  } catch(err) {
+    ge('ann-loading').style.display = 'none';
+    ge('ann-text').textContent = 'Erreur : ' + (err.message || 'Impossible de contacter l\'IA.');
+    toast('Erreur', 'Verifiez votre connexion.');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '\u2728 Generer l\'annonce avec l\'IA';
+}
+
+function regenAnnonce() {
+  genAnnonce();
+}
+
+function copyAnnonce() {
+  if (!_lastAnnonce) return;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(_lastAnnonce).then(function() {
+      toast('Copie', 'Annonce copiee dans le presse-papier.');
+    });
+  } else {
+    // Fallback
+    var ta = document.createElement('textarea');
+    ta.value = _lastAnnonce;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('Copie', 'Annonce copiee.');
+  }
+}
+
+
 function filterBiens(query) {
   var q = query.toLowerCase();
   document.querySelectorAll('#biens-list .bc').forEach(function(card) {
@@ -2702,7 +2750,6 @@ function filterBiens(query) {
     card.style.display = text.includes(q) ? '' : 'none';
   });
 }
-
 function filterLocs(query) {
   var q = query.toLowerCase();
   document.querySelectorAll('#locs-list .lc-card').forEach(function(card) {
@@ -2710,7 +2757,6 @@ function filterLocs(query) {
     card.style.display = text.includes(q) ? '' : 'none';
   });
 }
-
 function filterCharges(query) {
   var q = query.toLowerCase();
   document.querySelectorAll('#charges-list tr').forEach(function(row, i) {
@@ -2719,6 +2765,7 @@ function filterCharges(query) {
     row.style.display = text.includes(q) ? '' : 'none';
   });
 }
+
 
 </script>
 </body>
