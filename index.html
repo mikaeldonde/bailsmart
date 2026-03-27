@@ -419,7 +419,6 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
           <div class="un" id="user-name">...</div>
           <div class="upl" id="user-email"></div>
         </div>
-        <div onclick="doLogout()" style="cursor:pointer;color:var(--mu);font-size:16px;padding:4px">&#10005;</div>
       </div>
     </div>
   </aside>
@@ -1217,7 +1216,6 @@ function showApp(user) {
   ge('user-email').textContent = user.email;
   ge('user-ava').textContent = name.charAt(0).toUpperCase();
   loadDashboard();
-  setTimeout(addBiometricSetup, 600);
 }
 
 function showAuth() {
@@ -3733,32 +3731,13 @@ async function doBiometric() {
 }
 
 // Add biometric setup button in sidebar
-function addBiometricSetup() {
-  // Remove existing button first to avoid duplicates
-  var existing = document.getElementById('bio-setup-btn');
-  if (existing) existing.remove();
-  var sbft = document.querySelector('.sbft');
-  if (!sbft) return;
-  if (!window.PublicKeyCredential) return;
 
-  PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(available) {
-    if (!available) return;
-    var btn = document.createElement('div');
-    btn.id = 'bio-setup-btn';
-    btn.onclick = registerBiometric;
-    btn.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;cursor:pointer;margin-bottom:8px;background:var(--s2);border:1px solid var(--bd)';
-    btn.innerHTML = '<span style="font-size:18px">&#128273;</span><span style="font-size:13px;color:var(--mu)">' + (localStorage.getItem('bailsmart_cred_id') ? 'Empreinte active' : 'Activer empreinte') + '</span>';
-    sbft.insertBefore(btn, sbft.firstChild);
-  }).catch(function() {});
-}
 
 // Call on page load
 document.addEventListener('DOMContentLoaded', function() {
   checkBiometric();
 });
 
-// Add biometric setup after login (not on every auth state change)
-// addBiometricSetup called directly from showApp
 
 
 // ── THEME CLAIR/SOMBRE ──
