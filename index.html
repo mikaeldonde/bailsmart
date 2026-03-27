@@ -350,6 +350,9 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
       <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="l-email" placeholder="vous@email.com"></div>
       <div class="fg"><label class="fl">Mot de passe</label><div style="position:relative"><input class="fi" type="password" id="l-pwd" placeholder="..." style="padding-right:40px"><span onclick="togglePwd('l-pwd',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--mu);font-size:16px">&#128065;</span></div></div>
       <button class="btn btnp" id="l-btn" onclick="doLogin()">Se connecter</button>
+      <div id="biometric-btn-wrap" style="display:none;margin-top:10px">
+        <button class="btn btng" style="width:100%;justify-content:center" onclick="doBiometric()">&#128273; Connexion par empreinte</button>
+      </div>
     </div>
     <div id="panel-signup" style="display:none">
       <div class="auth-head">Creer un compte</div>
@@ -427,10 +430,6 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
       <div class="topb">
         <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Mes biens</div><div class="tbsu" id="biens-sub">...</div></div></div>
         <div class="tbr">
-          <div style="display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:6px 11px">
-            <span style="color:var(--mu)">&#128269;</span>
-            <input type="text" id="search-biens" placeholder="Rechercher..." oninput="filterBiens(this.value)" style="background:none;border:none;outline:none;color:var(--tx);font-size:13px;width:120px;font-family:DM Sans,sans-serif">
-          </div>
           <button class="btn btnp btnsm" onclick="openMo('mo-bien')">+ Ajouter</button>
         </div>
       </div>
@@ -441,6 +440,10 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
           <div class="kpi kb"><div class="kico">&#128100;</div><div class="klb">Occupes</div><div class="kv" id="bk-occ">-</div><div class="kd dn">Loues</div></div>
           <div class="kpi kr"><div class="kico">&#128201;</div><div class="klb">Patrimoine</div><div class="kv" id="bk-pat">-</div><div class="kd dn">Acquisition</div></div>
         </div>
+        <div style="display:flex;align-items:center;gap:6px;background:var(--sf);border:1px solid var(--bd);border-radius:9px;padding:8px 12px;margin-bottom:10px">
+          <span style="color:var(--mu)">&#128269;</span>
+          <input type="text" id="search-biens" placeholder="Rechercher un bien..." oninput="filterBiens(this.value)" style="background:none;border:none;outline:none;color:var(--tx);font-size:14px;width:100%;font-family:DM Sans,sans-serif">
+        </div>
         <div id="biens-list"><div class="loading"><div class="spin"></div></div></div>
       </div>
     </div>
@@ -448,14 +451,16 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
       <div class="topb">
         <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Locataires</div><div class="tbsu" id="locs-sub">...</div></div></div>
         <div class="tbr">
-          <div style="display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:6px 11px">
-            <span style="color:var(--mu)">&#128269;</span>
-            <input type="text" id="search-locs" placeholder="Rechercher..." oninput="filterLocs(this.value)" style="background:none;border:none;outline:none;color:var(--tx);font-size:13px;width:120px;font-family:DM Sans,sans-serif">
-          </div>
           <button class="btn btnp btnsm" onclick="openMo('mo-loc')">+ Ajouter</button>
         </div>
       </div>
-      <div class="cnt"><div id="locs-list"><div class="loading"><div class="spin"></div></div></div></div>
+      <div class="cnt">
+        <div style="display:flex;align-items:center;gap:6px;background:var(--sf);border:1px solid var(--bd);border-radius:9px;padding:8px 12px;margin-bottom:10px">
+          <span style="color:var(--mu)">&#128269;</span>
+          <input type="text" id="search-locs" placeholder="Rechercher un locataire..." oninput="filterLocs(this.value)" style="background:none;border:none;outline:none;color:var(--tx);font-size:14px;width:100%;font-family:DM Sans,sans-serif">
+        </div>
+        <div id="locs-list"><div class="loading"><div class="spin"></div></div></div>
+      </div>
     </div>
     <div class="pg" id="p-loyers">
       <div class="topb">
@@ -3531,6 +3536,142 @@ function buildBienCard(b, locs, dpeData) {
   stats.appendChild(s1); stats.appendChild(rentDiv); stats.appendChild(s2); stats.appendChild(s3);
   card.appendChild(stats);
   return card;
+}
+
+
+// ============================================================
+// AUTHENTIFICATION BIOMETRIQUE (WebAuthn)
+// ============================================================
+
+// Check if biometric is available and show button
+async function checkBiometric() {
+  if (!window.PublicKeyCredential) return;
+  try {
+    var available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+    if (available) {
+      var wrap = ge('biometric-btn-wrap');
+      if (wrap) wrap.style.display = 'block';
+    }
+  } catch(e) {}
+}
+
+// Register biometric for current user
+async function registerBiometric() {
+  if (!window.PublicKeyCredential) {
+    toast('Non supporte', 'Votre appareil ne supporte pas la biometrie.');
+    return;
+  }
+  try {
+    var userId = CU.id;
+    var userName = ge('user-email').textContent || CU.email;
+
+    var challenge = new Uint8Array(32);
+    crypto.getRandomValues(challenge);
+
+    var credential = await navigator.credentials.create({
+      publicKey: {
+        challenge: challenge,
+        rp: { name: 'BailSmart', id: location.hostname },
+        user: {
+          id: new TextEncoder().encode(userId),
+          name: userName,
+          displayName: ge('user-name').textContent || userName
+        },
+        pubKeyCredParams: [
+          { type: 'public-key', alg: -7 },
+          { type: 'public-key', alg: -257 }
+        ],
+        authenticatorSelection: {
+          authenticatorAttachment: 'platform',
+          userVerification: 'required'
+        },
+        timeout: 60000
+      }
+    });
+
+    if (credential) {
+      // Store credential id in localStorage
+      localStorage.setItem('bailsmart_cred_id', btoa(String.fromCharCode(...new Uint8Array(credential.rawId))));
+      localStorage.setItem('bailsmart_bio_email', CU.email);
+      toast('Empreinte enregistree', 'Vous pouvez maintenant vous connecter avec votre empreinte.');
+    }
+  } catch(e) {
+    if (e.name !== 'NotAllowedError') {
+      toast('Erreur', e.message);
+    }
+  }
+}
+
+// Login with biometric
+async function doBiometric() {
+  if (!window.PublicKeyCredential) return;
+  var storedCredId = localStorage.getItem('bailsmart_cred_id');
+  var storedEmail = localStorage.getItem('bailsmart_bio_email');
+  if (!storedCredId || !storedEmail) {
+    toast('Non configure', 'Connectez-vous d\'abord puis activez l\'empreinte dans les parametres.');
+    return;
+  }
+  try {
+    var challenge = new Uint8Array(32);
+    crypto.getRandomValues(challenge);
+
+    var credIdBytes = Uint8Array.from(atob(storedCredId), function(c2) { return c2.charCodeAt(0); });
+
+    var assertion = await navigator.credentials.get({
+      publicKey: {
+        challenge: challenge,
+        allowCredentials: [{ type: 'public-key', id: credIdBytes }],
+        userVerification: 'required',
+        timeout: 60000
+      }
+    });
+
+    if (assertion) {
+      // Biometric verified - auto-fill email and try login with stored session
+      // Since WebAuthn does not give us the password, we use Supabase session
+      var session = await SB.auth.getSession();
+      if (session.data.session) {
+        showApp(session.data.session.user);
+      } else {
+        // Pre-fill email for convenience
+        ge('l-email').value = storedEmail;
+        toast('Identite verifiee', 'Entrez votre mot de passe pour finaliser.');
+      }
+    }
+  } catch(e) {
+    if (e.name !== 'NotAllowedError') {
+      toast('Erreur biometrie', e.message);
+    }
+  }
+}
+
+// Add biometric setup button in sidebar
+function addBiometricSetup() {
+  var sbft = document.querySelector('.sbft');
+  if (!sbft || document.getElementById('bio-setup-btn')) return;
+  if (!window.PublicKeyCredential) return;
+
+  PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(available) {
+    if (!available) return;
+    var btn = document.createElement('div');
+    btn.id = 'bio-setup-btn';
+    btn.onclick = registerBiometric;
+    btn.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;cursor:pointer;margin-bottom:8px;background:var(--s2);border:1px solid var(--bd)';
+    btn.innerHTML = '<span style="font-size:18px">&#128273;</span><span style="font-size:13px;color:var(--mu)">' + (localStorage.getItem('bailsmart_cred_id') ? 'Empreinte active' : 'Activer empreinte') + '</span>';
+    sbft.insertBefore(btn, sbft.firstChild);
+  }).catch(function() {});
+}
+
+// Call on page load
+document.addEventListener('DOMContentLoaded', function() {
+  checkBiometric();
+});
+
+// Call after login to add setup button
+var _origShowApp = showApp;
+function showApp(user) {
+  _origShowApp(user);
+  setTimeout(addBiometricSetup, 500);
 }
 
 </script>
