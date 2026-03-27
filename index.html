@@ -324,6 +324,23 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
 .large-text .fl2r { font-size: 15px; }
 .large-text .un { font-size: 14px; }
 .large-text .upl { font-size: 12px; }
+
+/* ── THEME CLAIR ── */
+.light-theme {
+  --bg: #F0F2F8;
+  --sf: #FFFFFF;
+  --s2: #E8EBF4;
+  --s3: #D8DCF0;
+  --bd: rgba(0,0,0,.1);
+  --tx: #1A1F35;
+  --mu: #6B7280;
+  --wh: #1A1F35;
+}
+.light-theme .topb { background: var(--sf); }
+.light-theme .sidebar { background: var(--sf); }
+.light-theme .ni { color: #6B7280; }
+.light-theme .ni.on { color: var(--ac); }
+.light-theme .tbl2 tr:hover td { background: rgba(0,0,0,.02); }
 </style>
 </head>
 <body>
@@ -392,9 +409,13 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
       <div class="ni" onclick="goTo('compta',this)"><span class="nico">&#128202;</span> Pre-comptabilite</div>
     </nav>
     <div class="sbft">
-      <div onclick="toggleLargeText()" id="font-toggle-btn" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;cursor:pointer;margin-bottom:8px;background:var(--s2);border:1px solid var(--bd)">
+      <div onclick="toggleLargeText()" id="font-toggle-btn" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;cursor:pointer;margin-bottom:6px;background:var(--s2);border:1px solid var(--bd)">
         <span style="font-size:18px">&#128269;</span>
         <span style="font-size:13px;color:var(--mu)" id="font-toggle-label">Grand texte</span>
+      </div>
+      <div onclick="toggleTheme()" id="theme-toggle-btn" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;cursor:pointer;margin-bottom:8px;background:var(--s2);border:1px solid var(--bd)">
+        <span style="font-size:18px" id="theme-toggle-ico">&#9728;</span>
+        <span style="font-size:13px;color:var(--mu)" id="theme-toggle-label">Theme clair</span>
       </div>
       <div class="usrp">
         <div class="ava" id="user-ava">?</div>
@@ -3667,12 +3688,36 @@ document.addEventListener('DOMContentLoaded', function() {
   checkBiometric();
 });
 
-// Call after login to add setup button
-var _origShowApp = showApp;
-function showApp(user) {
-  _origShowApp(user);
-  setTimeout(addBiometricSetup, 500);
+// Add biometric setup after auth state change
+SB.auth.onAuthStateChange(function(event, session) {
+  if (session && session.user) {
+    setTimeout(addBiometricSetup, 800);
+  }
+});
+
+
+// ── THEME CLAIR/SOMBRE ──
+function toggleTheme() {
+  var body = document.body;
+  var isLight = body.classList.toggle('light-theme');
+  ge('theme-toggle-label').textContent = isLight ? 'Theme sombre' : 'Theme clair';
+  ge('theme-toggle-ico').textContent = isLight ? '&#9790;' : '&#9728;';
+  try { localStorage.setItem('bailsmart_theme', isLight ? 'light' : 'dark'); } catch(e) {}
 }
+
+(function() {
+  try {
+    if (localStorage.getItem('bailsmart_theme') === 'light') {
+      document.body.classList.add('light-theme');
+      setTimeout(function() {
+        var lbl = ge('theme-toggle-label');
+        var ico = ge('theme-toggle-ico');
+        if (lbl) lbl.textContent = 'Theme sombre';
+        if (ico) ico.textContent = '&#9790;';
+      }, 100);
+    }
+  } catch(e) {}
+})();
 
 </script>
 </body>
