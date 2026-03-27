@@ -899,6 +899,31 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
+
+<div class="mo" id="mo-edit-charge" onclick="if(event.target===this)closeMo('mo-edit-charge')">
+  <div class="mdl">
+    <div class="mti">Modifier la charge</div><div class="msu">Mettez a jour les informations</div>
+    <input type="hidden" id="ec-id">
+    <div class="fg"><label class="fl">Intitule</label><input class="fi" type="text" id="ec-intitule"></div>
+    <div class="fr2">
+      <div class="fg"><label class="fl">Montant euros</label><input class="fi" type="number" id="ec-montant"></div>
+      <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="ec-date"></div>
+    </div>
+    <div class="fg"><label class="fl">Bien concerne</label><select class="fi" id="ec-bien"><option value="">Tous les biens</option></select></div>
+    <div class="fr2">
+      <div class="fg"><label class="fl">Categorie</label>
+        <select class="fi" id="ec-cat">
+          <option>Taxe fonciere</option><option>Travaux</option><option>Syndic</option>
+          <option>Assurance</option><option>Frais gestion</option><option>Autre</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Deductible</label>
+        <select class="fi" id="ec-ded"><option value="1">Oui</option><option value="0">Non</option></select>
+      </div>
+    </div>
+    <div class="mac"><button class="btn btng btnsm" onclick="closeMo('mo-edit-charge')">Annuler</button><button class="btn btnp btnsm" onclick="saveEditCharge()">Enregistrer</button></div>
+  </div>
+</div>
 <div class="mo" id="mo-confirm" onclick="if(event.target===this)closeMo('mo-confirm')">
   <div class="mdl" style="max-width:360px">
     <div class="mti">Confirmer</div>
@@ -1160,6 +1185,7 @@ async function loadCharges() {
   var ded=charges.filter(function(c){return c.deductible;}).reduce(function(s,c){return s+(c.montant||0);},0);
   setKv('ck-total',euro(total)); setKv('ck-year',euro(thisYear)); setKv('ck-ded',euro(ded)); setKv('ck-nb',charges.length);
   setKv('charges-sub', charges.length + ' charge(s)');
+  _allCharges = charges;
   var container = ge('charges-list'); container.innerHTML = '';
   if (charges.length === 0) { container.appendChild(makeEmpty('&#128295;', 'Aucune charge', 'Cliquez sur + Ajouter')); return; }
   var tbl=document.createElement('table'); tbl.className='tbl2';
@@ -1180,8 +1206,13 @@ async function loadCharges() {
     var db=document.createElement('button'); db.className='btndel btnsm'; db.textContent='X';
     db.dataset.type='charge'; db.dataset.id=c.id; db.dataset.label=c.intitule;
     db.addEventListener('click', function(){askDelete(this.dataset.type,this.dataset.id,this.dataset.label);});
+    var eb=document.createElement('button'); eb.className='btndel btnsm'; eb.textContent='Modifier';
+    eb.style.cssText='background:rgba(107,140,255,.1);color:var(--a3);border-color:rgba(107,140,255,.2)';
+    eb.dataset.id=c.id;
+    eb.addEventListener('click', function(){editCharge(this.dataset.id);});
+    td6.appendChild(eb);
     td6.appendChild(db);
-    if(c.photo_url){var ph=document.createElement('a');ph.href=c.photo_url;ph.target='_blank';ph.style.cssText='font-size:16px;cursor:pointer;text-decoration:none';ph.textContent='&#128247;';td6.appendChild(ph);}
+    if(c.photo_url){var ph=document.createElement('a');ph.href=c.photo_url;ph.target='_blank';ph.style.cssText='font-size:16px;cursor:pointer;text-decoration:none;margin-left:4px';ph.textContent='&#128247;';td6.appendChild(ph);}
     tr.appendChild(td1);tr.appendChild(td2);tr.appendChild(td3);tr.appendChild(td4);tr.appendChild(td5);tr.appendChild(td6);
     tb.appendChild(tr);
   });
@@ -3027,16 +3058,26 @@ async function scanFacture(input) {
 
       var data = await response.json();
       var text = '';
+      // Handle different response formats
       if (data.content && data.content[0] && data.content[0].text) {
         text = data.content[0].text;
+      } else if (data.error) {
+        console.error('Worker error:', JSON.stringify(data.error));
       }
+      console.log('AI response text:', text);
 
       // Parse JSON response
       var parsed = {};
       try {
-        var clean = text.replace(/```json|```/g, '').trim();
+        // Remove markdown code blocks if present
+        var clean = text.replace(/```json\n?/g, '').replace(/```/g, '').trim();
+        // Sometimes AI adds text before/after JSON - extract JSON object
+        var jsonMatch = clean.match(/\{[^{}]*\}/s);
+        if (jsonMatch) clean = jsonMatch[0];
         parsed = JSON.parse(clean);
+        console.log('Parsed:', JSON.stringify(parsed));
       } catch(e) {
+        console.error('Parse error:', e.message, 'Text was:', text);
         parsed = {intitule: 'Facture', montant: null, date: null, categorie: 'Autre'};
       }
 
@@ -3044,10 +3085,24 @@ async function scanFacture(input) {
       ge('scan-fields').style.display = 'block';
       ge('scan-save-btn').style.display = 'inline-flex';
 
+      // Show raw response for debug
+      var debugDiv = document.getElementById('scan-debug');
+      if (!debugDiv) {
+        debugDiv = document.createElement('div');
+        debugDiv.id = 'scan-debug';
+        debugDiv.style.cssText = 'font-size:10px;color:var(--mu);background:var(--s2);padding:8px;border-radius:6px;margin-bottom:10px;word-break:break-all';
+        ge('scan-fields').insertBefore(debugDiv, ge('scan-fields').firstChild);
+      }
+      debugDiv.textContent = 'IA: ' + (text || 'vide');
+
       // Fill fields
-      if (ge('scan-intitule')) ge('scan-intitule').value = parsed.intitule || 'Facture';
-      if (ge('scan-montant') && parsed.montant) ge('scan-montant').value = parsed.montant;
-      if (ge('scan-date') && parsed.date) ge('scan-date').value = parsed.date;
+      if (ge('scan-intitule')) ge('scan-intitule').value = parsed.intitule || parsed.nom || parsed.fournisseur || 'Facture';
+      if (ge('scan-montant') && (parsed.montant || parsed.total || parsed.montant_ttc)) {
+        ge('scan-montant').value = parsed.montant || parsed.total || parsed.montant_ttc;
+      }
+      if (ge('scan-date') && (parsed.date || parsed.date_facture)) {
+        ge('scan-date').value = parsed.date || parsed.date_facture;
+      }
       if (ge('scan-cat') && parsed.categorie) {
         var opts = ge('scan-cat').options;
         for (var i = 0; i < opts.length; i++) {
@@ -3062,7 +3117,8 @@ async function scanFacture(input) {
       ge('scan-fields').style.display = 'block';
       ge('scan-save-btn').style.display = 'inline-flex';
       ge('scan-intitule').value = 'Facture';
-      toast('Analyse incomplete', 'Completez manuellement.');
+      console.error('Scan error:', err);
+      toast('Analyse incomplete', 'Completez manuellement: ' + (err.message||''));
     }
   };
   reader.readAsDataURL(file);
@@ -3161,6 +3217,48 @@ async function exportFactures() {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
   toast('Export CSV', chargesAnnee.length + ' charges exportees');
+}
+
+
+var _allCharges = [];
+
+function editCharge(id) {
+  var charge = _allCharges.find(function(x){ return x.id === id; });
+  if (!charge) return;
+  ge('ec-id').value = charge.id;
+  ge('ec-intitule').value = charge.intitule || '';
+  ge('ec-montant').value = charge.montant || '';
+  ge('ec-date').value = charge.date_charge || '';
+  ge('ec-cat').value = charge.categorie || 'Autre';
+  ge('ec-ded').value = charge.deductible ? '1' : '0';
+  var bSel = ge('ec-bien');
+  bSel.innerHTML = '<option value="">Tous les biens</option>';
+  _biens.forEach(function(b) {
+    var o = document.createElement('option');
+    o.value = b.id; o.textContent = b.nom;
+    if (b.id === charge.bien_id) o.selected = true;
+    bSel.appendChild(o);
+  });
+  openMo('mo-edit-charge');
+}
+
+async function saveEditCharge() {
+  var id = ge('ec-id').value;
+  var intitule = ge('ec-intitule').value.trim();
+  if (!intitule) { toast('Erreur', 'Intitule obligatoire.'); return; }
+  var data = {
+    intitule: intitule,
+    montant: parseFloat(ge('ec-montant').value) || null,
+    date_charge: ge('ec-date').value || null,
+    bien_id: ge('ec-bien').value || null,
+    categorie: ge('ec-cat').value,
+    deductible: ge('ec-ded').value === '1'
+  };
+  var r = await SB.from('charges').update(data).eq('id', id).eq('user_id', CU.id);
+  if (r.error) { toast('Erreur', r.error.message); return; }
+  closeMo('mo-edit-charge');
+  toast('Charge modifiee', intitule);
+  loadCharges(); loadDashboard();
 }
 
 </script>
