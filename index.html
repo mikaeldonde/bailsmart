@@ -940,6 +940,7 @@ function goTo(p, navEl) {
   }
   closeSB();
   window.scrollTo(0, 0);
+  if (!CU) return;
   if (p === 'dashboard') loadDashboard();
   if (p === 'biens') loadBiensV2();
   if (p === 'locataires') loadLocatairesV2();
@@ -1016,14 +1017,17 @@ SB.auth.onAuthStateChange(function(event, session) {
 });
 
 async function getBiens() {
+  if (!CU) return [];
   var r = await SB.from('biens').select('*').eq('user_id', CU.id).order('created_at', {ascending: false});
   _biens = r.data || []; return _biens;
 }
 async function getLocs() {
+  if (!CU) return [];
   var r = await SB.from('locataires').select('*').eq('user_id', CU.id).order('created_at', {ascending: false});
   _locs = r.data || []; return _locs;
 }
 async function getCharges() {
+  if (!CU) return [];
   var r = await SB.from('charges').select('*').eq('user_id', CU.id).order('created_at', {ascending: false});
   return r.data || [];
 }
@@ -1991,40 +1995,7 @@ async function loadLocatairesV2() {
   });
 }
 
-async function loadCharges() {
-  var charges = await getCharges(), biens = await getBiens();
-  var year = new Date().getFullYear().toString();
-  var total=charges.reduce(function(s,c){return s+(c.montant||0);},0);
-  var thisYear=charges.filter(function(c){return c.date_charge&&c.date_charge.startsWith(year);}).reduce(function(s,c){return s+(c.montant||0);},0);
-  var ded=charges.filter(function(c){return c.deductible;}).reduce(function(s,c){return s+(c.montant||0);},0);
-  setKv('ck-total', euro(total)); setKv('ck-year', euro(thisYear)); setKv('ck-ded', euro(ded)); setKv('ck-nb', charges.length);
-  setKv('charges-sub', charges.length + ' charge(s)');
-  var container = ge('charges-list'); container.innerHTML = '';
-  if (charges.length === 0) { container.appendChild(makeEmpty('&#128295;', 'Aucune charge', 'Cliquez sur + Ajouter')); return; }
-  var tbl=document.createElement('table'); tbl.className='tbl2';
-  tbl.innerHTML='<thead><tr><th>Intitule</th><th>Categorie</th><th>Date</th><th>Montant</th><th>Ded.</th><th></th></tr></thead>';
-  var tb=document.createElement('tbody');
-  charges.forEach(function(c) {
-    var bien=biens.find(function(b){return b.id===c.bien_id;});
-    var tr=document.createElement('tr');
-    var td1=document.createElement('td');
-    var nm=document.createElement('div'); nm.style.cssText='font-weight:500;color:var(--wh)'; nm.textContent=c.intitule; td1.appendChild(nm);
-    if(bien){var bs=document.createElement('div'); bs.style.cssText='font-size:11px;color:var(--mu)'; bs.textContent=bien.nom; td1.appendChild(bs);}
-    var td2=document.createElement('td'); td2.textContent=c.categorie||'';
-    var td3=document.createElement('td'); td3.textContent=c.date_charge||'-';
-    var td4=document.createElement('td'); td4.style.cssText='font-weight:600;color:var(--dg)'; td4.textContent='-'+euro(c.montant);
-    var td5=document.createElement('td');
-    var p=document.createElement('span'); p.className='pill '+(c.deductible?'ok':'dng'); p.textContent=c.deductible?'Oui':'Non'; td5.appendChild(p);
-    var td6=document.createElement('td');
-    var db=document.createElement('button'); db.className='btndel btnsm'; db.textContent='X';
-    db.dataset.type='charge'; db.dataset.id=c.id; db.dataset.label=c.intitule;
-    db.addEventListener('click', function(){askDelete(this.dataset.type,this.dataset.id,this.dataset.label);});
-    td6.appendChild(db);
-    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4); tr.appendChild(td5); tr.appendChild(td6);
-    tb.appendChild(tr);
-  });
-  tbl.appendChild(tb); var wrap=document.createElement('div'); wrap.className='tw'; wrap.appendChild(tbl); container.appendChild(wrap);
-}
+
 
 
 // ── TOGGLE PASSWORD ──
@@ -2581,66 +2552,7 @@ function genAllQuittances() {
 // ══════════════════════════════
 // DOCUMENTS - BAIL
 // ══════════════════════════════
-async function loadDocuments() {
-  var locs = await getLocs();
-  var biens = await getBiens();
 
-  // Populate selects in modals
-  var bSel = ge('bail-loc'), eSel = ge('edl-loc');
-  if (bSel) {
-    bSel.innerHTML = '<option value="">-- Selectionner --</option>';
-    locs.forEach(function(l){ var o=document.createElement('option'); o.value=l.id; o.textContent=l.prenom+' '+l.nom; bSel.appendChild(o); });
-  }
-  if (eSel) {
-    eSel.innerHTML = '<option value="">-- Selectionner --</option>';
-    locs.forEach(function(l){ var o=document.createElement('option'); o.value=l.id; o.textContent=l.prenom+' '+l.nom; eSel.appendChild(o); });
-  }
-
-  // Show docs list
-  var baux = ge('doc-baux'), edlDiv = ge('doc-edl');
-  if (baux) {
-    baux.innerHTML = '';
-    if (locs.length === 0) {
-      baux.appendChild(makeEmpty('&#128196;', 'Aucun locataire', 'Ajoutez des locataires pour generer des baux'));
-    } else {
-      locs.forEach(function(l) {
-        var bien = biens.find(function(b){ return b.id===l.bien_id; });
-        var row = document.createElement('div');
-        row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--bd)';
-        var info = document.createElement('div');
-        var nm = document.createElement('div'); nm.style.cssText='font-weight:500;color:var(--wh);font-size:13px'; nm.textContent=l.prenom+' '+l.nom;
-        var bi = document.createElement('div'); bi.style.cssText='font-size:11px;color:var(--mu)'; bi.textContent=(bien?bien.nom:'-')+' - '+(l.type_bail||'');
-        info.appendChild(nm); info.appendChild(bi);
-        var btn = document.createElement('button'); btn.className='btn btng btnsm'; btn.textContent='Generer bail';
-        btn.addEventListener('click', function() { genBailForLoc(l, bien); });
-        row.appendChild(info); row.appendChild(btn); baux.appendChild(row);
-      });
-    }
-  }
-
-  if (edlDiv) {
-    edlDiv.innerHTML = '';
-    if (locs.length === 0) {
-      edlDiv.appendChild(makeEmpty('&#128196;', 'Aucun locataire', 'Ajoutez des locataires pour generer des EDL'));
-    } else {
-      locs.forEach(function(l) {
-        var bien = biens.find(function(b){ return b.id===l.bien_id; });
-        var row = document.createElement('div');
-        row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--bd)';
-        var info = document.createElement('div');
-        var nm = document.createElement('div'); nm.style.cssText='font-weight:500;color:var(--wh);font-size:13px'; nm.textContent=l.prenom+' '+l.nom;
-        var bi = document.createElement('div'); bi.style.cssText='font-size:11px;color:var(--mu)'; bi.textContent=bien?bien.nom:'-';
-        info.appendChild(nm); info.appendChild(bi);
-        var acts = document.createElement('div'); acts.style.cssText='display:flex;gap:6px';
-        var btn1 = document.createElement('button'); btn1.className='btn btng btnsm'; btn1.textContent='EDL Entree';
-        btn1.addEventListener('click', function() { genEDLForLoc(l, bien, 'entree'); });
-        var btn2 = document.createElement('button'); btn2.className='btn btng btnsm'; btn2.textContent='EDL Sortie';
-        btn2.addEventListener('click', function() { genEDLForLoc(l, bien, 'sortie'); });
-        acts.appendChild(btn1); acts.appendChild(btn2); row.appendChild(info); row.appendChild(acts); edlDiv.appendChild(row);
-      });
-    }
-  }
-}
 
 function genBail() {
   var locId = ge('bail-loc').value;
