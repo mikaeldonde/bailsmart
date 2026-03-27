@@ -863,39 +863,216 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
 
 <div class="tst" id="tst"><div class="tstt" id="tstt"></div><div class="tstb" id="tstb"></div></div>
 
+<div class="mo" id="mo-edl2" onclick="if(event.target===this)closeMo('mo-edl2')">
+  <div class="mdl" style="max-width:600px">
+    <div class="mti">Etat des lieux</div><div class="msu">Remplissez piece par piece</div>
+    <div class="fr2">
+      <div class="fg"><label class="fl">Type</label><select class="fi" id="edl2-type"><option value="Entree">Entree</option><option value="Sortie">Sortie</option></select></div>
+      <div class="fg"><label class="fl">Locataire</label><select class="fi" id="edl2-loc"><option value="">-- Selectionner --</option></select></div>
+    </div>
+    <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="edl2-date"></div>
+    <div style="font-size:12px;color:var(--mu);margin:10px 0 6px">Cliquez sur chaque piece pour la remplir :</div>
+    <div id="edl-pieces-container"></div>
+    <div class="mac"><button class="btn btng btnsm" onclick="closeMo('mo-edl2')">Annuler</button><button class="btn btnp btnsm" onclick="genEDLComplet()">Generer PDF</button></div>
+  </div>
+</div>
+
 <script>
-https://xixnesmwiumbdwmkefjf.supabase.co"
-SUPA_KEY = "sb_publishable_vPvjAzu8nYZXJnGPouGdIw_hJYlLE1f"
+var SB = supabase.createClient('https://xixnesmwiumbdwmkefjf.supabase.co', 'sb_publishable_vPvjAzu8nYZXJnGPouGdIw_hJYlLE1f');
+var CU = null;
+var _biens = [];
+var _locs = [];
 
-# Write the file directly - no f-strings, no format(), no patches
-lines = []
-def w(s): lines.append(s)
+function ge(id) { return document.getElementById(id); }
+function val(id) { var e = ge(id); return e ? e.value.trim() : ''; }
+function num(id) { var e = ge(id); return e ? parseFloat(e.value) || null : null; }
 
-w('<!DOCTYPE html>')
-w('<html lang="fr">')
-w('<head>')
-w('<meta charset="UTF-8">')
-w('<meta name="viewport" content="width=device-width, initial-scale=1.0">')
-w('<title>BailSmart</title>')
-w('<meta name="theme-color" content="#0C0F1A">')
-w('<meta name="mobile-web-app-capable" content="yes">')
-w('<meta name="apple-mobile-web-app-capable" content="yes">')
-w('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>')
-w('<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">')
-w('<style>')
+function euro(n) {
+  if (!n && n !== 0) return '-';
+  return new Intl.NumberFormat('fr-FR', {style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+}
 
-# ---- CSS ---- written as plain lines, no Python format strings ----
-CSS = 
+function toast(t, b) {
+  ge('tstt').textContent = t;
+  ge('tstb').textContent = b || '';
+  var el = ge('tst');
+  el.classList.add('on');
+  setTimeout(function() { el.classList.remove('on'); }, 3400);
+}
+
+function showMsg(txt, type) {
+  var el = ge('amsg');
+  el.textContent = txt;
+  el.className = 'amsg ' + type;
+  el.style.display = 'block';
+}
+
+function makeEmpty(ico, t, s) {
+  var d = document.createElement('div'); d.className = 'empty';
+  d.innerHTML = '<div class="empty-ico">' + ico + '</div><div class="empty-t">' + t + '</div><div class="empty-s">' + s + '</div>';
+  return d;
+}
+
+function setKv(id, v) { var e = ge(id); if (e) e.textContent = v; }
+
+function openMo(id) {
+  ge(id).classList.add('on');
+  if (id === 'mo-loc' || id === 'mo-paiement' || id === 'mo-charge') populateSel();
+  if (id === 'mo-bail' || id === 'mo-edl2') loadDocuments();
+}
+function closeMo(id) { ge(id).classList.remove('on'); }
+
+function toggleSB() { ge('sb').classList.toggle('open'); ge('overlay').classList.toggle('show'); }
+function closeSB() { ge('sb').classList.remove('open'); ge('overlay').classList.remove('show'); }
+window.addEventListener('resize', function() { if (window.innerWidth > 1024) closeSB(); });
+
+function goTo(p, navEl) {
+  document.querySelectorAll('.pg').forEach(function(x) { x.classList.remove('on'); });
+  document.querySelectorAll('.ni').forEach(function(x) { x.classList.remove('on'); });
+  var pg = ge('p-' + p);
+  if (pg) pg.classList.add('on');
+  if (navEl) {
+    navEl.classList.add('on');
+  } else {
+    document.querySelectorAll('.ni').forEach(function(n) {
+      if ((n.getAttribute('onclick') || '').indexOf(p) !== -1) n.classList.add('on');
+    });
+  }
+  closeSB();
+  window.scrollTo(0, 0);
+  if (p === 'dashboard') loadDashboard();
+  if (p === 'biens') loadBiensV2();
+  if (p === 'locataires') loadLocatairesV2();
+  if (p === 'loyers') loadLoyers();
+  if (p === 'charges') loadCharges();
+  if (p === 'fiscalite') loadFiscalite();
+  if (p === 'irl') loadIRL();
+  if (p === 'quittances') loadQuittances();
+  if (p === 'documents') loadDocuments();
+  if (p === 'juridique') loadJuridique();
+  if (p === 'annonces') loadAnnonces();
+  if (p === 'carte') loadCarte();
+  if (p === 'compta') loadCompta();
+}
+
+function switchAuth(mode) {
+  if (mode === 'login') {
+    ge('tab-login').classList.add('on'); ge('tab-signup').classList.remove('on');
+    ge('panel-login').style.display = ''; ge('panel-signup').style.display = 'none';
+  } else {
+    ge('tab-signup').classList.add('on'); ge('tab-login').classList.remove('on');
+    ge('panel-signup').style.display = ''; ge('panel-login').style.display = 'none';
+  }
+  ge('amsg').style.display = 'none';
+}
+
+async function doLogin() {
+  var email = val('l-email'), pwd = ge('l-pwd').value;
+  if (!email || !pwd) { showMsg('Remplissez tous les champs.', 'err'); return; }
+  ge('l-btn').disabled = true; ge('l-btn').textContent = 'Connexion...';
+  var r = await SB.auth.signInWithPassword({email: email, password: pwd});
+  if (r.error) {
+    showMsg('Email ou mot de passe incorrect.', 'err');
+    ge('l-btn').disabled = false; ge('l-btn').textContent = 'Se connecter';
+  }
+}
+
+async function doSignup() {
+  var prenom = val('s-prenom'), nom = val('s-nom'), email = val('s-email'), pwd = ge('s-pwd').value;
+  if (!prenom || !nom || !email || !pwd) { showMsg('Remplissez tous les champs.', 'err'); return; }
+  if (pwd.length < 8) { showMsg('Mot de passe: 8 caracteres minimum.', 'err'); return; }
+  ge('s-btn').disabled = true; ge('s-btn').textContent = 'Creation...';
+  var r = await SB.auth.signUp({email:email, password:pwd, options:{data:{prenom:prenom, nom:nom}}});
+  if (r.error) { showMsg(r.error.message, 'err'); }
+  else { showMsg('Compte cree ! Verifiez votre email.', 'ok'); }
+  ge('s-btn').disabled = false; ge('s-btn').textContent = 'Creer mon compte';
+}
+
+async function doLogout() { await SB.auth.signOut(); }
+
+function showApp(user) {
+  CU = user;
+  ge('splash').style.display = 'none';
+  ge('auth-wrap').style.display = 'none';
+  ge('app-wrap').style.display = 'block';
+  var meta = user.user_metadata || {};
+  var name = ((meta.prenom||'')+' '+(meta.nom||'')).trim() || user.email.split('@')[0];
+  ge('user-name').textContent = name;
+  ge('user-email').textContent = user.email;
+  ge('user-ava').textContent = name.charAt(0).toUpperCase();
+  loadDashboard();
+}
+
+function showAuth() {
+  CU = null;
+  ge('splash').style.display = 'none';
+  ge('auth-wrap').style.display = 'flex';
+  ge('app-wrap').style.display = 'none';
+}
+
+SB.auth.onAuthStateChange(function(event, session) {
+  if (session && session.user) { showApp(session.user); }
+  else { showAuth(); }
+});
+
+async function getBiens() {
+  var r = await SB.from('biens').select('*').eq('user_id', CU.id).order('created_at', {ascending: false});
+  _biens = r.data || []; return _biens;
+}
+async function getLocs() {
+  var r = await SB.from('locataires').select('*').eq('user_id', CU.id).order('created_at', {ascending: false});
+  _locs = r.data || []; return _locs;
+}
+async function getCharges() {
+  var r = await SB.from('charges').select('*').eq('user_id', CU.id).order('created_at', {ascending: false});
+  return r.data || [];
+}
+
+async function loadDashboard() {
+  var biens = await getBiens(), locs = await getLocs(), charges = await getCharges();
+  setKv('k-loyers', euro(biens.reduce(function(s,b){return s+(b.loyer||0);},0)));
+  setKv('k-biens', biens.length);
+  setKv('k-locs', locs.length);
+  setKv('k-charges', euro(charges.reduce(function(s,c){return s+(c.montant||0);},0)));
+  setKv('dash-sub', biens.length + ' bien(s), ' + locs.length + ' locataire(s)');
+  var db = ge('dash-biens'); db.innerHTML = '';
+  if (biens.length === 0) { db.appendChild(makeEmpty('&#127968;', 'Aucun bien', 'Allez dans Mes biens pour en ajouter')); }
+  else {
+    biens.slice(0,4).forEach(function(b) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--bd)';
+      var l = document.createElement('div');
+      var n = document.createElement('div'); n.style.cssText='font-weight:500;color:var(--wh);font-size:14px'; n.textContent = b.nom;
+      var a = document.createElement('div'); a.style.cssText='font-size:12px;color:var(--mu)'; a.textContent = b.adresse || '';
+      l.appendChild(n); l.appendChild(a);
+      var r2 = document.createElement('div'); r2.style.cssText='font-weight:600;color:var(--ac);font-family:Syne,sans-serif;font-size:14px'; r2.textContent = euro(b.loyer);
+      row.appendChild(l); row.appendChild(r2); db.appendChild(row);
+    });
+  }
+  var dl = ge('dash-locs'); dl.innerHTML = '';
+  if (locs.length === 0) { dl.appendChild(makeEmpty('&#128100;', 'Aucun locataire', '')); }
+  else {
+    locs.slice(0,3).forEach(function(l2) {
+      var bien = biens.find(function(b){return b.id===l2.bien_id;});
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--bd)';
+      var lft = document.createElement('div');
+      var n = document.createElement('div'); n.style.cssText='font-weight:500;color:var(--wh);font-size:14px'; n.textContent = l2.prenom + ' ' + l2.nom;
+      var b2 = document.createElement('div'); b2.style.cssText='font-size:12px;color:var(--mu)'; b2.textContent = bien ? bien.nom : '-';
+      lft.appendChild(n); lft.appendChild(b2);
+      var amt = document.createElement('div'); amt.style.cssText='font-weight:600;color:var(--ac);font-family:Syne,sans-serif;font-size:14px'; amt.textContent = euro(l2.loyer);
+      row.appendChild(lft); row.appendChild(amt); dl.appendChild(row);
+    });
+  }
+}
 
 async function loadLoyers() {
   var locs = await getLocs();
   var qSel = ge('quick-loc');
-  if (qSel && qSel.options.length <= 1) {
+  if (qSel) {
+    qSel.innerHTML = '<option value="">-- Selectionner --</option>';
     locs.forEach(function(l) {
-      var o = document.createElement('option');
-      o.value = l.id;
-      o.textContent = l.prenom + ' ' + l.nom;
-      qSel.appendChild(o);
+      var o = document.createElement('option'); o.value = l.id; o.textContent = l.prenom + ' ' + l.nom; qSel.appendChild(o);
     });
   }
   var r = await SB.from('paiements').select('*, locataires(prenom,nom)').eq('user_id', CU.id).order('created_at', {ascending: false});
@@ -912,7 +1089,7 @@ async function loadLoyers() {
     var td2 = document.createElement('td'); td2.textContent = p.mois;
     var td3 = document.createElement('td'); td3.style.cssText='font-weight:600;color:var(--ac)'; td3.textContent = euro(p.montant);
     var td4 = document.createElement('td');
-    var pill = document.createElement('span'); pill.className='pill '+(p.statut==='ok'?'ok':p.statut==='pt'?'wn':'dng');
+    var pill = document.createElement('span'); pill.className = 'pill '+(p.statut==='ok'?'ok':p.statut==='pt'?'wn':'dng');
     pill.textContent = p.statut==='ok'?'Paye':p.statut==='pt'?'Partiel':'Impaye'; td4.appendChild(pill);
     var td5 = document.createElement('td');
     var db = document.createElement('button'); db.className='btndel btnsm'; db.textContent='X';
@@ -925,47 +1102,146 @@ async function loadLoyers() {
   tbl.appendChild(tb); var wrap=document.createElement('div'); wrap.className='tw'; wrap.appendChild(tbl); container.appendChild(wrap);
 }
 
+async function loadCharges() {
+  var charges = await getCharges(), biens = await getBiens();
+  var year = new Date().getFullYear().toString();
+  var total=charges.reduce(function(s,c){return s+(c.montant||0);},0);
+  var thisYear=charges.filter(function(c){return c.date_charge&&c.date_charge.startsWith(year);}).reduce(function(s,c){return s+(c.montant||0);},0);
+  var ded=charges.filter(function(c){return c.deductible;}).reduce(function(s,c){return s+(c.montant||0);},0);
+  setKv('ck-total',euro(total)); setKv('ck-year',euro(thisYear)); setKv('ck-ded',euro(ded)); setKv('ck-nb',charges.length);
+  setKv('charges-sub', charges.length + ' charge(s)');
+  var container = ge('charges-list'); container.innerHTML = '';
+  if (charges.length === 0) { container.appendChild(makeEmpty('&#128295;', 'Aucune charge', 'Cliquez sur + Ajouter')); return; }
+  var tbl=document.createElement('table'); tbl.className='tbl2';
+  tbl.innerHTML='<thead><tr><th>Intitule</th><th>Categorie</th><th>Date</th><th>Montant</th><th>Ded.</th><th></th></tr></thead>';
+  var tb=document.createElement('tbody');
+  charges.forEach(function(c) {
+    var bien=biens.find(function(b){return b.id===c.bien_id;});
+    var tr=document.createElement('tr');
+    var td1=document.createElement('td');
+    var nm=document.createElement('div'); nm.style.cssText='font-weight:500;color:var(--wh);font-size:14px'; nm.textContent=c.intitule; td1.appendChild(nm);
+    if(bien){var bs=document.createElement('div'); bs.style.cssText='font-size:12px;color:var(--mu)'; bs.textContent=bien.nom; td1.appendChild(bs);}
+    var td2=document.createElement('td'); td2.textContent=c.categorie||'';
+    var td3=document.createElement('td'); td3.textContent=c.date_charge||'-';
+    var td4=document.createElement('td'); td4.style.cssText='font-weight:600;color:var(--dg)'; td4.textContent='-'+euro(c.montant);
+    var td5=document.createElement('td');
+    var p=document.createElement('span'); p.className='pill '+(c.deductible?'ok':'dng'); p.textContent=c.deductible?'Oui':'Non'; td5.appendChild(p);
+    var td6=document.createElement('td');
+    var db=document.createElement('button'); db.className='btndel btnsm'; db.textContent='X';
+    db.dataset.type='charge'; db.dataset.id=c.id; db.dataset.label=c.intitule;
+    db.addEventListener('click', function(){askDelete(this.dataset.type,this.dataset.id,this.dataset.label);});
+    td6.appendChild(db);
+    tr.appendChild(td1);tr.appendChild(td2);tr.appendChild(td3);tr.appendChild(td4);tr.appendChild(td5);tr.appendChild(td6);
+    tb.appendChild(tr);
+  });
+  tbl.appendChild(tb); var wrap=document.createElement('div'); wrap.className='tw'; wrap.appendChild(tbl); container.appendChild(wrap);
+}
+
+var _pending = null;
+function askDelete(type, id, label) {
+  _pending = {type:type, id:id};
+  ge('confirm-msg').textContent = 'Supprimer ' + label + ' ?';
+  ge('confirm-ok').onclick = doDelete;
+  openMo('mo-confirm');
+}
+async function doDelete() {
+  if (!_pending) return;
+  var tbl = {bien:'biens',loc:'locataires',paiement:'paiements',charge:'charges'}[_pending.type];
+  var r = await SB.from(tbl).delete().eq('id', _pending.id);
+  closeMo('mo-confirm');
+  if (r.error) { toast('Erreur', r.error.message); return; }
+  toast('Supprime', ''); _pending = null;
+  if (tbl==='biens'){loadBiensV2();loadDashboard();}
+  else if(tbl==='locataires'){loadLocatairesV2();loadDashboard();}
+  else if(tbl==='paiements') loadLoyers();
+  else{loadCharges();loadDashboard();}
+}
+
+async function populateSel() {
+  var biens=await getBiens(), locs=await getLocs();
+  var bSel=ge('ll-bien'), cSel=ge('cc-bien'), pSel=ge('pp-loc');
+  if(bSel){bSel.innerHTML='<option value="">-- Selectionner --</option>'; biens.forEach(function(b){var o=document.createElement('option');o.value=b.id;o.textContent=b.nom;bSel.appendChild(o);});}
+  if(cSel){cSel.innerHTML='<option value="">Tous les biens</option>'; biens.forEach(function(b){var o=document.createElement('option');o.value=b.id;o.textContent=b.nom;cSel.appendChild(o);});}
+  if(pSel){pSel.innerHTML='<option value="">-- Selectionner --</option>'; locs.forEach(function(l){var o=document.createElement('option');o.value=l.id;o.textContent=l.prenom+' '+l.nom;pSel.appendChild(o);});}
+}
+
+async function saveBien() {
+  var nom=val('b-nom'); if(!nom){toast('Erreur','Nom obligatoire.');return;}
+  var r=await SB.from('biens').insert({user_id:CU.id,nom:nom,adresse:val('b-adresse'),type:val('b-type'),surface:num('b-surface'),loyer:num('b-loyer'),charges:num('b-charges-val'),regime_fiscal:val('b-regime'),prix_acquisition:num('b-prix')});
+  if(r.error){toast('Erreur',r.error.message);return;}
+  closeMo('mo-bien'); toast('Bien ajoute',nom);
+  ['b-nom','b-adresse','b-surface','b-loyer','b-charges-val','b-prix'].forEach(function(id){var e=ge(id);if(e)e.value='';});
+  loadBiensV2(); loadDashboard();
+}
+
+async function saveLoc() {
+  var prenom=val('ll-prenom'), nom=val('ll-nom'); if(!prenom||!nom){toast('Erreur','Prenom et nom obligatoires.');return;}
+  var r=await SB.from('locataires').insert({user_id:CU.id,prenom:prenom,nom:nom,email:val('ll-email'),telephone:val('ll-tel'),bien_id:ge('ll-bien').value||null,loyer:num('ll-loyer'),depot_garantie:num('ll-depot'),date_entree:ge('ll-date').value||null,type_bail:val('ll-bail')});
+  if(r.error){toast('Erreur',r.error.message);return;}
+  closeMo('mo-loc'); toast('Locataire ajoute',prenom+' '+nom); loadLocatairesV2(); loadDashboard();
+}
+
+async function savePaiement() {
+  var locId=ge('pp-loc').value, mois=val('pp-mois'); if(!locId||!mois){toast('Erreur','Locataire et mois obligatoires.');return;}
+  var loc=_locs.find(function(l){return l.id===locId;});
+  var r=await SB.from('paiements').insert({user_id:CU.id,locataire_id:locId,bien_id:loc?loc.bien_id:null,mois:mois,montant:num('pp-montant'),statut:ge('pp-statut').value});
+  if(r.error){toast('Erreur',r.error.message);return;}
+  closeMo('mo-paiement'); toast('Paiement enregistre',mois); loadLoyers();
+}
+
+async function saveCharge() {
+  var intitule=val('cc-intitule'); if(!intitule){toast('Erreur','Intitule obligatoire.');return;}
+  var r=await SB.from('charges').insert({user_id:CU.id,intitule:intitule,montant:num('cc-montant'),date_charge:ge('cc-date').value||null,bien_id:ge('cc-bien').value||null,categorie:val('cc-cat'),deductible:ge('cc-ded').value==='1'});
+  if(r.error){toast('Erreur',r.error.message);return;}
+  closeMo('mo-charge'); toast('Charge enregistree',intitule); loadCharges(); loadDashboard();
+}
 
 async function quickFillLoyer() {
-  var locId = ge('quick-loc').value;
-  if (!locId) return;
-  var loc = _locs.find(function(l){ return l.id === locId; });
-  if (loc && loc.loyer) {
-    ge('quick-montant').value = loc.loyer;
-  }
+  var locId = ge('quick-loc').value; if(!locId) return;
+  var loc = _locs.find(function(l){return l.id===locId;});
+  if(loc && loc.loyer) ge('quick-montant').value = loc.loyer;
 }
 
 async function saveQuickLoyer() {
-  var locId = ge('quick-loc').value;
-  var mois = ge('quick-mois').value;
-  if (!locId || !mois) { toast('Erreur', 'Selectionnez un locataire et un mois.'); return; }
-  var loc = _locs.find(function(l){ return l.id === locId; });
-  var montant = parseFloat(ge('quick-montant').value) || (loc ? loc.loyer : null);
-  var data = {
-    user_id: CU.id,
-    locataire_id: locId,
-    bien_id: loc ? loc.bien_id : null,
-    mois: mois,
-    montant: montant,
-    statut: ge('quick-statut').value
-  };
-  var r = await SB.from('paiements').insert(data);
-  if (r.error) { toast('Erreur', r.error.message); return; }
-  toast('Paiement enregistre', mois);
-  ge('quick-montant').value = '';
+  var locId=ge('quick-loc').value, mois=ge('quick-mois').value;
+  if(!locId||!mois){toast('Erreur','Selectionnez un locataire et un mois.');return;}
+  var loc=_locs.find(function(l){return l.id===locId;});
+  var montant=parseFloat(ge('quick-montant').value)||(loc?loc.loyer:null);
+  var r=await SB.from('paiements').insert({user_id:CU.id,locataire_id:locId,bien_id:loc?loc.bien_id:null,mois:mois,montant:montant,statut:ge('quick-statut').value});
+  if(r.error){toast('Erreur',r.error.message);return;}
+  toast('Paiement enregistre',mois);
+  ge('quick-montant').value='';
+  ge('quick-loc').value='';
   loadLoyers();
 }
 
 async function autofillLoyer() {
-  var bienId = ge('ll-bien').value;
-  if (!bienId) return;
-  var bien = _biens.find(function(b){ return b.id === bienId; });
-  if (bien && bien.loyer) {
-    var loyerEl = ge('ll-loyer');
-    if (loyerEl && !loyerEl.value) loyerEl.value = bien.loyer;
-    var depotEl = ge('ll-depot');
-    if (depotEl && !depotEl.value && bien.loyer) depotEl.value = bien.loyer;
+  var bienId=ge('ll-bien').value; if(!bienId) return;
+  var bien=_biens.find(function(b){return b.id===bienId;});
+  if(bien&&bien.loyer){
+    var loyerEl=ge('ll-loyer'); if(loyerEl&&!loyerEl.value) loyerEl.value=bien.loyer;
+    var depotEl=ge('ll-depot'); if(depotEl&&!depotEl.value) depotEl.value=bien.loyer;
   }
+}
+
+function filterBiens(query) {
+  var q=query.toLowerCase();
+  document.querySelectorAll('#biens-list .bc').forEach(function(card){
+    card.style.display=card.textContent.toLowerCase().includes(q)?'':'none';
+  });
+}
+function filterLocs(query) {
+  var q=query.toLowerCase();
+  document.querySelectorAll('#locs-list .lc-card').forEach(function(card){
+    card.style.display=card.textContent.toLowerCase().includes(q)?'':'none';
+  });
+}
+function filterCharges(query) {
+  var q=query.toLowerCase();
+  document.querySelectorAll('#charges-list tr').forEach(function(row,i){
+    if(i===0) return;
+    row.style.display=row.textContent.toLowerCase().includes(q)?'':'none';
+  });
 }
 
 
@@ -2295,37 +2571,8 @@ function openPrintWindow(html, filename) {
   setTimeout(function() { win.print(); }, 500);
 }
 
-async function envoyerQuittance() {
-  var locId = ge('q-loc').value;
-  if (!locId) { toast('Erreur', 'Selectionnez un locataire.'); return; }
-  var loc = _locs.find(function(l){ return l.id === locId; });
-  if (!loc || !loc.email) { toast('Erreur', 'Email du locataire manquant.'); return; }
-  var moisVal = ge('q-mois').value;
-  var mois = moisVal ? formatMois(moisVal) : 'Mois en cours';
-  var loyer = parseFloat(ge('q-loyer').value) || loc.loyer || 0;
-  var charges = parseFloat(ge('q-charges').value) || 0;
-  var html = buildQuittanceHTML(loc.prenom + ' ' + loc.nom, mois, loyer, charges);
-  toast('Envoi...', 'Email en cours vers ' + loc.email);
-  try {
-    var r = await fetch('https://bailsmart.mikaeldonde.workers.dev', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'send_email',
-        to: loc.email,
-        subject: 'Quittance de loyer - ' + mois,
-        html: html
-      })
-    });
-    var data = await r.json();
-    if (data.id) {
-      toast('Email envoye', 'Quittance envoyee a ' + loc.email);
-    } else {
-      toast('Erreur email', data.message || 'Verifiez la configuration.');
-    }
-  } catch(err) {
-    toast('Erreur', err.message);
-  }
+function envoyerQuittance() {
+  toast('Email', 'Fonctionnalite email disponible prochainement.');
 }
 function genAllQuittances() {
   toast('En cours', 'Generation de toutes les quittances du mois...');
@@ -2663,7 +2910,7 @@ async function genAnnonce() {
     + 'Ensuite, sur une nouvelle ligne separee par "---CONSEILS---", donne 3 conseils specifiques pour optimiser cette annonce sur ' + platformeLabel + '.';
 
   try {
-    var response = await fetch('https://api.anthropic.com/v1/messages', {
+    var response = await fetch('https://bailsmart.mikaeldonde.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -2741,31 +2988,6 @@ function copyAnnonce() {
     toast('Copie', 'Annonce copiee.');
   }
 }
-
-
-function filterBiens(query) {
-  var q = query.toLowerCase();
-  document.querySelectorAll('#biens-list .bc').forEach(function(card) {
-    var text = card.textContent.toLowerCase();
-    card.style.display = text.includes(q) ? '' : 'none';
-  });
-}
-function filterLocs(query) {
-  var q = query.toLowerCase();
-  document.querySelectorAll('#locs-list .lc-card').forEach(function(card) {
-    var text = card.textContent.toLowerCase();
-    card.style.display = text.includes(q) ? '' : 'none';
-  });
-}
-function filterCharges(query) {
-  var q = query.toLowerCase();
-  document.querySelectorAll('#charges-list tr').forEach(function(row, i) {
-    if (i === 0) return;
-    var text = row.textContent.toLowerCase();
-    row.style.display = text.includes(q) ? '' : 'none';
-  });
-}
-
 
 </script>
 </body>
