@@ -414,7 +414,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--t
         <span style="font-size:13px;color:var(--mu)" id="font-toggle-label">Grand texte</span>
       </div>
       <div onclick="toggleTheme()" id="theme-toggle-btn" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;cursor:pointer;margin-bottom:8px;background:var(--s2);border:1px solid var(--bd)">
-        <span style="font-size:18px" id="theme-toggle-ico">&#9728;</span>
+        <span style="font-size:18px" id="theme-toggle-ico">☀</span>
         <span style="font-size:13px;color:var(--mu)" id="theme-toggle-label">Theme clair</span>
       </div>
       <div class="usrp">
@@ -1152,6 +1152,7 @@ function showApp(user) {
   ge('user-email').textContent = user.email;
   ge('user-ava').textContent = name.charAt(0).toUpperCase();
   loadDashboard();
+  setTimeout(addBiometricSetup, 600);
 }
 
 function showAuth() {
@@ -3668,8 +3669,11 @@ async function doBiometric() {
 
 // Add biometric setup button in sidebar
 function addBiometricSetup() {
+  // Remove existing button first to avoid duplicates
+  var existing = document.getElementById('bio-setup-btn');
+  if (existing) existing.remove();
   var sbft = document.querySelector('.sbft');
-  if (!sbft || document.getElementById('bio-setup-btn')) return;
+  if (!sbft) return;
   if (!window.PublicKeyCredential) return;
 
   PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(available) {
@@ -3688,12 +3692,8 @@ document.addEventListener('DOMContentLoaded', function() {
   checkBiometric();
 });
 
-// Add biometric setup after auth state change
-SB.auth.onAuthStateChange(function(event, session) {
-  if (session && session.user) {
-    setTimeout(addBiometricSetup, 800);
-  }
-});
+// Add biometric setup after login (not on every auth state change)
+// addBiometricSetup called directly from showApp
 
 
 // ── THEME CLAIR/SOMBRE ──
@@ -3713,7 +3713,7 @@ function toggleTheme() {
         var lbl = ge('theme-toggle-label');
         var ico = ge('theme-toggle-ico');
         if (lbl) lbl.textContent = 'Theme sombre';
-        if (ico) ico.textContent = '&#9790;';
+        if (ico) ico.textContent = '☾';
       }, 100);
     }
   } catch(e) {}
