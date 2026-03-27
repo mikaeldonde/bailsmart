@@ -3100,18 +3100,7 @@ async function scanFacture(input) {
       ge('scan-fields').style.display = 'block';
       ge('scan-save-btn').style.display = 'inline-flex';
 
-      // Show raw response for debug
-      var debugDiv = document.getElementById('scan-debug');
-      if (!debugDiv) {
-        debugDiv = document.createElement('div');
-        debugDiv.id = 'scan-debug';
-        debugDiv.style.cssText = 'font-size:10px;color:var(--mu);background:var(--s2);padding:8px;border-radius:6px;margin-bottom:10px;word-break:break-all';
-        ge('scan-fields').insertBefore(debugDiv, ge('scan-fields').firstChild);
-      }
-      var debugText = text || '';
-      if (!debugText && data.error) debugText = 'ERR: ' + JSON.stringify(data.error);
-      if (!debugText) debugText = 'RAW: ' + JSON.stringify(data).substring(0, 200);
-      debugDiv.textContent = debugText;
+
 
       // Fill fields
       if (ge('scan-intitule')) ge('scan-intitule').value = parsed.intitule || parsed.nom || parsed.fournisseur || 'Facture';
