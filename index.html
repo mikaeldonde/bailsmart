@@ -10,10 +10,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-:root{--bg:#F2EFE9;--sf:#FFFFFF;--s2:#E8E4DC;--s3:#DEDAD0;--bd:rgba(26,24,20,.1);--tx:#1A1814;--mu:#7A7570;--wh:#1A1814;--ac:#C8502A;--a2:#E06040;--a3:#E06040;--ok:#2A7A4A;--ok-bg:rgba(42,122,74,.1);--wn:#C47A00;--wn-bg:rgba(196,122,0,.08);--dng:#B83020;--dng-bg:rgba(184,48,32,.08);--sh:0 1px 3px rgba(26,24,20,.06),0 4px 16px rgba(26,24,20,.06);--sh2:0 8px 40px rgba(26,24,20,.12)}
+:root{--bg:#F2EFE9;--sf:#FFFFFF;--s2:#E8E4DC;--s3:#DEDAD0;--bd:rgba(26,24,20,.1);--tx:#1A1814;--mu:#7A7570;--ac:#C8502A;--a2:#E06040;--a3:#E06040;--ok:#2A7A4A;--ok-bg:rgba(42,122,74,.1);--wn:#C47A00;--wn-bg:rgba(196,122,0,.08);--dng:#B83020;--dng-bg:rgba(184,48,32,.08);--sh:0 1px 3px rgba(26,24,20,.06),0 4px 16px rgba(26,24,20,.06);--sh2:0 8px 40px rgba(26,24,20,.12);--wh:#1A1814}
 .dark-theme{--bg:#141210;--sf:#1E1C18;--s2:#282420;--s3:#302C28;--bd:rgba(242,239,233,.08);--tx:#F2EFE9;--mu:#8A8680;--wh:#F2EFE9;--ac:#E06040;--a2:#F07050;--a3:#F07050;--ok:#4A9A6A;--ok-bg:rgba(74,154,106,.1);--wn:#D4A020;--wn-bg:rgba(212,160,32,.1);--dng:#D04030;--dng-bg:rgba(208,64,48,.1);--sh:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.2);--sh2:0 8px 40px rgba(0,0,0,.5)}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;transition:background .3s,color .3s;overflow-x:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
 input,select,textarea,button{font-family:'DM Sans',sans-serif}
 .dn{display:none!important}
 .spin{width:26px;height:26px;border:2px solid var(--s2);border-top-color:var(--ac);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto}
@@ -25,17 +25,14 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 .tbl2 td{font-size:13px;padding:12px;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:middle}
 .tbl2 tr:last-child td{border-bottom:none}
 
-/* LAYOUT */
-#app-wrap{display:block;min-height:100vh}
-
-/* SIDEBAR */
-.sidebar{width:240px;background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;overflow-y:auto}
+/* ── SIDEBAR (desktop) ── */
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:240px;background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;z-index:200;overflow-y:auto}
 .lsb{padding:18px 16px;border-bottom:1px solid var(--bd);flex-shrink:0}
 .logo{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;font-weight:800;color:var(--tx);letter-spacing:-.5px}
 .logo span{color:var(--ac)}
-.nav{flex:1;overflow-y:auto;padding:10px 8px}
+.nav{flex:1;padding:10px 8px;overflow-y:auto}
 .ns{font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.1em;padding:12px 10px 4px}
-.ni{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;margin-bottom:1px;transition:all .15s;font-size:13px;font-weight:500;color:var(--mu)}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;margin-bottom:1px;font-size:13px;font-weight:500;color:var(--mu);transition:all .15s}
 .ni:hover{background:var(--s2);color:var(--tx)}
 .ni.on{background:rgba(200,80,42,.12);color:var(--ac);font-weight:700}
 .nico{font-size:16px;width:20px;text-align:center;flex-shrink:0}
@@ -45,27 +42,51 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 .un{font-size:13px;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .upl{font-size:11px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* PAGES */
+/* ── PAGES (desktop) ── */
 .pages{margin-left:240px;min-height:100vh}
 .pg{display:none}
 .pg.on{display:block!important}
-.cnt{padding:20px}
-
-/* TOPBAR */
-.topb{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:56px;border-bottom:1px solid var(--bd);background:var(--sf);position:sticky;top:0;z-index:100;box-shadow:0 1px 0 var(--bd)}
+.topb{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:56px;border-bottom:1px solid var(--bd);background:var(--sf);position:sticky;top:0;z-index:100}
 .tbl{display:flex;align-items:center;gap:12px}
 .tbti{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;color:var(--tx);letter-spacing:-.4px}
 .tbsu{font-size:12px;color:var(--mu)}
 .tbr{display:flex;align-items:center;gap:8px}
-.hbg{width:36px;height:36px;border-radius:10px;display:none;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--mu);background:none;border:none;transition:all .15s}
-.hbg:hover{background:var(--s2)}
+.cnt{padding:20px}
 
-/* CARDS */
+/* ── BOTTOM NAV (mobile) ── */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--sf);border-top:1px solid var(--bd);z-index:200;padding:6px 0 20px}
+.bottom-nav-inner{display:flex;justify-content:space-around;align-items:center}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;cursor:pointer;border-radius:12px;transition:all .15s;border:none;background:none;min-width:50px}
+.bn-item.on .bn-ico{color:var(--ac)}
+.bn-item.on .bn-lbl{color:var(--ac)}
+.bn-ico{font-size:22px;color:var(--mu);line-height:1}
+.bn-lbl{font-size:10px;font-weight:600;color:var(--mu)}
+.bn-center{width:48px;height:48px;border-radius:16px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-size:24px;color:white;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(200,80,42,.35);margin-top:-10px}
+
+/* ── MOBILE MENU ── */
+.mob-menu{display:none;position:fixed;inset:0;z-index:300;flex-direction:column}
+.mob-menu.open{display:flex}
+.mob-menu-overlay{position:absolute;inset:0;background:rgba(26,24,20,.5);backdrop-filter:blur(4px)}
+.mob-menu-panel{position:absolute;bottom:0;left:0;right:0;background:var(--sf);border-radius:24px 24px 0 0;max-height:80vh;overflow-y:auto;padding:16px 0 32px}
+.mob-menu-handle{width:40px;height:4px;border-radius:2px;background:var(--bd);margin:0 auto 16px}
+.mob-menu-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 16px}
+.mob-menu-item{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border-radius:14px;cursor:pointer;background:var(--s2);transition:all .15s}
+.mob-menu-item:active{background:var(--s3)}
+.mob-menu-item.on{background:rgba(200,80,42,.12)}
+.mob-menu-item .ico{font-size:24px}
+.mob-menu-item .lbl{font-size:11px;font-weight:600;color:var(--tx);text-align:center;line-height:1.2}
+.mob-menu-item.on .lbl{color:var(--ac)}
+.mob-section-title{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;padding:16px 16px 6px}
+
+/* ── MOBILE TOPBAR ── */
+.mob-topbar{display:none;align-items:center;justify-content:space-between;padding:0 16px;height:52px;background:var(--sf);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:100}
+.mob-topbar-title{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:800;color:var(--tx);letter-spacing:-.3px}
+.mob-topbar-right{display:flex;align-items:center;gap:8px}
+
+/* ── CARDS ── */
 .card{background:var(--sf);border-radius:16px;box-shadow:var(--sh);margin-bottom:14px;overflow:hidden}
 .ch{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bd)}
 .ct{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;color:var(--tx);letter-spacing:-.3px}
-
-/* KPI */
 .kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
 .kpi{background:var(--sf);border-radius:16px;box-shadow:var(--sh);padding:16px}
 .kico{font-size:22px;margin-bottom:8px}
@@ -74,7 +95,7 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 .kd{font-size:11px;color:var(--mu);margin-top:2px}
 .kr .kv{color:var(--ac)}.kg .kv{color:var(--ok)}.ko .kv{color:var(--wn)}.kb .kv{color:#5B7FD4}
 
-/* BUTTONS */
+/* ── BUTTONS ── */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
 .btnsm{padding:7px 12px;font-size:12px;border-radius:8px}
 .btnp{background:var(--ac);color:white}
@@ -84,7 +105,7 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 .btndel{background:var(--dng-bg);color:var(--dng);border:1px solid rgba(184,48,32,.15);padding:6px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
 .btndel:hover{background:var(--dng);color:white}
 
-/* FORMS */
+/* ── FORMS ── */
 .fg{margin-bottom:14px}
 .fl{display:block;font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
 .fi{width:100%;background:var(--s2);border:1.5px solid var(--bd);border-radius:10px;padding:10px 13px;color:var(--tx);font-size:14px;outline:none;transition:border .15s;appearance:none;-webkit-appearance:none}
@@ -92,7 +113,7 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 .fr2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .fl2r{font-size:13px;color:var(--tx);font-weight:500}
 
-/* MODALS */
+/* ── MODALS ── */
 .mo{display:none;position:fixed;inset:0;background:rgba(26,24,20,.5);z-index:500;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
 .mo.on{display:flex}
 .mdl{background:var(--sf);border-radius:24px 24px 0 0;padding:24px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto}
@@ -100,13 +121,13 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 .msu{font-size:13px;color:var(--mu);margin-bottom:20px}
 .mac{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--bd)}
 
-/* BADGES */
+/* ── BADGES ── */
 .pill{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
 .ok{background:var(--ok-bg);color:var(--ok)}
 .wn{background:var(--wn-bg);color:var(--wn)}
 .dng{background:var(--dng-bg);color:var(--dng)}
 
-/* BIEN CARDS */
+/* ── BIEN CARDS ── */
 .bc{background:var(--sf);border-radius:16px;box-shadow:var(--sh);margin-bottom:12px;overflow:hidden}
 .bctp{display:flex;justify-content:space-between;align-items:flex-start;padding:16px 16px 10px}
 .bcnm{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:700;color:var(--tx);letter-spacing:-.3px}
@@ -117,7 +138,7 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 .bcsv{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;color:var(--tx);letter-spacing:-.3px}
 .bcsl{font-size:10px;color:var(--mu);margin-top:2px;font-weight:500}
 
-/* LOCATAIRE CARDS */
+/* ── LOCATAIRE CARDS ── */
 .lc{background:var(--sf);border-radius:16px;box-shadow:var(--sh);padding:16px;margin-bottom:12px;display:flex;gap:14px;align-items:flex-start}
 .lc-ava{width:44px;height:44px;border-radius:14px;background:rgba(200,80,42,.1);color:var(--ac);display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16px;flex-shrink:0}
 .lc-nm{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;color:var(--tx);letter-spacing:-.3px}
@@ -125,20 +146,20 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 .lc-meta{font-size:12px;color:var(--mu);margin-top:6px}
 .lc-right{margin-left:auto;text-align:right;flex-shrink:0}
 
-/* EMPTY STATE */
+/* ── EMPTY ── */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center}
 .empty-ico{font-size:40px;margin-bottom:12px;opacity:.5}
 .empty-t{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:700;color:var(--tx);margin-bottom:6px}
 .empty-s{font-size:13px;color:var(--mu);line-height:1.5}
 
-/* TOAST */
-.tst-wrap{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+/* ── TOAST ── */
+.tst-wrap{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
 .tst{background:var(--tx);color:var(--bg);border-radius:12px;padding:10px 18px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;box-shadow:var(--sh2);animation:fadeUp .25s ease;min-width:200px;max-width:320px}
 .tst.ok{background:var(--ok)}.tst.err{background:var(--dng)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .tstt{font-weight:700}.tstb{color:rgba(255,255,255,.7);font-size:12px}
 
-/* AUTH */
+/* ── AUTH ── */
 #splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:6px}
 .splash-ico{width:64px;height:64px;border-radius:20px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:28px;color:white;margin-bottom:4px}
 .splash-nm{font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:800;color:var(--tx)}
@@ -156,22 +177,29 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 .auth-hd{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;color:var(--tx);margin-bottom:4px;letter-spacing:-.4px}
 .auth-sub{font-size:13px;color:var(--mu);margin-bottom:20px}
 
-/* DPE */
+/* ── DPE ── */
 .dpe-a{background:#009B3A;color:white}.dpe-b{background:#51B747;color:white}.dpe-c{background:#C8D200;color:#1A1814}.dpe-d{background:#F7B300;color:#1A1814}.dpe-e{background:#EC6B08;color:white}.dpe-f{background:#E03726;color:white}.dpe-g{background:#9F1816;color:white}
 
-/* LARGE TEXT */
-.large-text .ni{font-size:15px;padding:11px 12px}.large-text .tbti{font-size:20px}.large-text .fi{font-size:16px;padding:12px 14px}.large-text .btn{font-size:14px;padding:11px 16px}.large-text .tbl2 td{font-size:14px;padding:13px 12px}.large-text .kv{font-size:26px}.large-text .ct{font-size:16px}.large-text .bcnm{font-size:17px}.large-text .lc-nm{font-size:16px}
+/* ── LARGE TEXT ── */
+.large-text .ni{font-size:15px;padding:11px 12px}.large-text .tbti{font-size:20px}.large-text .fi{font-size:16px;padding:12px 14px}.large-text .btn{font-size:14px;padding:11px 16px}.large-text .tbl2 td{font-size:14px}.large-text .kv{font-size:26px}.large-text .ct{font-size:16px}.large-text .bcnm{font-size:17px}.large-text .lc-nm{font-size:16px}
 
-/* MOBILE */
+/* ── RESPONSIVE ── */
 @media(max-width:700px){
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0)}
-  .pages{margin-left:0}
-  .hbg{display:flex!important}
+  .sidebar{display:none}
+  .pages{margin-left:0;padding-bottom:80px}
+  .topb{display:none}
+  .mob-topbar{display:flex}
+  .bottom-nav{display:block}
+  .tst-wrap{bottom:90px}
   .kpi-grid{grid-template-columns:1fr 1fr}
   .fr2{grid-template-columns:1fr}
+  .bcst{grid-template-columns:1fr 1fr}
 }
-@media(min-width:701px){.hbg{display:none!important}}
+@media(min-width:701px){
+  .bottom-nav{display:none!important}
+  .mob-topbar{display:none!important}
+  .mob-menu{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -199,8 +227,8 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
       <div class="auth-sub">Connectez-vous pour acceder a vos biens</div>
       <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="l-email" placeholder="vous@email.com"></div>
       <div class="fg"><label class="fl">Mot de passe</label><div style="position:relative"><input class="fi" type="password" id="l-pwd" placeholder="..." style="padding-right:40px"><span onclick="togglePwd('l-pwd',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--mu);font-size:16px">&#128065;</span></div></div>
-      <button class="btn btnp" id="l-btn" onclick="doLogin()" style="width:100%;justify-content:center">Se connecter</button>
-      <div id="biometric-btn-wrap" style="display:none;margin-top:10px">
+      <button class="btn btnp" id="l-btn" onclick="doLogin()" style="width:100%;justify-content:center;margin-bottom:10px">Se connecter</button>
+      <div id="biometric-btn-wrap" style="display:none">
         <button class="btn btng" style="width:100%;justify-content:center" onclick="doBiometric()">&#128273; Connexion par empreinte</button>
       </div>
     </div>
@@ -220,8 +248,8 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 
 <!-- APP -->
 <div id="app-wrap" style="display:none">
-  <div id="sb-overlay" onclick="toggleSB()" style="display:none;position:fixed;inset:0;background:rgba(26,24,20,.4);z-index:199"></div>
 
+  <!-- SIDEBAR DESKTOP -->
   <aside class="sidebar" id="sb">
     <div class="lsb">
       <div class="logo">Bail<span>Smart</span></div>
@@ -243,10 +271,9 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
       <div class="ni" id="ni-annonces" onclick="goTo('annonces',this)"><span class="nico">&#128228;</span>Annonces IA</div>
       <div class="ni" id="ni-carte" onclick="goTo('carte',this)"><span class="nico">&#128205;</span>Carte</div>
       <div class="ni" id="ni-compta" onclick="goTo('compta',this)"><span class="nico">&#128202;</span>Pre-comptabilite</div>
-
     </nav>
     <div class="sbft">
-      <div onclick="goTo('parametres',this);closeSB()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;cursor:pointer;margin-bottom:6px;background:var(--s2)">
+      <div onclick="goTo('parametres',this)" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;cursor:pointer;margin-bottom:6px;background:var(--s2)" id="ni-parametres">
         <span style="font-size:16px">&#9881;</span>
         <span style="font-size:13px;color:var(--mu)">Parametres</span>
       </div>
@@ -260,11 +287,19 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
     </div>
   </aside>
 
-  <main class="pages" id="pages">
+  <!-- MOBILE TOPBAR -->
+  <div class="mob-topbar" id="mob-topbar">
+    <div class="mob-topbar-title" id="mob-title">Tableau de bord</div>
+    <div class="mob-topbar-right" id="mob-topbar-right">
+      <div class="ava" id="mob-ava" onclick="goTo('parametres',null)" style="cursor:pointer">?</div>
+    </div>
+  </div>
+
+  <!-- PAGES -->
+  <div class="pages" id="pages">
     <div class="pg" id="p-dashboard">
       <div class="topb">
         <div class="tbl">
-          <div class="hbg" onclick="toggleSB()">&#9776;</div>
           <div>
             <div class="tbti">Tableau de bord</div>
             <div class="tbsu" id="dashboard-sub">...</div>
@@ -290,7 +325,6 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
     <div class="pg" id="p-biens">
       <div class="topb">
         <div class="tbl">
-          <div class="hbg" onclick="toggleSB()">&#9776;</div>
           <div>
             <div class="tbti">Mes biens</div>
             <div class="tbsu" id="biens-sub">...</div>
@@ -319,7 +353,6 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
     <div class="pg" id="p-locataires">
       <div class="topb">
         <div class="tbl">
-          <div class="hbg" onclick="toggleSB()">&#9776;</div>
           <div>
             <div class="tbti">Locataires</div>
             <div class="tbsu" id="locataires-sub">...</div>
@@ -342,7 +375,6 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
     <div class="pg" id="p-loyers">
       <div class="topb">
         <div class="tbl">
-          <div class="hbg" onclick="toggleSB()">&#9776;</div>
           <div>
             <div class="tbti">Loyers</div>
             <div class="tbsu" id="loyers-sub">Paiements</div>
@@ -416,7 +448,6 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
     <div class="pg" id="p-charges">
       <div class="topb">
         <div class="tbl">
-          <div class="hbg" onclick="toggleSB()">&#9776;</div>
           <div>
             <div class="tbti">Charges</div>
             <div class="tbsu" id="charges-sub">...</div>
@@ -452,10 +483,9 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
     <div class="pg" id="p-irl">
       <div class="topb">
         <div class="tbl">
-          <div class="hbg" onclick="toggleSB()">&#9776;</div>
           <div>
             <div class="tbti">IRL / Revisions</div>
-            <div class="tbsu" id="irl-sub">Indices officiels INSEE</div>
+            <div class="tbsu" id="irl-sub">Indices INSEE</div>
           </div>
         </div>
         <div class="tbr"><button class="btn btnsm btng" onclick="loadIRL()">Actualiser</button></div>
@@ -471,7 +501,6 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
     <div class="pg" id="p-fiscalite">
       <div class="topb">
         <div class="tbl">
-          <div class="hbg" onclick="toggleSB()">&#9776;</div>
           <div>
             <div class="tbti">Fiscalite</div>
             <div class="tbsu" id="fiscalite-sub">Simulation impot</div>
@@ -524,7 +553,6 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
     <div class="pg" id="p-quittances">
       <div class="topb">
         <div class="tbl">
-          <div class="hbg" onclick="toggleSB()">&#9776;</div>
           <div>
             <div class="tbti">Quittances</div>
             <div class="tbsu" id="quittances-sub">Generation et envoi</div>
@@ -562,7 +590,6 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
     <div class="pg" id="p-documents">
       <div class="topb">
         <div class="tbl">
-          <div class="hbg" onclick="toggleSB()">&#9776;</div>
           <div>
             <div class="tbti">Documents</div>
             <div class="tbsu" id="documents-sub">Baux, etats des lieux</div>
@@ -584,7 +611,6 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
     <div class="pg" id="p-juridique">
       <div class="topb">
         <div class="tbl">
-          <div class="hbg" onclick="toggleSB()">&#9776;</div>
           <div>
             <div class="tbti">Juridique</div>
             <div class="tbsu" id="juridique-sub">References</div>
@@ -597,7 +623,6 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
     <div class="pg" id="p-annonces">
       <div class="topb">
         <div class="tbl">
-          <div class="hbg" onclick="toggleSB()">&#9776;</div>
           <div>
             <div class="tbti">Annonces IA</div>
             <div class="tbsu" id="annonces-sub">Generation automatique</div>
@@ -641,9 +666,8 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
     <div class="pg" id="p-carte">
       <div class="topb">
         <div class="tbl">
-          <div class="hbg" onclick="toggleSB()">&#9776;</div>
           <div>
-            <div class="tbti">Carte des biens</div>
+            <div class="tbti">Carte</div>
             <div class="tbsu" id="carte-sub">Geolocalisation</div>
           </div>
         </div>
@@ -663,7 +687,6 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
     <div class="pg" id="p-compta">
       <div class="topb">
         <div class="tbl">
-          <div class="hbg" onclick="toggleSB()">&#9776;</div>
           <div>
             <div class="tbti">Pre-comptabilite</div>
             <div class="tbsu" id="compta-sub">Bilan et journal</div>
@@ -696,7 +719,6 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
     <div class="pg" id="p-parametres">
       <div class="topb">
         <div class="tbl">
-          <div class="hbg" onclick="toggleSB()">&#9776;</div>
           <div>
             <div class="tbti">Parametres</div>
             <div class="tbsu" id="parametres-sub">Personnalisation</div>
@@ -774,10 +796,63 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 
 <!-- MODALS -->
     </div>
+  </div><!-- /pages -->
 
-  </main>
-</div>
+  <!-- BOTTOM NAV MOBILE -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <button class="bn-item on" id="bn-dashboard" onclick="goTo('dashboard',null)">
+        <div class="bn-ico">&#127968;</div>
+        <div class="bn-lbl">Accueil</div>
+      </button>
+      <button class="bn-item" id="bn-biens" onclick="goTo('biens',null)">
+        <div class="bn-ico">&#127968;</div>
+        <div class="bn-lbl">Biens</div>
+      </button>
+      <button class="bn-center" onclick="toggleMobMenu()">&#43;</button>
+      <button class="bn-item" id="bn-loyers" onclick="goTo('loyers',null)">
+        <div class="bn-ico">&#128182;</div>
+        <div class="bn-lbl">Loyers</div>
+      </button>
+      <button class="bn-item" id="bn-profil" onclick="goTo('parametres',null)">
+        <div class="bn-ico">&#128100;</div>
+        <div class="bn-lbl">Profil</div>
+      </button>
+    </div>
+  </nav>
 
+  <!-- MOBILE MENU (tous les onglets) -->
+  <div class="mob-menu" id="mob-menu">
+    <div class="mob-menu-overlay" onclick="toggleMobMenu()"></div>
+    <div class="mob-menu-panel">
+      <div class="mob-menu-handle"></div>
+      <div class="mob-section-title">PATRIMOINE</div>
+      <div class="mob-menu-grid">
+        <div class="mob-menu-item" onclick="goTo('dashboard',null);toggleMobMenu()"><div class="ico">&#9632;</div><div class="lbl">Tableau de bord</div></div>
+        <div class="mob-menu-item" onclick="goTo('biens',null);toggleMobMenu()"><div class="ico">&#127968;</div><div class="lbl">Mes biens</div></div>
+        <div class="mob-menu-item" onclick="goTo('locataires',null);toggleMobMenu()"><div class="ico">&#128100;</div><div class="lbl">Locataires</div></div>
+      </div>
+      <div class="mob-section-title">FINANCES</div>
+      <div class="mob-menu-grid">
+        <div class="mob-menu-item" onclick="goTo('loyers',null);toggleMobMenu()"><div class="ico">&#128182;</div><div class="lbl">Loyers</div></div>
+        <div class="mob-menu-item" onclick="goTo('charges',null);toggleMobMenu()"><div class="ico">&#128295;</div><div class="lbl">Charges</div></div>
+        <div class="mob-menu-item" onclick="goTo('fiscalite',null);toggleMobMenu()"><div class="ico">&#128202;</div><div class="lbl">Fiscalite</div></div>
+        <div class="mob-menu-item" onclick="goTo('irl',null);toggleMobMenu()"><div class="ico">&#128200;</div><div class="lbl">IRL</div></div>
+      </div>
+      <div class="mob-section-title">OUTILS</div>
+      <div class="mob-menu-grid">
+        <div class="mob-menu-item" onclick="goTo('quittances',null);toggleMobMenu()"><div class="ico">&#128196;</div><div class="lbl">Quittances</div></div>
+        <div class="mob-menu-item" onclick="goTo('documents',null);toggleMobMenu()"><div class="ico">&#128203;</div><div class="lbl">Documents</div></div>
+        <div class="mob-menu-item" onclick="goTo('juridique',null);toggleMobMenu()"><div class="ico">&#9878;</div><div class="lbl">Juridique</div></div>
+        <div class="mob-menu-item" onclick="goTo('annonces',null);toggleMobMenu()"><div class="ico">&#128228;</div><div class="lbl">Annonces IA</div></div>
+        <div class="mob-menu-item" onclick="goTo('carte',null);toggleMobMenu()"><div class="ico">&#128205;</div><div class="lbl">Carte</div></div>
+        <div class="mob-menu-item" onclick="goTo('compta',null);toggleMobMenu()"><div class="ico">&#128202;</div><div class="lbl">Comptabilite</div></div>
+        <div class="mob-menu-item" onclick="goTo('parametres',null);toggleMobMenu()"><div class="ico">&#9881;</div><div class="lbl">Parametres</div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app-wrap -->
 <div class="mo" id="mo-scan" onclick="if(event.target===this)closeMo('mo-scan')">
   <div class="mdl">
     <div class="mti">&#128247; Facture scannee</div>
@@ -1056,8 +1131,37 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 
 <!-- TOASTS -->
 <div class="tst-wrap" id="tst-wrap"></div>
+<div class="tst-wrap" id="tst-wrap"></div>
 
 <script>
+
+function toggleMobMenu() {
+  var menu = document.getElementById('mob-menu');
+  menu.classList.toggle('open');
+}
+
+function updateMobNav(page) {
+  var title = document.querySelector('#p-' + page + ' .tbti');
+  var mobTitle = document.getElementById('mob-title');
+  if (title && mobTitle) mobTitle.textContent = title.textContent;
+  document.querySelectorAll('.bn-item').forEach(function(b) { b.classList.remove('on'); });
+  var bn = document.getElementById('bn-' + page);
+  if (bn) bn.classList.add('on');
+  var btns = document.querySelector('#p-' + page + ' .tbr');
+  var mobRight = document.getElementById('mob-topbar-right');
+  if (mobRight && btns) {
+    var existing = mobRight.querySelector('.mob-page-btns');
+    if (existing) existing.remove();
+    if (btns.innerHTML.trim()) {
+      var wrap = document.createElement('div');
+      wrap.className = 'mob-page-btns';
+      wrap.style.cssText = 'display:flex;gap:6px;align-items:center';
+      wrap.innerHTML = btns.innerHTML;
+      mobRight.insertBefore(wrap, mobRight.firstChild);
+    }
+  }
+}
+
 
 
 var SB = supabase.createClient('https://xixnesmwiumbdwmkefjf.supabase.co', 'sb_publishable_vPvjAzu8nYZXJnGPouGdIw_hJYlLE1f');
@@ -1111,7 +1215,7 @@ function closeSB() {
   if (ov) ov.style.display = 'none';
 }
 function toggleSB() {
-  var sb = document.querySelector('.sidebar');
+  var sb = document.getElementById('sb');
   var ov = document.getElementById('sb-overlay');
   var isOpen = sb.classList.toggle('open');
   if (ov) ov.style.display = isOpen ? 'block' : 'none';
@@ -1147,6 +1251,7 @@ function goTo(p, navEl) {
   if (p === 'carte') loadCarte();
   if (p === 'compta') loadCompta();
   if (p === 'parametres') loadParametres();
+  updateMobNav(p);
 }
 
 function switchAuth(mode) {
@@ -1194,6 +1299,7 @@ function showApp(user) {
   ge('user-name').textContent = name;
   ge('user-email').textContent = user.email;
   ge('user-ava').textContent = name.charAt(0).toUpperCase();
+  var mobAva = document.getElementById('mob-ava'); if(mobAva) mobAva.textContent = name.charAt(0).toUpperCase();
   goTo('dashboard', null);
   checkBiometric();
 }
