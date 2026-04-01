@@ -1080,8 +1080,12 @@ function closeSB() {
   var ov = document.getElementById('sb-overlay');
   if (ov) ov.style.display = 'none';
 }
-function toggleSB() { ge('sb').classList.toggle('open'); ge('overlay').classList.toggle('show'); }
-function closeSB() { ge('sb').classList.remove('open'); ge('overlay').classList.remove('show'); }
+function toggleSB() {
+  var sb = document.querySelector('.sidebar');
+  sb.classList.toggle('open');
+  var ov = document.getElementById('sb-overlay');
+  if (ov) ov.style.display = sb.classList.contains('open') ? 'block' : 'none';
+}
 window.addEventListener('resize', function() { if (window.innerWidth > 1024) closeSB(); });
 
 function goTo(p, navEl) {
