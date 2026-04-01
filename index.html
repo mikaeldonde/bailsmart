@@ -29,7 +29,7 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 #app-wrap{display:flex;min-height:100vh}
 
 /* SIDEBAR */
-.sidebar{width:240px;background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:200;transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:var(--sh)}
+.sidebar{width:240px;min-width:240px;background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:200;transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:var(--sh)}
 .lsb{padding:18px 16px;border-bottom:1px solid var(--bd);flex-shrink:0}
 .logo{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;font-weight:800;color:var(--tx);letter-spacing:-.5px}
 .logo span{color:var(--ac)}
@@ -46,7 +46,7 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 .upl{font-size:11px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* PAGES */
-.pages{flex:1;margin-left:240px;min-height:100vh;background:var(--bg)}
+.pages{flex:1;min-height:100vh;background:var(--bg);min-width:0}
 .pg{display:none}
 .pg.on{display:block!important}
 .cnt{padding:20px}
@@ -164,7 +164,7 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 
 /* MOBILE */
 @media(max-width:700px){
-  .sidebar{transform:translateX(-100%)}
+  .sidebar{position:fixed;top:0;bottom:0;left:0;transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
   .pages{margin-left:0}
   .hbg{display:flex!important}
