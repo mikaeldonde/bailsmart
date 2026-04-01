@@ -217,7 +217,7 @@ input,select,textarea,button{font-family:'DM Sans',sans-serif}
 </div>
 
 <!-- APP -->
-<div id="app-wrap" style="display:none">
+<div id="app-wrap" class="main" style="display:none">
   <div id="sb-overlay" onclick="closeSB()" style="display:none;position:fixed;inset:0;background:rgba(26,24,20,.4);z-index:199;backdrop-filter:blur(2px)"></div>
 
   <!-- SIDEBAR -->
@@ -1154,13 +1154,14 @@ function showApp(user) {
   CU = user;
   ge('splash').style.display = 'none';
   ge('auth-wrap').style.display = 'none';
-  ge('app-wrap').style.display = 'block';
+  ge('app-wrap').style.display = 'flex';
   var meta = user.user_metadata || {};
   var name = ((meta.prenom||'')+' '+(meta.nom||'')).trim() || user.email.split('@')[0];
   ge('user-name').textContent = name;
   ge('user-email').textContent = user.email;
   ge('user-ava').textContent = name.charAt(0).toUpperCase();
-  loadDashboard();
+  goTo('dashboard', null);
+  checkBiometric();
 }
 
 function showAuth() {
