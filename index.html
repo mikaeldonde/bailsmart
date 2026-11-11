@@ -4497,9 +4497,9 @@ DOCS.Edl = (function() {
     };
   };
   /* état de sortie : copie de l'entrée, colonnes sortie vides */
-  X.fromEntree = function(entree) {
+  X.fromEntree = function(entree, papier) {
     var d = JSON.parse(JSON.stringify(entree));
-    d.kind = 'sortie'; d.entree_date = entree.date; d.date = DOCS.today(); d.signatures = {}; d.commentaires = ''; d.nouvelle_adresse = '';
+    d.kind = 'sortie'; d.entree_date = papier ? '' : entree.date; d.entree_papier = !!papier; d.date = DOCS.today(); d.signatures = {}; d.commentaires = ''; d.nouvelle_adresse = '';
     d.compteurs_entree = entree.compteurs;
     d.compteurs = {elec_n: entree.compteurs.elec_n, elec_hp: '', elec_hc: '', gaz_n: entree.compteurs.gaz_n, gaz_rel: '', eau_chaude: '', eau_froide: ''};
     function clear(list) { list.forEach(function(i) { i.s = ''; }); }
@@ -4508,7 +4508,7 @@ DOCS.Edl = (function() {
     return d;
   };
   X.diffs = function(d) {
-    var out = [];
+    var out = []; if (d.entree_papier) return out;
     function chk(zone, n, e, s, comm) { if (s && e !== s) out.push({zone: zone, nom: n, e: e, s: s, comm: comm}); }
     d.pieces.forEach(function(p) { p.items.forEach(function(i) { chk(p.nom, i.nom, i.e, i.s, i.comm); }); });
     d.equip.forEach(function(i) { chk('Équipements', i.nom, i.e, i.s, i.comm); });
@@ -4535,23 +4535,24 @@ DOCS.Edl = (function() {
     h += '<h2>Les locaux</h2><table><tr><td>Type</td><td><b>' + E(L.type) + '</b></td><td>Surface</td><td><b>' + E(L.surface) + ' m²</b></td></tr><tr><td>Adresse</td><td colspan="3"><b>' + E(L.adresse) + '</b></td></tr><tr><td>Étage / N° appartement</td><td><b>' + E(L.etage) + ' ' + E(L.appart) + '</b></td><td>Meublé</td><td><b>' + (L.meuble ? 'Oui (inventaire joint)' : 'Non') + '</b></td></tr><tr><td>Nom ancien occupant</td><td colspan="3">' + E(L.ancien) + '</td></tr></table>';
     h += '<table><tr><td style="width:50%"><b>Le bailleur</b><br>' + E(d.bailleur.nom) + '<br>' + E(d.bailleur.adresse) + '</td><td><b>Le(s) locataire(s)</b><br>' + E((d.loc.prenom + ' ' + d.loc.nom).trim()) + (sortie && d.nouvelle_adresse ? '<br>Nouvelle adresse : ' + E(d.nouvelle_adresse) : '') + '</td></tr></table>';
     h += '<h2>Relevé des compteurs' + (sortie ? ' (entrée / sortie)' : '') + '</h2><table><tr><th>Compteur</th>' + (sortie ? '<th>Entrée</th>' : '') + '<th>' + (sortie ? 'Sortie' : 'Relevé') + '</th></tr>';
-    [['Électricité — n° compteur', 'elec_n'], ['Électricité — heures pleines', 'elec_hp'], ['Électricité — heures creuses', 'elec_hc'], ['Gaz naturel — n° compteur', 'gaz_n'], ['Gaz naturel — relevé', 'gaz_rel'], ['Eau chaude (m³)', 'eau_chaude'], ['Eau froide (m³)', 'eau_froide']].forEach(function(m) { h += '<tr><td>' + m[0] + '</td>' + (sortie ? '<td>' + E((CE || {})[m[1]] || '') + '</td>' : '') + '<td><b>' + E(C[m[1]] || '') + '</b></td></tr>'; });
+    [['Électricité — n° compteur', 'elec_n'], ['Électricité — heures pleines (ou index unique)', 'elec_hp'], ['Électricité — heures creuses', 'elec_hc'], ['Gaz naturel — n° compteur', 'gaz_n'], ['Gaz naturel — relevé', 'gaz_rel'], ['Eau chaude (m³)', 'eau_chaude'], ['Eau froide (m³)', 'eau_froide']].forEach(function(m) { h += '<tr><td>' + m[0] + '</td>' + (sortie ? '<td>' + E((CE || {})[m[1]] || '') + '</td>' : '') + '<td><b>' + E(C[m[1]] || '') + '</b></td></tr>'; });
     h += '</table>';
     h += '<h2>Caractéristiques énergétiques</h2><p>Chauffage : <b>' + E(en.chauffage) + '</b> · Eau chaude : <b>' + E(en.ecs) + '</b>' + (en.chaudiere ? ' · Chaudière / état : <b>' + E(en.chaudiere) + '</b>' : '') + (en.entretien ? ' · Dernier entretien : <b>' + E(en.entretien) + '</b>' : '') + (en.ballon ? ' · Ballon d\'eau chaude : <b>' + E(en.ballon) + '</b>' : '') + '</p>';
     h += '<p class="small">Abréviations : TB très bon état · B bon état · C état moyen · M mauvais état · HS hors service · NV non vérifié</p>';
     h += '<h2>Clés</h2><table><tr><th>Type de clé</th><th>Nombre</th><th>Commentaires</th></tr>' + d.cles.map(function(k) { return '<tr><td>' + E(k.type) + '</td><td>' + E(k.nb) + '</td><td>' + E(k.comm) + '</td></tr>'; }).join('') + '</table>';
     var priv = d.privatives.filter(function(p) { return p.actif; });
     if (priv.length) h += '<h2>Parties privatives attachées au logement</h2><table><tr><th>Partie</th><th>N°</th><th>Entrée</th><th>Sortie</th><th>Commentaires</th></tr>' + priv.map(function(p) { return '<tr><td>' + E(p.nom) + '</td><td>' + E(p.num) + '</td><td>' + st(p.e) + '</td><td>' + st(p.s) + '</td><td>' + E(p.comm) + '</td></tr>'; }).join('') + '</table>';
-    h += '<h2>Autres équipements et aménagements</h2><table><tr><th>Équipement</th><th>Entrée</th><th>Sortie</th><th>Commentaires</th></tr>' + d.equip.map(function(p) { return '<tr' + (sortie && p.s && p.s !== p.e ? ' class="diff"' : '') + '><td>' + E(p.nom) + '</td><td>' + st(p.e) + '</td><td>' + st(p.s) + '</td><td>' + E(p.comm) + '</td></tr>'; }).join('') + '</table>';
+    h += '<h2>Autres équipements et aménagements</h2><table><tr><th>Équipement</th><th>Entrée</th><th>Sortie</th><th>Commentaires</th></tr>' + d.equip.map(function(p) { return '<tr' + (sortie && !d.entree_papier && p.s && p.s !== p.e ? ' class="diff"' : '') + '><td>' + E(p.nom) + '</td><td>' + st(p.e) + '</td><td>' + st(p.s) + '</td><td>' + E(p.comm) + '</td></tr>'; }).join('') + '</table>';
     d.pieces.forEach(function(p) {
-      h += '<div class="pb"></div><h2>' + E(p.nom) + '</h2><table><tr><th style="width:34%">Éléments</th><th>État d\'entrée</th><th>État de sortie</th><th>Commentaires</th></tr>' + p.items.map(function(i) { return '<tr' + (sortie && i.s && i.s !== i.e ? ' class="diff"' : '') + '><td>' + E(i.nom) + '</td><td>' + st(i.e) + '</td><td>' + st(i.s) + '</td><td>' + E(i.comm) + '</td></tr>'; }).join('') + '</table>';
+      h += '<div class="pb"></div><h2>' + E(p.nom) + '</h2><table><tr><th style="width:34%">Éléments</th><th>État d\'entrée</th><th>État de sortie</th><th>Commentaires</th></tr>' + p.items.map(function(i) { return '<tr' + (sortie && !d.entree_papier && i.s && i.s !== i.e ? ' class="diff"' : '') + '><td>' + E(i.nom) + '</td><td>' + st(i.e) + '</td><td>' + st(i.s) + '</td><td>' + E(i.comm) + '</td></tr>'; }).join('') + '</table>';
       if (p.comm) h += '<p><b>Remarques :</b> ' + E(p.comm) + '</p>';
       if (sortie && p.photos_entree && p.photos_entree.length) h += '<p class="small">Photos à l\'entrée :</p>' + photos(p.photos_entree);
       h += (p.photos && p.photos.length ? '<p class="small">' + (sortie ? 'Photos à la sortie :' : 'Photos :') + '</p>' : '') + photos(p.photos);
     });
-    h += '<div class="pb"></div><h2>Inventaire et état détaillé du mobilier</h2><table><tr><th>Élément</th><th>Qté</th><th>Entrée</th><th>Sortie</th><th>Commentaires</th></tr>' + d.inventaire.filter(function(i) { return i.qte !== 0 && i.qte !== '0'; }).map(function(i) { return '<tr' + (sortie && i.s && i.s !== i.e ? ' class="diff"' : '') + '><td>' + E(i.nom) + '</td><td>' + E(i.qte) + '</td><td>' + st(i.e) + '</td><td>' + st(i.s) + '</td><td>' + E(i.comm) + '</td></tr>'; }).join('') + '</table>';
+    h += '<div class="pb"></div><h2>Inventaire et état détaillé du mobilier</h2><table><tr><th>Élément</th><th>Qté</th><th>Entrée</th><th>Sortie</th><th>Commentaires</th></tr>' + d.inventaire.filter(function(i) { return i.qte !== 0 && i.qte !== '0'; }).map(function(i) { return '<tr' + (sortie && !d.entree_papier && i.s && i.s !== i.e ? ' class="diff"' : '') + '><td>' + E(i.nom) + '</td><td>' + E(i.qte) + '</td><td>' + st(i.e) + '</td><td>' + st(i.s) + '</td><td>' + E(i.comm) + '</td></tr>'; }).join('') + '</table>';
     if (sortie) {
       var df = X.diffs(d);
+      if (d.entree_papier) h += '<h2>État d\'entrée</h2><p>L\'état des lieux d\'entrée a été établi sur papier lors de l\'entrée dans les lieux ; un exemplaire est joint au présent document et sert de référence. La comparaison élément par élément est effectuée à partir de cet exemplaire.</p>'; else
       h += '<h2>Annexe — éléments non conformes à l\'état d\'entrée</h2>' + (df.length ? '<table><tr><th>Pièce</th><th>Élément</th><th>Entrée</th><th>Sortie</th><th>Commentaire / montant estimé</th></tr>' + df.map(function(x) { return '<tr><td>' + E(x.zone) + '</td><td>' + E(x.nom) + '</td><td>' + st(x.e) + '</td><td>' + st(x.s) + '</td><td>' + E(x.comm) + '</td></tr>'; }).join('') + '</table>' : '<p>Aucune différence constatée avec l\'état des lieux d\'entrée.</p>');
     }
     h += '<h2>Commentaires généraux</h2><p>' + (d.commentaires ? E(d.commentaires).replace(/\n/g, '<br>') : '—') + '</p>';
@@ -4582,7 +4583,7 @@ DOCS.EdlUI = (function() {
       function hint(k) { return sortie && CE[k] ? '<div class="hint">Entrée : ' + E(CE[k]) + '</div>' : ''; }
       return W.card('Le rendez-vous', W.row(W.date('date', 'Date'), W.inp('heure', 'Heure', {type: 'time'})) + W.row(W.inp('loc.prenom', 'Locataire — prénom'), W.inp('loc.nom', 'Nom')) + (sortie ? W.inp('nouvelle_adresse', 'Nouvelle adresse du locataire (obligatoire)') : '') + W.inp('logement.ancien', 'Nom de l\'ancien occupant (facultatif)'))
         + W.card('Le logement', W.inp('logement.adresse', 'Adresse') + W.row(W.inp('logement.etage', 'Étage'), W.inp('logement.appart', 'N° d\'appartement')) + W.row(W.num('logement.surface', 'Surface (m²)', {step: '0.01'}), W.chips('logement.type', 'Type', ['Appartement', 'Maison', 'Autre'])))
-        + W.card('Compteurs', W.row(W.inp('compteurs.elec_n', 'Électricité — n° compteur'), W.inp('compteurs.elec_hp', 'Heures pleines')) + hint('elec_hp') + W.row(W.inp('compteurs.elec_hc', 'Heures creuses'), W.inp('compteurs.gaz_n', 'Gaz — n° compteur')) + W.inp('compteurs.gaz_rel', 'Gaz — relevé') + hint('gaz_rel') + W.row(W.inp('compteurs.eau_chaude', 'Eau chaude (m³)'), W.inp('compteurs.eau_froide', 'Eau froide (m³)')) + hint('eau_froide'), 'Photographiez aussi les compteurs : bouton photos de la 1re pièce.')
+        + W.card('Compteurs', W.row(W.inp('compteurs.elec_n', 'Électricité — n° compteur'), W.inp('compteurs.elec_hp', 'Heures pleines (ou index unique)')) + hint('elec_hp') + W.row(W.inp('compteurs.elec_hc', 'Heures creuses'), W.inp('compteurs.gaz_n', 'Gaz — n° compteur')) + W.inp('compteurs.gaz_rel', 'Gaz — relevé') + hint('gaz_rel') + W.row(W.inp('compteurs.eau_chaude', 'Eau chaude (m³)'), W.inp('compteurs.eau_froide', 'Eau froide (m³)')) + hint('eau_froide'), 'Photographiez aussi les compteurs : bouton photos de la 1re pièce.')
         + W.card('Énergie', W.chips('energie.chauffage', 'Chauffage', [['electrique', 'Électrique'], ['gaz', 'Gaz'], ['collectif', 'Collectif'], ['autre', 'Autre']]) + W.chips('energie.ecs', 'Eau chaude', [['electrique', 'Électrique'], ['gaz', 'Gaz'], ['collectif', 'Collectif'], ['autre', 'Autre']]) + W.row(W.inp('energie.chaudiere', 'Chaudière / état'), W.inp('energie.entretien', 'Dernier entretien')) + W.inp('energie.ballon', 'Ballon d\'eau chaude / état'));
     }, validate: function(d) { if (!d.logement.adresse) return 'Indiquez l\'adresse.'; if (d.kind === 'sortie' && !d.nouvelle_adresse) return 'La nouvelle adresse du locataire est obligatoire.'; } };
   }
@@ -4637,7 +4638,13 @@ DOCS.EdlUI = (function() {
   }
   function fname(d) { return 'EDL-' + (d.kind === 'sortie' ? 'sortie' : 'entree') + '-' + (d.loc.nom || 'locataire').replace(/[^A-Za-z0-9]/g, '') + '-' + d.date + '.pdf'; }
 
-  async function save(silent) { if (!cur) return; try { await DOCS.save(cur); } catch (e) { if (!silent) toast('Enregistrement impossible', e.message || 'Table dossiers manquante ?'); } }
+  var lastElec = '';
+  async function syncElec() {
+    if (!cur || !cur.id || !window.ELEC || !ELEC.fromEdl || (cur.statut !== 'signe' && cur.statut !== 'envoye')) return;
+    var d = cur.data, key = [cur.id, d.date, d.compteurs && d.compteurs.elec_hp, d.compteurs && d.compteurs.elec_hc].join('|'); if (key === lastElec) return;
+    try { var r = await ELEC.fromEdl(cur); if (!r) return; lastElec = key; if (r.err) toast('Relevé électricité', r.err); else toast('Électricité', r.ok || r.msg); } catch (e) {}
+  }
+  async function save(silent) { if (!cur) return; try { await DOCS.save(cur); await syncElec(); } catch (e) { if (!silent) toast('Enregistrement impossible', e.message || 'Table dossiers manquante ?'); } }
 
   async function addPhotos(pi) {
     var inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true;
@@ -4693,7 +4700,7 @@ DOCS.EdlUI = (function() {
   U.open = function(dossier, loc, bien, dpe, kind, entree, onClose) {
     if (dossier) cur = dossier;
     else {
-      var data = kind === 'sortie' ? X.fromEntree(entree.data) : X.defaults('entree', loc, bien, dpe);
+      var data = kind === 'sortie' ? X.fromEntree(entree.data, !entree.id) : X.defaults('entree', loc, bien, dpe);
       cur = {type: kind === 'sortie' ? 'edl_sortie' : 'edl_entree', bien_id: bien && bien.id, locataire_id: loc.id, statut: 'brouillon', data: data};
     }
     var steps = buildSteps(cur.data);
@@ -4727,7 +4734,7 @@ DOCS.EdlUI = (function() {
       var bien = biens.find(function(b) { return b.id === loc.bien_id; }), mine = ds.filter(function(x) { return x.locataire_id === loc.id; });
       var bail = mine.find(function(x) { return x.type === 'bail'; }), ein = mine.find(function(x) { return x.type === 'edl_entree'; }), eout = mine.find(function(x) { return x.type === 'edl_sortie'; });
       h += '<div class="card dc"><div class="dc-h"><div class="lc-av" style="background:linear-gradient(135deg,#C8502A,#E8895F)">' + E((loc.prenom || '?').charAt(0) + (loc.nom || '').charAt(0)) + '</div><div><div class="dc-n">' + E(loc.prenom + ' ' + loc.nom) + '</div><div class="dc-b">' + E(bien ? bien.nom : 'Aucun bien associé') + '</div></div></div>'
-        + row('Bail meublé', bail, loc.id, 'bail') + row('État des lieux d\'entrée', ein, loc.id, 'edl_entree') + row('État des lieux de sortie', eout, loc.id, 'edl_sortie') + '</div>';
+        + row('Bail meublé', bail, loc.id, 'bail') + row('État des lieux d\'entrée', ein, loc.id, 'edl_entree') + row('État des lieux de sortie' + (!ein && !eout ? ' <span style="font-weight:400;color:var(--mu);font-size:12px">(entrée sur papier)</span>' : ''), eout, loc.id, 'edl_sortie') + '</div>';
     });
     box.innerHTML = h;
     box._ds = ds; box._locs = locs; box._biens = biens;
@@ -5113,6 +5120,8 @@ DOCS.EdlUI = (function() {
     if (bag) { c.offre = 'Offre Classique'; c.parts = 4; c.tarifs = [{from: '2026-10-17', abo: 23.76, hc: 0.1985, hp: 0.1985, src: 'manuel'}]; }
     return c;
   }
+  function allLocs(locs) { var all = (window.ARCH && ARCH.all) ? ARCH.all.slice() : []; (locs || []).forEach(function(l) { if (!all.some(function(x) { return x.id === l.id; })) all.push(l); }); return all; }
+  function kwhOf(r) { return r.lines.reduce(function(s, l) { return s + l.kwh; }, 0); }
   function lastBefore(bienId, date) {
     return X.rel.filter(function(r) { return r.bien_id === bienId && r.data.date < date; }).sort(function(a, b) { return b.data.date.localeCompare(a.data.date); })[0] || null;
   }
@@ -5196,17 +5205,48 @@ DOCS.EdlUI = (function() {
       '<button class="btn btnp" id="el-save" style="width:100%">' + (c.auto_send ? 'Valider et envoyer aux locataires' : 'Enregistrer les relevés') + '</button>' +
       '<p style="font-size:12px;color:var(--mu);margin-top:8px">Les photos ne sont jamais enregistrées : seuls les index sont conservés.</p></div></div>';
   }
+  function descr(d, loc) {
+    var nm = loc ? E(loc.prenom + ' ' + loc.nom) : '', va = d.vacance && d.vacance.kwh != null ? ' · ' + N(d.vacance.kwh, 0) + ' kWh non refacturés depuis le ' + FD(d.vacance.from) + ' (à ma charge)' : '';
+    if (d.kind === 'entree') return 'Relevé d\'entrée' + (nm ? ' · ' + nm : '') + va;
+    if (d.kind === 'cloture') return d.base ? 'Relevé de sortie' + (nm ? ' · ' + nm : '') + ' (point de départ)' : 'Facture de clôture · ' + nm + ' · ' + N(d.kwh, 0) + ' kWh';
+    if (d.vacance === true) return 'Logement vacant · ' + N(d.kwh, 0) + ' kWh à ma charge';
+    return d.base ? 'Relevé de départ' : (nm ? nm + ' · ' : '') + N(d.kwh, 0) + ' kWh';
+  }
   function histCard(biens, locs) {
     var ids = biens.map(function(b) { return b.id; }), list = X.rel.filter(function(r) { return ids.indexOf(r.bien_id) >= 0; }).slice(0, 18);
     var h = '<div class="card"><div class="ch"><div class="ct">Historique</div></div><div style="padding:0 18px 14px">';
     if (!list.length) return h + '<p style="font-size:13.5px;color:var(--mu)">Aucun relevé pour l\'instant.</p></div></div>';
     list.forEach(function(r) {
-      var d = r.data, b = biens.find(function(x) { return x.id === r.bien_id; }), loc = locs.find(function(l) { return l.id === r.locataire_id; });
-      h += '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--bd)"><div style="min-width:0"><div style="font-weight:600;font-size:14px">' + FD(d.date) + ' · ' + E(b ? b.nom : '') + '</div><div style="font-size:12.5px;color:var(--mu)">' + (d.base ? 'Relevé de départ' : (loc ? E(loc.prenom + ' ' + loc.nom) + ' · ' : '') + N(d.kwh, 0) + ' kWh') + '</div></div><div style="text-align:right;white-space:nowrap">' +
-        (d.base ? '' : '<div style="font-weight:700;color:var(--ac)">' + F(d.total) + '</div><span class="pill ' + (r.statut === 'envoye' ? 'ok' : 'wn') + '">' + (r.statut === 'envoye' ? 'Envoyé' : 'À envoyer') + '</span> ' + (d.locataire_id || r.locataire_id ? '<button class="btn btng btnsm el-send" data-id="' + r.id + '">' + (r.statut === 'envoye' ? 'Renvoyer' : 'Envoyer') + '</button>' : '')) + ' <button class="btn btng btnsm el-del" data-id="' + r.id + '" aria-label="Supprimer">🗑</button></div></div>';
+      var d = r.data, b = biens.find(function(x) { return x.id === r.bien_id; }), loc = allLocs(locs).find(function(l) { return l.id === r.locataire_id; });
+      h += '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--bd)"><div style="min-width:0"><div style="font-weight:600;font-size:14px">' + FD(d.date) + ' · ' + E(b ? b.nom : '') + '</div><div style="font-size:12.5px;color:var(--mu)">' + descr(d, loc) + '</div></div><div style="text-align:right;white-space:nowrap">' +
+        (d.base ? '' : d.vacance === true ? '<span class="pill nt">Non facturé</span>' : '<div style="font-weight:700;color:var(--ac)">' + F(d.total) + '</div><span class="pill ' + (r.statut === 'envoye' ? 'ok' : 'wn') + '">' + (r.statut === 'envoye' ? 'Envoyé' : 'À envoyer') + '</span> ' + (d.locataire_id || r.locataire_id ? '<button class="btn btng btnsm el-send" data-id="' + r.id + '">' + (r.statut === 'envoye' ? 'Renvoyer' : 'Envoyer') + '</button>' : '')) + ' <button class="btn btng btnsm el-del" data-id="' + r.id + '" aria-label="Supprimer">🗑</button></div></div>';
     });
     return h + '</div></div>';
   }
+
+  /* ---------- relevés générés par les états des lieux signés ---------- */
+  X.fromEdl = async function(ds) {
+    var d = ds && ds.data; if (!d || !d.compteurs || !ds.bien_id || !d.date) return null;
+    var biens = await getBiens(), b = biens.find(function(x) { return x.id === ds.bien_id; }); if (!b || !b.immeuble_id) return null;
+    await loadAll(); var cc = X.cfgs[b.immeuble_id]; if (!cc) return null;
+    var c = cc.c, mode = lotMode(c, b.id), hp = num(d.compteurs.elec_hp), hc = num(d.compteurs.elec_hc), vals = null;
+    if (mode === 'hphc') { if (hp != null && hc != null) vals = {hp: hp, hc: hc}; } else if (hp != null) vals = {idx: hp};
+    if (!vals) return {msg: mode === 'hphc' ? 'Index heures pleines et heures creuses manquants dans l\'état des lieux : aucun relevé créé.' : 'Index du compteur manquant dans l\'état des lieux (champ « Heures pleines (ou index unique) ») : aucun relevé créé.'};
+    var sortie = d.kind === 'sortie', date = d.date, ex = X.rel.find(function(r) { return r.data.edl_id === ds.id; });
+    var prev = X.rel.filter(function(r) { return r.bien_id === b.id && r.data.date < date && (!ex || r.id !== ex.id); }).sort(function(a, z) { return z.data.date.localeCompare(a.data.date); })[0] || null;
+    var data = {immeuble_id: b.immeuble_id, date: date, mode: mode, hp: vals.hp, hc: vals.hc, idx: vals.idx, edl_id: ds.id, kind: sortie ? 'cloture' : 'entree'}, msg;
+    if (sortie) {
+      if (!prev) { data.base = true; msg = 'Relevé de sortie enregistré comme point de départ (aucun relevé précédent : rien à facturer).'; }
+      else { var r = X.calc(c, mode, prev.data, Object.assign({date: date}, vals)); if (r.err) return {err: r.err}; data.calc = r; data.total = r.total; data.prev_date = prev.data.date; data.kwh = kwhOf(r); msg = 'Facture de clôture créée : ' + F(r.total) + '. Elle attend dans Électricité (bouton Envoyer) ou se déduit du dépôt de garantie.'; }
+    } else {
+      data.base = true; msg = 'Relevé d\'entrée enregistré : il sert de point de départ au nouveau locataire.';
+      if (prev) { var rv = X.calc(c, mode, prev.data, Object.assign({date: date}, vals)); if (!rv.err) { data.vacance = {from: prev.data.date, to: date, kwh: kwhOf(rv)}; msg += ' ' + N(data.vacance.kwh, 0) + ' kWh depuis le ' + FD(prev.data.date) + ' restent à ta charge.'; } }
+    }
+    var row = {user_id: CU.id, type: 'elec_releve', bien_id: b.id, locataire_id: ds.locataire_id || null, statut: data.base ? 'base' : (ex && ex.statut === 'envoye' ? 'envoye' : 'brouillon'), data: data, updated_at: new Date().toISOString()};
+    if (ex) { var u = await SB.from('dossiers').update({statut: row.statut, data: data, locataire_id: row.locataire_id, updated_at: row.updated_at}).eq('id', ex.id); if (u.error) throw u.error; ex.data = data; ex.statut = row.statut; }
+    else { var i = await SB.from('dossiers').insert(row).select().single(); if (i.error) throw i.error; X.rel.push(i.data); }
+    return {ok: msg};
+  };
 
   /* ---------- interactions ---------- */
   function readVals(box, c, b) {
@@ -5230,10 +5270,10 @@ DOCS.EdlUI = (function() {
       '<p>Merci de régler ce montant par virement, séparément du loyer.</p><p>Cordialement,<br>' + E(bl.nom || '') + '</p></div>';
   }
   async function send(imm, c, rel, biens, locs) {
-    var d = rel.data, b = biens.find(function(x) { return x.id === rel.bien_id; }), loc = locs.find(function(l) { return l.id === rel.locataire_id; });
+    var d = rel.data, b = biens.find(function(x) { return x.id === rel.bien_id; }), loc = allLocs(locs).find(function(l) { return l.id === rel.locataire_id; });
     if (!loc || !loc.email) throw new Error((loc ? loc.prenom + ' ' + loc.nom : 'Locataire') + ' : pas d\'adresse email.');
     var bl = DOCS.bailleur();
-    await DOCS.sendMail({to: loc.email, bcc: bl.email || CU.email, reply_to: bl.email || CU.email, subject: 'Consommation électrique ' + b.nom + ' – relevé du ' + FD(d.date), html: emailHtml(imm, b, loc, d, rel, c)});
+    await DOCS.sendMail({to: loc.email, bcc: bl.email || CU.email, reply_to: bl.email || CU.email, subject: (d.kind === 'cloture' ? 'Facture de clôture – consommation électrique ' : 'Consommation électrique ') + b.nom + ' – relevé du ' + FD(d.date), html: emailHtml(imm, b, loc, d, rel, c)});
     var u = await SB.from('dossiers').update({statut: 'envoye', data: Object.assign({}, d, {sent_at: new Date().toISOString()}), updated_at: new Date().toISOString()}).eq('id', rel.id);
     if (u.error) throw u.error; rel.statut = 'envoye'; rel.data.sent_at = new Date().toISOString();
   }
@@ -5277,9 +5317,14 @@ DOCS.EdlUI = (function() {
     biens.forEach(function(b) {
       var vals = readVals(box, c, b); if (!vals) return;
       var loc = locs.find(function(l) { return l.bien_id === b.id; }), mode = lotMode(c, b.id), prev = lastBefore(b.id, date);
-      var data = {immeuble_id: imm.id, date: date, mode: mode, hp: vals.hp, hc: vals.hc, idx: vals.idx};
-      if (!prev) data.base = true;
-      else { var r = X.calc(c, mode, prev.data, Object.assign({date: date}, vals)); if (r.err) { errs.push(b.nom + ' : ' + r.err); return; } data.calc = r; data.total = r.total; data.prev_date = prev.data.date; data.kwh = r.lines.reduce(function(s, l) { return s + l.kwh; }, 0); }
+      var data = {immeuble_id: imm.id, date: date, mode: mode, hp: vals.hp, hc: vals.hc, idx: vals.idx}, ent = loc && loc.date_entree;
+      if (prev && ent && prev.data.date < ent && date > ent) { errs.push(b.nom + ' : ' + loc.prenom + ' ' + loc.nom + ' est entré(e) le ' + FD(ent) + ', après le dernier relevé (' + FD(prev.data.date) + '). Saisissez d\'abord l\'index d\'entrée (état des lieux d\'entrée, ou un relevé daté du ' + FD(ent) + ').'); return; }
+      if (loc && ent && date < ent && prev) { errs.push(b.nom + ' : ce relevé est antérieur à l\'entrée de ' + loc.prenom + ' ' + loc.nom + ' (' + FD(ent) + '). Pour clôturer l\'ancien locataire, utilisez son état des lieux de sortie.'); return; }
+      if (loc && ent && date === ent) {
+        data.base = true; data.kind = 'entree';
+        if (prev) { var rv = X.calc(c, mode, prev.data, Object.assign({date: date}, vals)); if (!rv.err) data.vacance = {from: prev.data.date, to: date, kwh: kwhOf(rv)}; }
+      } else if (!prev) data.base = true;
+      else { var r = X.calc(c, mode, prev.data, Object.assign({date: date}, vals)); if (r.err) { errs.push(b.nom + ' : ' + r.err); return; } data.calc = r; data.total = r.total; data.prev_date = prev.data.date; data.kwh = kwhOf(r); if (!loc) data.vacance = true; }
       todo.push({b: b, loc: loc, data: data});
     });
     if (errs.length) { toast('À corriger', errs[0]); return; }
@@ -5289,7 +5334,7 @@ DOCS.EdlUI = (function() {
       var t = todo[i], row = {user_id: CU.id, type: 'elec_releve', bien_id: t.b.id, locataire_id: t.loc ? t.loc.id : null, statut: t.data.base ? 'base' : 'brouillon', data: t.data, updated_at: new Date().toISOString()};
       var r = await SB.from('dossiers').insert(row).select().single(); if (r.error) { toast('Erreur', r.error.message); btn.disabled = false; return; }
       X.rel.push(r.data);
-      if (c.auto_send && !t.data.base && t.loc) { try { await send(imm, c, r.data, biens, locs); sent++; } catch (e) { fail.push(e.message); } }
+      if (c.auto_send && !t.data.base && t.loc && t.data.vacance !== true) { try { await send(imm, c, r.data, biens, locs); sent++; } catch (e) { fail.push(e.message); } }
     }
     toast('Relevé enregistré', (sent ? sent + ' email(s) envoyé(s). ' : '') + (fail.length ? fail[0] : ''));
     window.loadElec();
