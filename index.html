@@ -5105,10 +5105,10 @@ DOCS.EdlUI = (function() {
   /* ---------- tarifs : mise à jour automatique ---------- */
   function plausible(n, o) { return o && Math.abs(n - o) / o <= 0.12; }
   X.refresh = async function(imm, manual) {
-    var cur = X.cfgs[imm.id]; if (!cur || cur.c.mode !== 'edf') { if (manual) toast('Tarifs', 'Les tarifs de cet immeuble se saisissent à la main.'); return; }
+    var cur = X.cfgs[imm.id]; if (!cur || cur.c.mode === 'manuel') { if (manual) toast('Tarifs', 'Les tarifs de cet immeuble se saisissent à la main.'); return; }
     var c = cur.c;
     try {
-      var j = await call('tarifs_refresh', {option: c.option === 'Base' ? 'base' : 'hc', kva: c.kva});
+      var j = await call('tarifs_refresh', {option: c.option === 'Base' ? 'base' : 'hc', kva: c.kva, provider: c.mode, offre: c.offre});
       c.last_check = new Date().toISOString();
       if (j.erreur || j.error || !j.abo) { await saveCfg(imm, c); if (manual) toast('Tarifs', j.erreur || j.error || 'Tarif introuvable.'); return; }
       var cands = [{from: j.from, abo: +j.abo, hc: +j.hc, hp: +j.hp, src: 'auto'}];
@@ -5144,14 +5144,14 @@ DOCS.EdlUI = (function() {
     if (!biens.length) { h += '<div class="card"><div style="padding:18px;font-size:13.5px;line-height:1.5">Aucun appartement n\'est rattaché à « ' + E(imm.nom) + ' ». Ouvrez un bien (Modifier) et choisissez cet immeuble.</div></div>'; box.innerHTML = h; bind(box, imm, biens, locs); return; }
     if (!c) { h += setupHint(imm); box.innerHTML = h; bind(box, imm, biens, locs, defaultCfg(imm, biens)); return; }
     var t = latestTarif(c);
-    h += '<div class="card" style="margin-bottom:14px"><div class="ch"><div class="ct">Tarif · ' + (c.mode === 'edf' ? 'EDF Tarif Bleu ' + E(c.option) + ' ' + c.kva + ' kVA' : 'Abonnement ' + (c.option === 'Base' ? 'à tarif unique' : 'heures creuses') + ' (saisie manuelle)') + '</div><button class="btn btng btnsm" id="el-cfg">Modifier</button></div><div style="padding:0 18px 16px;font-size:13.5px;line-height:1.6">' +
+    h += '<div class="card" style="margin-bottom:14px"><div class="ch"><div class="ct">Tarif · ' + (c.mode === 'total' ? 'TotalEnergies ' + E(c.offre || '') + (c.kva ? ' ' + c.kva + ' kVA' : '') : c.mode === 'edf' ? 'EDF Tarif Bleu ' + E(c.option) + ' ' + c.kva + ' kVA' : 'Abonnement ' + (c.option === 'Base' ? 'à tarif unique' : 'heures creuses') + ' (saisie manuelle)') + '</div><button class="btn btng btnsm" id="el-cfg">Modifier</button></div><div style="padding:0 18px 16px;font-size:13.5px;line-height:1.6">' +
       (t ? 'Abonnement <strong>' + F(t.abo) + '</strong>/mois · ' + (c.option === 'Base' ? 'kWh <strong>' + N(t.hp, 4) + ' €</strong>' : 'HC <strong>' + N(t.hc, 4) + ' €</strong> · HP <strong>' + N(t.hp, 4) + ' €</strong> le kWh') + '<br><span style="color:var(--mu)">en vigueur depuis le ' + FD(t.from) + ' · charges fixes réparties en ' + c.parts + ' parts</span>' : '<span style="color:var(--a2)">Aucun tarif : cliquez sur Modifier.</span>') +
       (c.pending ? '<div style="margin-top:10px;padding:10px 12px;background:var(--s2);border-radius:12px">Nouveau tarif détecté au ' + FD(c.pending.from) + ' : abo ' + F(c.pending.abo) + ', HC ' + N(c.pending.hc, 4) + ' €, HP ' + N(c.pending.hp, 4) + ' €. <button class="btn btnp btnsm" id="el-apply" style="margin-left:6px">Appliquer</button></div>' : '') +
-      (c.mode === 'edf' ? '<div style="margin-top:10px"><button class="btn btng btnsm" id="el-ref">Vérifier les tarifs maintenant</button>' + (c.last_check ? ' <span style="color:var(--mu);font-size:12px">dernière vérification le ' + FD(c.last_check.slice(0, 10)) + '</span>' : '') + '</div>' : '') + '</div></div>';
+      (c.mode !== 'manuel' ? '<div style="margin-top:10px"><button class="btn btng btnsm" id="el-ref">Vérifier les tarifs maintenant</button>' + (c.last_check ? ' <span style="color:var(--mu);font-size:12px">dernière vérification le ' + FD(c.last_check.slice(0, 10)) + '</span>' : '') + '</div>' : '') + '</div></div>';
     h += newCard(c, biens, locs);
     h += histCard(biens, locs);
     box.innerHTML = h; bind(box, imm, biens, locs, c);
-    if (c.mode === 'edf' && c.auto_update !== false && (!c.last_check || Date.now() - new Date(c.last_check) > 7 * 864e5) && !X.busy) { X.busy = true; X.refresh(imm, false).then(function() { X.busy = false; loadElecSoft(); }); }
+    if (c.mode !== 'manuel' && c.auto_update !== false && (!c.last_check || Date.now() - new Date(c.last_check) > 7 * 864e5) && !X.busy) { X.busy = true; X.refresh(imm, false).then(function() { X.busy = false; loadElecSoft(); }); }
   };
   function loadElecSoft() { var p = ge('p-elec'); if (p && p.classList.contains('on')) window.loadElec(); }
 
@@ -5273,7 +5273,8 @@ DOCS.EdlUI = (function() {
   function configSheet(imm, biens, c0) {
     var c = JSON.parse(JSON.stringify(c0)), t = latestTarif(c) || {from: today(), abo: '', hc: '', hp: ''};
     var h = '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-weight:800;font-size:20px;margin-bottom:12px">Électricité · ' + E(imm.nom) + '</div>' +
-      '<div class="fg"><label class="fl">Fournisseur</label><select class="fi" id="ec-mode"><option value="edf"' + (c.mode === 'edf' ? ' selected' : '') + '>EDF Tarif Bleu (tarifs mis à jour automatiquement)</option><option value="manuel"' + (c.mode !== 'edf' ? ' selected' : '') + '>Autre fournisseur (tarifs saisis à la main)</option></select></div>' +
+      '<div class="fg"><label class="fl">Fournisseur</label><select class="fi" id="ec-mode"><option value="edf"' + (c.mode === 'edf' ? ' selected' : '') + '>EDF Tarif Bleu (tarifs mis à jour automatiquement)</option><option value="total"' + (c.mode === 'total' ? ' selected' : '') + '>TotalEnergies (tarifs mis à jour automatiquement)</option><option value="manuel"' + (c.mode === 'manuel' ? ' selected' : '') + '>Autre fournisseur (tarifs saisis à la main)</option></select></div>' +
+      '<div class="fg" id="ec-offrebox"><label class="fl">Nom de votre offre TotalEnergies (sur le contrat ou la facture)</label><input class="fi" id="ec-offre" placeholder="ex. Offre Verte Fixe" value="' + E(c.offre || '') + '"></div>' +
       '<div style="display:flex;gap:8px"><div class="fg" style="flex:1"><label class="fl">Option</label><select class="fi" id="ec-opt"><option value="HC"' + (c.option !== 'Base' ? ' selected' : '') + '>Heures creuses</option><option value="Base"' + (c.option === 'Base' ? ' selected' : '') + '>Tarif unique (un seul prix du kWh)</option></select></div><div class="fg" style="flex:1"><label class="fl">Puissance (kVA)</label><input class="fi" id="ec-kva" inputmode="decimal" value="' + (c.kva || 18) + '"></div></div>' +
       '<div class="fg"><label class="fl">Nombre de parts pour les charges fixes</label><input class="fi" id="ec-parts" inputmode="numeric" value="' + (c.parts || biens.length) + '"></div>' +
       '<div style="font-weight:700;margin:12px 0 6px">Tarif TTC en vigueur</div>' +
@@ -5287,13 +5288,14 @@ DOCS.EdlUI = (function() {
       '<label style="display:flex;gap:8px;align-items:center;font-size:14px;margin:10px 0"><input type="checkbox" id="ec-upd"' + (c.auto_update !== false ? ' checked' : '') + '> Mettre à jour les tarifs automatiquement (EDF)</label>' +
       '<div style="display:flex;gap:10px;margin-top:14px"><button class="btn btng" id="ec-no" style="flex:1">Annuler</button><button class="btn btnp" id="ec-ok" style="flex:1">Enregistrer</button></div>';
     var ov = sheet(h);
-    var tog = function() { var base = ov.querySelector('#ec-opt').value === 'Base'; ov.querySelector('#ec-hphc').style.display = base ? 'none' : 'flex'; ov.querySelector('#ec-bs').style.display = base ? '' : 'none'; ov.querySelectorAll('.ec-lot').forEach(function(s) { if (!c.lots || !c.lots[s.dataset.b]) s.value = base ? 'single' : 'hphc'; }); }; ov.querySelector('#ec-opt').onchange = tog; tog();
+    var tog = function() { ov.querySelector('#ec-offrebox').style.display = ov.querySelector('#ec-mode').value === 'total' ? '' : 'none';  var base = ov.querySelector('#ec-opt').value === 'Base'; ov.querySelector('#ec-hphc').style.display = base ? 'none' : 'flex'; ov.querySelector('#ec-bs').style.display = base ? '' : 'none'; ov.querySelectorAll('.ec-lot').forEach(function(s) { if (!c.lots || !c.lots[s.dataset.b]) s.value = base ? 'single' : 'hphc'; }); }; ov.querySelector('#ec-opt').onchange = tog; ov.querySelector('#ec-mode').onchange = tog; tog();
     ov.querySelector('#ec-no').onclick = function() { ov.remove(); };
     ov.querySelector('#ec-ok').onclick = async function() {
       var v = function(i) { return ov.querySelector('#' + i).value; };
       var isBase = v('ec-opt') === 'Base', abo = num(v('ec-abo')), hc = isBase ? num(v('ec-base')) : num(v('ec-hc')), hp = isBase ? hc : num(v('ec-hp')), from = v('ec-from');
       if (abo == null || hc == null || hp == null || !from) { toast('Tarif', 'Renseignez l\'abonnement, le prix du kWh et la date d\'effet.'); return; }
-      c.mode = v('ec-mode'); c.option = v('ec-opt'); c.kva = num(v('ec-kva')) || 18; c.parts = Math.max(1, parseInt(v('ec-parts'), 10) || biens.length);
+      c.mode = v('ec-mode'); c.offre = v('ec-offre').trim();
+      if (c.mode === 'total' && !c.offre) { toast('Offre', 'Indiquez le nom de votre offre TotalEnergies.'); return; } c.option = v('ec-opt'); c.kva = num(v('ec-kva')) || (c.mode === 'edf' ? 18 : null); c.parts = Math.max(1, parseInt(v('ec-parts'), 10) || biens.length);
       c.hc_share = Math.min(1, Math.max(0, (num(v('ec-share')) || 33) / 100)); c.auto_send = ov.querySelector('#ec-send').checked; c.auto_update = ov.querySelector('#ec-upd').checked;
       c.lots = c.lots || {}; ov.querySelectorAll('.ec-lot').forEach(function(s) { c.lots[s.dataset.b] = {mode: s.value}; });
       c.tarifs = (c.tarifs || []).filter(function(x) { return x.from !== from; }); c.tarifs.push({from: from, abo: abo, hc: hc, hp: hp, src: 'manuel'}); c.tarifs.sort(function(a, b) { return a.from < b.from ? -1 : 1; });
