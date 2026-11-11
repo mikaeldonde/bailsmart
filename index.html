@@ -1415,15 +1415,15 @@ async function loadDashboard() {
   }
   if (impayes.length) {
     var noms = impayes.slice(0, 3).map(function(b) { return b.nom; }).join(', ');
-    ins('', '&#128276;', impayes.length + ' loyer' + (impayes.length > 1 ? 's' : '') + ' a verifier', noms + (impayes.length > 3 ? '...' : '') + ' · pas encore marque paye', 'loyers');
+    ins('', '&#128276;', impayes.length + ' loyer' + (impayes.length > 1 ? 's' : '') + ' à vérifier', noms + (impayes.length > 3 ? '...' : '') + ' · pas encore marqué payé', 'loyers');
   }
   var sansDpe = biens.filter(function(b) { return !dpes.some(function(d) { return d.bien_id === b.id; }); });
   if (sansDpe.length) ins('soft', '&#9888;&#65039;', 'DPE manquant', sansDpe.length + ' bien' + (sansDpe.length > 1 ? 's' : '') + ' sans DPE · ' + sansDpe[0].nom + (sansDpe.length > 1 ? '...' : ''), 'biens');
   var expir = dpes.filter(function(d) { return d.date_expiration && (new Date(d.date_expiration) - now) / 86400000 < 180; });
-  if (expir.length) ins('soft', '&#9203;', 'DPE a renouveler', expir.length + ' diagnostic' + (expir.length > 1 ? 's' : '') + ' expire' + (expir.length > 1 ? 'nt' : '') + ' dans moins de 6 mois', 'biens');
+  if (expir.length) ins('soft', '&#9203;', 'DPE à renouveler', expir.length + ' diagnostic' + (expir.length > 1 ? 's' : '') + ' expire' + (expir.length > 1 ? 'nt' : '') + ' dans moins de 6 mois', 'biens');
   var vacants = biens.filter(function(b) { return !locs.some(function(l) { return l.bien_id === b.id; }); });
-  if (vacants.length) ins('soft', '&#128273;', vacants.length + ' bien' + (vacants.length > 1 ? 's' : '') + ' vacant' + (vacants.length > 1 ? 's' : ''), vacants[0].nom + ' · generez une annonce en 1 clic', 'annonces');
-  if (!todo.children.length) ins('ok', '&#10003;', 'Tout est a jour', biens.length ? 'Aucune action en attente' : 'Commencez par ajouter votre premier bien', biens.length ? 'dashboard' : 'biens');
+  if (vacants.length) ins('soft', '&#128273;', vacants.length + ' bien' + (vacants.length > 1 ? 's' : '') + ' vacant' + (vacants.length > 1 ? 's' : ''), vacants[0].nom + ' · générez une annonce en 1 clic', 'annonces');
+  if (!todo.children.length) ins('ok', '&#10003;', 'Tout est à jour', biens.length ? 'Aucune action en attente' : 'Commencez par ajouter votre premier bien', biens.length ? 'dashboard' : 'biens');
 
   // Biens (aperçu numéroté)
   var db = ge('dash-biens'); db.innerHTML = '';
@@ -4855,6 +4855,14 @@ DOCS.EdlUI = (function() {
     } catch (e) { toast('Banque', e.message); }
     return true;
   };
+  function lev(a, b) { var d = [], i, j; for (i = 0; i <= a.length; i++) d[i] = [i]; for (j = 1; j <= b.length; j++) d[0][j] = j;
+    for (i = 1; i <= a.length; i++) for (j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[a.length][b.length]; }
+  /* le nom du locataire apparaît dans le libellé du virement (tolérance d'une faute de frappe) */
+  function nameHit(nom, h) {
+    if (nom.length < 3) return false; if (h.indexOf(nom) >= 0) return true;
+    var nt = nom.split(' ').filter(function(x) { return x.length >= 3; }), ht = h.split(' ');
+    return nt.length > 0 && nt.every(function(a) { return ht.some(function(t) { return t === a || (a.length >= 5 && t.length >= 4 && lev(a, t) <= 1); }); });
+  }
   function amountOk(t, exp) { return exp.some(function(e) { return Math.abs(t.amount - e) <= 0.5; }); }
   B.sync = async function(manual) {
     if (!B.row) await B.load(); var d = B.row && B.row.data;
@@ -4865,7 +4873,7 @@ DOCS.EdlUI = (function() {
     tx = tx.filter(function(t) { return t.credit && t.date && t.amount > 0; });
     var locs = await getLocs(), biens = await getBiens();
     var pr = await SB.from('paiements').select('*').eq('user_id', CU.id), pays = pr.data || [];
-    var used = {}, res = {ok: 0, pt: 0, manque: [], confirmer: []}, cur = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2);
+    var used = {}, res = {ok: 0, pt: 0, repare: 0, manque: [], confirmer: []}, cur = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2);
     for (var k = 2; k >= 0; k--) {
       var md = new Date(now.getFullYear(), now.getMonth() - k, 1), key = md.getFullYear() + '-' + ('0' + (md.getMonth() + 1)).slice(-2);
       var from = new Date(md.getFullYear(), md.getMonth() - 1, 25).toISOString().slice(0, 10), to = new Date(md.getFullYear(), md.getMonth() + 1, 0).toISOString().slice(0, 10);
@@ -4876,10 +4884,16 @@ DOCS.EdlUI = (function() {
         var loyer = Number(l.loyer || b.loyer || 0), ch = Number(l.charges || b.charges || 0); if (!loyer) continue;
         var nom = norm(l.nom), combo = loyer + ch;
         var have = pays.find(function(p) { return p.locataire_id === l.id && bsMoisKey(p.mois) === key; });
-        if (have && have.statut === 'ok') continue;
+        if (have && have.statut === 'ok') {
+          /* réparation : un ancien paiement enregistré avec loyer + électricité est ramené au loyer seul */
+          if (have.montant > loyer + 0.5 && tx.some(function(t) { return t.date >= from && t.date <= to && Math.abs(t.amount - have.montant) <= 0.01 && norm(t.debtor + ' ' + t.info).indexOf(nom) >= 0; })) {
+            var rp = await SB.from('paiements').update({montant: loyer}).eq('id', have.id); if (!rp.error) res.repare++;
+          }
+          continue;
+        }
         var cands = tx.filter(function(t) { return !used[t.id || t.date + t.amount + t.debtor] && t.date >= from && t.date <= to; });
         /* virements du locataire : on ignore les petits montants (refacturation electricite, etc.) */
-        var byName = cands.filter(function(t) { var h = norm(t.debtor + ' ' + t.info); return nom.length >= 3 && h.indexOf(nom) >= 0 && t.amount >= loyer * 0.5; });
+        var byName = cands.filter(function(t) { return nameHit(nom, norm(t.debtor + ' ' + t.info)) && t.amount >= loyer * 0.5; });
         var full = byName.filter(function(t) { return Math.abs(t.amount - loyer) <= 0.5; })[0] ||
                    (ch > 0 ? byName.filter(function(t) { return Math.abs(t.amount - combo) <= 0.5; })[0] : null) ||
                    byName.filter(function(t) { return t.amount > loyer + 0.5; })[0];
@@ -4899,7 +4913,7 @@ DOCS.EdlUI = (function() {
     }
     d.last_sync = new Date().toISOString(); d.last_result = {ok: res.ok, pt: res.pt, manque: res.manque.length, confirmer: res.confirmer.length};
     await saveRow(d);
-    if (manual) toast('Banque synchronisée', res.ok + ' loyer(s) reconnu(s)' + (res.manque.length ? ', ' + res.manque.length + ' non retrouvé(s)' : ''));
+    if (manual) toast('Banque synchronisée', res.ok + ' loyer(s) reconnu(s)' + (res.repare ? ', ' + res.repare + ' montant(s) corrigé(s) (électricité retirée)' : '') + (res.manque.length ? ', ' + res.manque.length + ' non retrouvé(s)' : ''));
     B.last = res; return res;
   };
   function daysLeft(d) { return d && d.valid_until ? Math.ceil((new Date(d.valid_until) - new Date()) / 864e5) : null; }
