@@ -323,6 +323,94 @@ select.fi{appearance:auto}
 .tbl2 td,.tbl2 th{white-space:nowrap}
 @media (max-width:600px){.tbl2 th,.tbl2 td{padding:11px 10px}}
 
+
+/* ============ DOCUMENTS : assistant, signature, aperçu ============ */
+.dc{padding-bottom:6px}
+.dc-h{display:flex;align-items:center;gap:12px;padding:16px 18px 8px}
+.dc-n{font-family:var(--fh);font-weight:700;font-size:16px;letter-spacing:-.3px}
+.dc-b{font-size:12px;color:var(--mu)}
+.dc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;border-top:1px solid var(--bd)}
+.dc-l{font-size:13.5px;font-weight:600;margin-bottom:4px}
+.dc-d{font-size:11px;color:var(--mu);margin-left:6px}
+.dc-a{display:flex;gap:6px;flex-shrink:0}
+.pill.nt{background:var(--s2);color:var(--mu)}
+.sqlbox{background:var(--bg);border-radius:12px;padding:12px;font-size:11px;line-height:1.5;overflow-x:auto;white-space:pre;max-height:200px;overflow-y:auto;user-select:all}
+
+.wz{position:fixed;inset:0;background:var(--bg);z-index:600;display:none;flex-direction:column}
+.wz.on{display:flex}
+body.wz-open{overflow:hidden}
+.wz-h{display:flex;align-items:center;gap:12px;padding:14px 16px 10px;padding-top:calc(14px + env(safe-area-inset-top))}
+.wz-x{width:40px;height:40px;border-radius:13px;border:none;background:var(--sf);box-shadow:var(--sh);font-size:24px;line-height:1;color:var(--tx);cursor:pointer}
+.wz-t{font-family:var(--fh);font-size:20px;font-weight:800;letter-spacing:-.6px}
+.wz-st{font-size:12px;color:var(--mu);margin-top:2px}
+.wz-bar{height:4px;background:var(--s2);margin:0 16px;border-radius:4px;overflow:hidden}
+.wz-bar i{display:block;height:100%;background:var(--ac);border-radius:4px;transition:width .3s}
+.wz-b{flex:1;overflow-y:auto;padding:14px 16px 24px;max-width:720px;width:100%;margin:0 auto}
+.wz-f{display:flex;gap:10px;justify-content:space-between;padding:12px 16px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--bg) 70%,transparent);max-width:720px;width:100%;margin:0 auto}
+.wz-f .btn{flex:1}
+.wcard{background:var(--sf);border-radius:22px;padding:16px;margin-bottom:12px;box-shadow:var(--sh)}
+.wct{font-family:var(--fh);font-size:16px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px}
+.wcs{font-size:12px;color:var(--mu);margin-bottom:10px;line-height:1.4}
+.wcard .fg{margin-top:10px}
+.wcard .fr2 .fg.half{margin-top:10px}
+.chips2{display:flex;gap:6px;flex-wrap:wrap}
+.chp{border:none;background:var(--bg);color:var(--tx);font-family:var(--fb);font-size:13px;font-weight:600;padding:9px 13px;border-radius:12px;cursor:pointer;transition:all .12s}
+.chp.on{background:var(--ac);color:#fff}
+.chp.sm{padding:7px 0;min-width:44px;font-size:12px;text-align:center;flex:1}
+.wnote{font-size:12.5px;line-height:1.45;background:var(--acl);color:var(--tx);padding:10px 12px;border-radius:12px;margin-top:10px}
+.wnote.bad{background:rgba(194,59,59,.12);color:var(--dg)}
+.wnote.warn{background:rgba(201,132,20,.14)}
+.sg-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--bd)}
+.sg-row:first-of-type{border-top:none}
+.sg-row>div:first-child{flex:1;min-width:0}
+.sg-img{height:34px;max-width:90px;background:#fff;border-radius:6px;border:1px solid var(--bd)}
+.sg-actions{display:flex;flex-direction:column;gap:8px}
+.sg-actions .btn{width:100%}
+.sg-actions .btn[disabled]{opacity:.45}
+textarea.fi{resize:vertical;min-height:70px}
+.legend{font-size:11px;color:var(--mu);margin:0 4px 10px}
+.room-h{display:flex;justify-content:space-between;align-items:center;margin:4px 2px 12px}
+.room-t{font-family:var(--fh);font-size:24px;font-weight:800;letter-spacing:-.8px}
+.it{padding:11px 0;border-top:1px solid var(--bd)}
+.wcard>.it:first-of-type,.wcard .wcs+.it{border-top:none}
+.it.diff{background:linear-gradient(90deg,rgba(201,132,20,.12),transparent);margin:0 -8px;padding:11px 8px;border-radius:10px}
+.it-h{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px}
+.it-n{font-size:13.5px;font-weight:600}
+.it-e{font-size:11px;color:var(--mu)}
+.stc{display:flex;gap:5px;margin-bottom:7px}
+.chp.st-TB.on,.chp.st-B.on{background:var(--gr)}
+.chp.st-C.on{background:var(--a2)}
+.chp.st-M.on,.chp.st-HS.on{background:var(--dg)}
+.chp.st-NV.on{background:var(--mu)}
+.fi.sm{padding:9px 11px;font-size:13px;border-radius:11px}
+.fi.n{width:70px;flex:none}
+.keyrow{display:flex;gap:6px;margin-bottom:6px;align-items:center}
+.keyrow .fi:first-child{flex:1}
+.qte{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mu)}
+.hint{font-size:11px;color:var(--mu);margin:2px 0 0}
+.st-b{display:inline-block;padding:1px 6px;border-radius:5px;font-size:11px;font-weight:700;background:var(--s2)}
+.st-b.TB,.st-b.B{background:var(--grl);color:var(--gr)}.st-b.C{background:rgba(201,132,20,.15);color:var(--a2)}.st-b.M,.st-b.HS{background:rgba(194,59,59,.14);color:var(--dg)}
+.phs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.phs-i{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden}
+.phs-i img{width:100%;height:100%;object-fit:cover}
+.phs-i button{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;border:none;background:rgba(0,0,0,.6);color:#fff;font-size:15px;line-height:1;cursor:pointer}
+
+.sgn-ov{position:fixed;inset:0;background:rgba(20,18,16,.65);z-index:900;display:flex;align-items:center;justify-content:center;padding:14px}
+.sgn-box{background:var(--sf);border-radius:24px;padding:18px;width:100%;max-width:520px;box-shadow:var(--shl)}
+.sgn-t{font-family:var(--fh);font-size:19px;font-weight:800;letter-spacing:-.5px}
+.sgn-s{font-size:12.5px;color:var(--mu);margin:2px 0 10px}
+.sgn-cv{position:relative;height:210px;background:#fff;border:2px dashed var(--s3);border-radius:16px;touch-action:none;overflow:hidden}
+.sgn-cv canvas{display:block;touch-action:none}
+.sgn-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#b5b0a8;font-size:13px;pointer-events:none}
+.sgn-ac{display:flex;gap:8px;align-items:center;margin-top:12px}
+
+.prv-ov{position:fixed;inset:0;background:var(--bg);z-index:800;display:flex;flex-direction:column}
+.prv-h{display:flex;justify-content:space-between;align-items:center;padding:14px 16px}
+.prv-b{flex:1;overflow:auto;padding:0 12px 24px}
+.prv-b .pdfdoc.prv{background:#fff;color:#111;padding:20px 16px;border-radius:14px;width:100%;max-width:794px;margin:0 auto;box-shadow:var(--sh)}
+.prv-b .pdfdoc .pb{border-top:2px dashed #ccc;margin:18px 0}
+.prv-b .pdfdoc .ph img{width:48%;height:auto}
+
 </style>
 </head>
 <body>
@@ -508,7 +596,7 @@ select.fi{appearance:auto}
         <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Loyers</div><div class="tbsu">Paiements</div></div></div>
         <div class="tbr"><button class="btn btng btnsm" onclick="openMo('mo-paiement')">+ Avance</button></div>
       </div>
-      <div class="cnt">
+      <div class="cnt"><div class="card" id="bank-card" style="margin-bottom:14px"></div>
         <div class="card" style="margin-bottom:14px">
           <div class="ch"><div class="ct">Saisie rapide</div></div>
           <div style="padding:14px 16px">
@@ -668,17 +756,8 @@ select.fi{appearance:auto}
 
     <!-- DOCUMENTS -->
     <div class="pg" id="p-documents">
-      <div class="topb">
-        <div class="tbl"><div class="hbg" onclick="toggleSB()">&#9776;</div><div><div class="tbti">Documents</div><div class="tbsu" id="doc-sub">Baux, etats des lieux</div></div></div>
-        <div class="tbr">
-          <button class="btn btng btnsm" onclick="openMo('mo-bail')">+ Bail</button>
-          <button class="btn btnp btnsm" onclick="openMo('mo-edl2')">+ EDL</button>
-        </div>
-      </div>
-      <div class="cnt">
-        <div class="card" style="margin-bottom:14px"><div class="ch"><div class="ct">Baux</div></div><div id="doc-baux"><div class="loading"><div class="spin"></div></div></div></div>
-        <div class="card"><div class="ch"><div class="ct">Etats des lieux</div></div><div id="doc-edl"><div class="loading"><div class="spin"></div></div></div></div>
-      </div>
+      <div class="topb"><div class="tbl"><div><div class="tbti">Documents</div><div class="tbsu">Baux et &eacute;tats des lieux</div></div></div></div>
+      <div class="cnt" id="doc-main"><div class="loading"><div class="spin"></div></div></div>
     </div>
 
     <!-- JURIDIQUE -->
@@ -1289,7 +1368,7 @@ async function loadDashboard() {
 
   var occupes = biens.filter(function(b) { return locs.some(function(l) { return l.bien_id === b.id; }); });
   var attendu = occupes.reduce(function(s, b) { return s + (b.loyer || 0); }, 0);
-  var doMois = paiements.filter(function(p) { return p.mois && String(p.mois).slice(0, 7) === moisCle; });
+  var doMois = paiements.filter(function(p) { return p.mois && (window.bsMoisKey ? bsMoisKey(p.mois) : String(p.mois).slice(0, 7)) === moisCle; });
   var percus = doMois.filter(function(p) { return p.statut === 'ok'; });
   var encaisse = percus.reduce(function(s, p) { return s + (p.montant || 0); }, 0);
   var impayes = occupes.filter(function(b) {
@@ -3860,6 +3939,990 @@ async function toggleBiometric() {
     updateSwitches();
   }
 }
+
+</script>
+<script>
+/* ===== DOCUMENTS : noyau (utilitaires, dossiers, signature, photos, PDF) ===== */
+var DOCS = (function() {
+  var D = {};
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function(c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  D.esc = esc;
+
+  /* nombres en lettres (0 - 999 999) */
+  var U = ['zéro','un','deux','trois','quatre','cinq','six','sept','huit','neuf','dix','onze','douze','treize','quatorze','quinze','seize','dix-sept','dix-huit','dix-neuf'];
+  var T = ['','','vingt','trente','quarante','cinquante','soixante'];
+  function inf100(n) {
+    if (n < 20) return U[n];
+    var d = Math.floor(n / 10), u = n % 10;
+    if (d <= 6) return u === 0 ? T[d] : (u === 1 ? T[d] + ' et un' : T[d] + '-' + U[u]);
+    if (d === 7) return u === 1 ? 'soixante et onze' : 'soixante-' + U[10 + u];
+    if (d === 8) return u === 0 ? 'quatre-vingts' : 'quatre-vingt-' + U[u];
+    return 'quatre-vingt-' + U[10 + u];
+  }
+  function cent(n) {
+    var c = Math.floor(n / 100), r = n % 100, s = '';
+    if (c > 0) { s = c === 1 ? 'cent' : U[c] + ' cent'; if (r === 0 && c > 1) s += 's'; }
+    if (r > 0) s += (s ? ' ' : '') + inf100(r);
+    return s;
+  }
+  function lettres(n) {
+    n = Math.round(n || 0);
+    if (n === 0) return 'zéro';
+    var m = Math.floor(n / 1000), r = n % 1000, s = '';
+    if (m > 0) {
+      if (m === 1) s = 'mille';
+      else s = cent(m).replace(/(quatre-vingt|cent)s$/, '$1') + ' mille';
+    }
+    if (r > 0) s += (s ? ' ' : '') + cent(r);
+    return s;
+  }
+  D.lettres = lettres;
+  D.euros = function(x) {
+    x = Math.round((parseFloat(x) || 0) * 100) / 100;
+    var e = Math.floor(x), c = Math.round((x - e) * 100);
+    return lettres(e) + ' euro' + (e > 1 ? 's' : '') + (c ? ' et ' + lettres(c) + ' centime' + (c > 1 ? 's' : '') : '');
+  };
+  D.fmtE = function(x) { return (parseFloat(x) || 0).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' €'; };
+  D.fmtDate = function(s) {
+    if (!s) return '';
+    var d = new Date(s + (String(s).length <= 10 ? 'T12:00:00' : ''));
+    if (isNaN(d)) return s;
+    return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear();
+  };
+  D.fmtDateLong = function(s) {
+    if (!s) return '';
+    var d = new Date(s + (String(s).length <= 10 ? 'T12:00:00' : ''));
+    if (isNaN(d)) return s;
+    var M = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+    return d.getDate() + ' ' + M[d.getMonth()] + ' ' + d.getFullYear();
+  };
+  D.addMonths = function(s, n) {
+    var d = new Date(s + 'T12:00:00'); if (isNaN(d)) return '';
+    d.setMonth(d.getMonth() + n); return d.toISOString().slice(0, 10);
+  };
+  D.today = function() { return new Date().toISOString().slice(0, 10); };
+  D.getPath = function(o, p) { var a = p.split('.'); for (var i = 0; i < a.length; i++) { if (o == null) return undefined; o = o[a[i]]; } return o; };
+  D.setPath = function(o, p, v) { var a = p.split('.'); for (var i = 0; i < a.length - 1; i++) { if (o[a[i]] == null || typeof o[a[i]] !== 'object') o[a[i]] = {}; o = o[a[i]]; } o[a[a.length - 1]] = v; };
+  D.uid = function() { return 'x' + Math.random().toString(36).slice(2, 9); };
+
+  /* ---------- dossiers (table "dossiers") ---------- */
+  D.SQL = "create table if not exists public.dossiers (\n  id uuid primary key default gen_random_uuid(),\n  user_id uuid not null default auth.uid(),\n  type text not null,\n  bien_id uuid,\n  locataire_id uuid,\n  statut text default 'brouillon',\n  data jsonb not null default '{}'::jsonb,\n  created_at timestamptz default now(),\n  updated_at timestamptz default now()\n);\nalter table public.dossiers enable row level security;\ncreate policy dossiers_all on public.dossiers for all using (auth.uid() = user_id) with check (auth.uid() = user_id);";
+  D.list = async function() {
+    var r = await SB.from('dossiers').select('*').eq('user_id', CU.id).order('created_at', {ascending: false});
+    if (r.error) return {error: r.error, data: []};
+    return {data: r.data || []};
+  };
+  D.save = async function(d) {
+    var row = {user_id: CU.id, type: d.type, bien_id: d.bien_id || null, locataire_id: d.locataire_id || null, statut: d.statut || 'brouillon', data: d.data, updated_at: new Date().toISOString()};
+    if (d.id) {
+      var u = await SB.from('dossiers').update(row).eq('id', d.id);
+      if (u.error) throw u.error;
+      return d.id;
+    }
+    var r = await SB.from('dossiers').insert(row).select().single();
+    if (r.error) throw r.error;
+    d.id = r.data.id; return d.id;
+  };
+  D.remove = async function(id) { return SB.from('dossiers').delete().eq('id', id); };
+
+  /* ---------- profil bailleur ---------- */
+  D.bailleur = function() {
+    var meta = (CU && CU.user_metadata) || {}, b = meta.bailleur;
+    if (!b) { try { b = JSON.parse(localStorage.getItem('bailsmart_bailleur') || 'null'); } catch (e) {} }
+    if (!b) b = {nom: 'DONDE Mikaël', adresse: '174 route de la Chênaie 84420 PIOLENC', email: (CU && CU.email) || '', telephone: '', qualite: 'physique', _defaut: true};
+    return b;
+  };
+  D.saveBailleur = async function(b) {
+    delete b._defaut;
+    try { localStorage.setItem('bailsmart_bailleur', JSON.stringify(b)); } catch (e) {}
+    try { if (SB.auth.updateUser) { var r = await SB.auth.updateUser({data: {bailleur: b}}); if (r && r.data && r.data.user) CU = r.data.user; } } catch (e) {}
+  };
+
+  /* ---------- photos ---------- */
+  D.resizeImage = function(file, max, q) {
+    return new Promise(function(res, rej) {
+      var fr = new FileReader();
+      fr.onerror = rej;
+      fr.onload = function() {
+        var im = new Image();
+        im.onerror = rej;
+        im.onload = function() {
+          var w = im.width, h = im.height, k = Math.min(1, max / Math.max(w, h));
+          var c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
+          c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+          res(c.toDataURL('image/jpeg', q || 0.72));
+        };
+        im.src = fr.result;
+      };
+      fr.readAsDataURL(file);
+    });
+  };
+  D.dataUrlToBlob = function(u) {
+    var p = u.split(','), mime = (p[0].match(/:(.*?);/) || [])[1] || 'image/jpeg', bin = atob(p[1]), n = bin.length, a = new Uint8Array(n);
+    while (n--) a[n] = bin.charCodeAt(n);
+    return new Blob([a], {type: mime});
+  };
+  D.uploadDataUrl = async function(u, path) {
+    try {
+      var up = await SB.storage.from('factures').upload(path, D.dataUrlToBlob(u), {contentType: 'image/jpeg', upsert: true});
+      if (up.error) return null;
+      var g = SB.storage.from('factures').getPublicUrl(path);
+      return (g && g.data && g.data.publicUrl) || null;
+    } catch (e) { return null; }
+  };
+
+  /* ---------- signature au doigt ---------- */
+  D.signPad = function(title, subtitle) {
+    return new Promise(function(resolve) {
+      var ov = document.createElement('div'); ov.className = 'sgn-ov';
+      ov.innerHTML = '<div class="sgn-box"><div class="sgn-t"></div><div class="sgn-s"></div><div class="sgn-cv"><canvas></canvas><div class="sgn-hint">Signez ici avec le doigt ou la souris</div></div><div class="sgn-ac"><button class="btn btng btnsm" data-a="clear">Effacer</button><span style="flex:1"></span><button class="btn btng btnsm" data-a="cancel">Annuler</button><button class="btn btnp btnsm" data-a="ok">Valider</button></div></div>';
+      ov.querySelector('.sgn-t').textContent = title || 'Signature';
+      ov.querySelector('.sgn-s').textContent = subtitle || '';
+      document.body.appendChild(ov);
+      var cv = ov.querySelector('canvas'), box = ov.querySelector('.sgn-cv');
+      var w = box.clientWidth, h = box.clientHeight, ratio = 2;
+      cv.width = w * ratio; cv.height = h * ratio; cv.style.width = w + 'px'; cv.style.height = h + 'px';
+      var ctx = cv.getContext('2d'); ctx.scale(ratio, ratio); ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#15213d';
+      var drawing = false, dirty = false, last = null;
+      function pos(e) { var r = cv.getBoundingClientRect(); return {x: e.clientX - r.left, y: e.clientY - r.top}; }
+      cv.addEventListener('pointerdown', function(e) { drawing = true; last = pos(e); cv.setPointerCapture && cv.setPointerCapture(e.pointerId); ctx.beginPath(); ctx.arc(last.x, last.y, 1.1, 0, 7); ctx.fillStyle = '#15213d'; ctx.fill(); dirty = true; ov.querySelector('.sgn-hint').style.display = 'none'; e.preventDefault(); });
+      cv.addEventListener('pointermove', function(e) { if (!drawing) return; var p = pos(e); ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p; e.preventDefault(); });
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach(function(t) { cv.addEventListener(t, function() { drawing = false; }); });
+      ov.addEventListener('click', function(e) {
+        var a = e.target.getAttribute && e.target.getAttribute('data-a');
+        if (a === 'clear') { ctx.clearRect(0, 0, w, h); dirty = false; ov.querySelector('.sgn-hint').style.display = ''; }
+        if (a === 'cancel') { document.body.removeChild(ov); resolve(null); }
+        if (a === 'ok') {
+          if (!dirty) { toast('Signature vide', 'Signez dans le cadre.'); return; }
+          var out = document.createElement('canvas'); out.width = 420; out.height = Math.round(420 * h / w);
+          out.getContext('2d').drawImage(cv, 0, 0, out.width, out.height);
+          var url = out.toDataURL('image/png'); document.body.removeChild(ov); resolve(url);
+        }
+      });
+    });
+  };
+
+  /* ---------- PDF + envoi ---------- */
+  D.loadPdfLib = function() {
+    return new Promise(function(res, rej) {
+      if (window.html2pdf) return res();
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+      s.onload = function() { res(); }; s.onerror = function() { rej(new Error('Bibliothèque PDF inaccessible (connexion ?)')); };
+      document.head.appendChild(s);
+    });
+  };
+  D.makePdf = async function(html, filename) {
+    await D.loadPdfLib();
+    var host = document.createElement('div');
+    host.style.cssText = 'position:fixed;left:-12000px;top:0;width:718px;background:#fff;z-index:-1';
+    host.innerHTML = '<style>' + D.PDF_CSS + '</style><div class="pdfdoc">' + html + '</div>';
+    document.body.appendChild(host);
+    try {
+      var imgs = host.querySelectorAll('img');
+      await Promise.all([].map.call(imgs, function(im) { return im.complete ? 0 : new Promise(function(r) { im.onload = im.onerror = r; }); }));
+      var blob = await html2pdf().set({
+        margin: [12, 10, 14, 10], filename: filename,
+        image: {type: 'jpeg', quality: 0.9},
+        html2canvas: {scale: 1.5, useCORS: true, windowWidth: 718, backgroundColor: '#ffffff'},
+        jsPDF: {unit: 'mm', format: 'a4', orientation: 'portrait', compress: true},
+        pagebreak: {mode: ['css', 'legacy'], before: '.pb', avoid: ['.nb', 'tr', 'p', 'h2', 'h3', '.sigbox', '.box']}
+      }).from(host.querySelector('.pdfdoc')).outputPdf('blob');
+      return blob;
+    } finally { document.body.removeChild(host); }
+  };
+  D.blobToB64 = function(blob) {
+    return new Promise(function(res, rej) { var fr = new FileReader(); fr.onerror = rej; fr.onload = function() { res(String(fr.result).split(',')[1]); }; fr.readAsDataURL(blob); });
+  };
+  D.download = function(blob, name) {
+    var u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function() { document.body.removeChild(a); URL.revokeObjectURL(u); }, 4000);
+  };
+  D.sendMail = async function(opts) { /* opts: to, bcc, subject, html, attachments:[{filename, blob}] */
+    var att = [];
+    for (var i = 0; i < (opts.attachments || []).length; i++) att.push({filename: opts.attachments[i].filename, content: await D.blobToB64(opts.attachments[i].blob)});
+    var r = await fetch('https://bailsmart.mikaeldonde.workers.dev', {method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({action: 'send_email', to: opts.to, bcc: opts.bcc || undefined, reply_to: opts.reply_to || undefined, subject: opts.subject, html: opts.html, attachments: att})});
+    var j = await r.json();
+    if (!j.id) throw new Error(j.message || j.error || 'Envoi refusé par le service email');
+    return j;
+  };
+
+  D.PDF_CSS = "*{box-sizing:border-box}.pdfdoc{font-family:Arial,Helvetica,sans-serif;color:#111;font-size:11.5px;line-height:1.5;width:auto;padding:0}.pdfdoc h1{font-size:19px;text-align:center;margin:0 0 4px;letter-spacing:.3px}.pdfdoc h2{font-size:13px;margin:12px 0 5px;padding:5px 8px;background:#efece6;border-left:4px solid #c8502a;text-transform:uppercase;letter-spacing:.3px}.pdfdoc h3{font-size:12px;margin:10px 0 4px}.pdfdoc p{margin:3px 0}.pdfdoc .sub{text-align:center;color:#555;margin-bottom:10px}.pdfdoc .ck{display:inline-block;width:11px;height:11px;border:1.2px solid #111;margin-right:4px;vertical-align:-1px;position:relative}.pdfdoc .ck.on::after{content:'';position:absolute;left:1px;top:-3px;width:4px;height:9px;border:solid #c8502a;border-width:0 2.4px 2.4px 0;transform:rotate(40deg)}.pdfdoc .fv{border-bottom:1px dotted #777;padding:0 3px;font-weight:600}.pdfdoc .small{font-size:10px;color:#444}.pdfdoc .box{border:1px solid #bbb;padding:7px 9px;margin:6px 0;border-radius:3px}.pdfdoc table{width:100%;border-collapse:collapse;margin:6px 0}.pdfdoc td,.pdfdoc th{border:1px solid #bbb;padding:3px 6px;font-size:10.5px;vertical-align:top;text-align:left}.pdfdoc th{background:#efece6}.pdfdoc .sigrow{display:flex;gap:14px;margin-top:14px}.pdfdoc .sigbox{flex:1;border:1px solid #999;border-radius:3px;padding:8px;min-height:130px}.pdfdoc .sigbox img{max-height:70px;max-width:100%;display:block;margin:6px 0}.pdfdoc .sigbox .lu{font-size:10px;font-style:italic;color:#333}.pdfdoc .sigbox .ts{font-size:9px;color:#666}.pdfdoc .st{font-weight:700;display:inline-block;min-width:26px;text-align:center;padding:1px 4px;border-radius:3px;font-size:10px}.pdfdoc .st.TB,.pdfdoc .st.B{background:#dff1e5;color:#1d6b3a}.pdfdoc .st.C{background:#fbf0d0;color:#8a5c00}.pdfdoc .st.M,.pdfdoc .st.HS{background:#f8d9d6;color:#9b1c1c}.pdfdoc .st.NV{background:#eee;color:#555}.pdfdoc .ph{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.pdfdoc .ph img{width:176px;height:132px;object-fit:cover;border:1px solid #bbb}.pdfdoc .pb{page-break-before:always}.pdfdoc .nb{page-break-inside:avoid}.pdfdoc .diff{background:#fff3e6}";
+  return D;
+})();
+
+/* ===== DOCUMENTS : assistant plein écran (étapes) ===== */
+DOCS.Wz = (function() {
+  var cfg = null, step = 0, root, saveT = null;
+  var G = DOCS.getPath, S = DOCS.setPath, esc = DOCS.esc;
+  var W = {};
+
+  /* ---------- briques de formulaire (HTML) ---------- */
+  W.inp = function(k, label, o) {
+    o = o || {}; var v = G(cfg.data, k); if (v == null) v = '';
+    return '<div class="fg' + (o.half ? ' half' : '') + '"><label class="fl">' + esc(label) + '</label><input class="fi" data-k="' + k + '"' + (o.t ? ' data-t="' + o.t + '"' : '') + (o.rr ? ' data-rr="1"' : '') + ' type="' + (o.type || 'text') + '"' + (o.step ? ' step="' + o.step + '"' : '') + ' inputmode="' + (o.type === 'number' ? 'decimal' : 'text') + '" placeholder="' + esc(o.ph || '') + '" value="' + esc(v) + '"></div>';
+  };
+  W.num = function(k, label, o) { o = o || {}; o.type = 'number'; o.t = 'num'; return W.inp(k, label, o); };
+  W.date = function(k, label, o) { o = o || {}; o.type = 'date'; return W.inp(k, label, o); };
+  W.area = function(k, label, ph) { return '<div class="fg"><label class="fl">' + esc(label) + '</label><textarea class="fi" rows="3" data-k="' + k + '" placeholder="' + esc(ph || '') + '">' + esc(G(cfg.data, k) || '') + '</textarea></div>'; };
+  W.chips = function(k, label, opts, rr) {
+    var cur = G(cfg.data, k), h = '<div class="fg"><label class="fl">' + esc(label) + '</label><div class="chips2">';
+    opts.forEach(function(o) { var v = Array.isArray(o) ? o[0] : o, l = Array.isArray(o) ? o[1] : o; h += '<button type="button" class="chp' + (String(cur) === String(v) ? ' on' : '') + '" data-k="' + k + '" data-v="' + esc(v) + '"' + (rr ? ' data-rr="1"' : '') + '>' + esc(l) + '</button>'; });
+    return h + '</div></div>';
+  };
+  W.yesno = function(k, label, rr) {
+    var cur = G(cfg.data, k);
+    return '<div class="fg"><label class="fl">' + esc(label) + '</label><div class="chips2"><button type="button" class="chp' + (cur === true ? ' on' : '') + '" data-k="' + k + '" data-b="1"' + (rr ? ' data-rr="1"' : '') + '>Oui</button><button type="button" class="chp' + (cur !== true ? ' on' : '') + '" data-k="' + k + '" data-b="0"' + (rr ? ' data-rr="1"' : '') + '>Non</button></div></div>';
+  };
+  W.multi = function(k, label, opts) {
+    var cur = G(cfg.data, k) || [], h = '<div class="fg"><label class="fl">' + esc(label) + '</label><div class="chips2">';
+    opts.forEach(function(o) { h += '<button type="button" class="chp' + (cur.indexOf(o) >= 0 ? ' on' : '') + '" data-km="' + k + '" data-v="' + esc(o) + '">' + esc(o) + '</button>'; });
+    return h + '</div></div>';
+  };
+  W.row = function() { return '<div class="fr2">' + [].join.call(arguments, '') + '</div>'; };
+  W.card = function(title, inner, sub) { return '<div class="wcard"><div class="wct">' + esc(title) + '</div>' + (sub ? '<div class="wcs">' + sub + '</div>' : '') + inner + '</div>'; };
+  W.note = function(txt, cls) { return '<div class="wnote ' + (cls || '') + '">' + txt + '</div>'; };
+
+  /* ---------- cycle de vie ---------- */
+  function ensure() {
+    if (root) return;
+    root = document.createElement('div'); root.id = 'wz'; root.className = 'wz';
+    root.innerHTML = '<div class="wz-h"><button class="wz-x" data-wa="close" aria-label="Fermer">&times;</button><div class="wz-ti"><div class="wz-t"></div><div class="wz-st"></div></div></div><div class="wz-bar"><i></i></div><div class="wz-b"></div><div class="wz-f"><button class="btn btng" data-wa="prev">Précédent</button><button class="btn btnp" data-wa="next">Suivant</button></div>';
+    document.body.appendChild(root);
+    var body = root.querySelector('.wz-b');
+    body.addEventListener('input', function(e) {
+      var t = e.target, k = t.getAttribute('data-k'); if (!k || t.tagName === 'BUTTON') return;
+      var v = t.value; if (t.getAttribute('data-t') === 'num') v = v === '' ? '' : parseFloat(v);
+      S(cfg.data, k, v); changed(k);
+    });
+    body.addEventListener('change', function(e) { if (e.target.hasAttribute && e.target.hasAttribute('data-rr') && e.target.tagName !== 'BUTTON') { cfg.onRerender && cfg.onRerender(e.target.getAttribute('data-k')); render(true); } });
+    body.addEventListener('click', function(e) {
+      var el = e.target.closest('[data-k],[data-km],[data-act]'); if (!el) return;
+      if (el.hasAttribute('data-act')) { cfg.act && cfg.act(el.getAttribute('data-act'), el, W); return; }
+      if (el.tagName !== 'BUTTON') return;
+      if (el.hasAttribute('data-km')) {
+        var k = el.getAttribute('data-km'), v = el.getAttribute('data-v'), arr = G(cfg.data, k) || [], i = arr.indexOf(v);
+        if (i >= 0) arr.splice(i, 1); else arr.push(v);
+        S(cfg.data, k, arr); el.classList.toggle('on'); changed(k); return;
+      }
+      var kk = el.getAttribute('data-k');
+      if (el.hasAttribute('data-b')) S(cfg.data, kk, el.getAttribute('data-b') === '1'); else S(cfg.data, kk, el.getAttribute('data-v'));
+      changed(kk);
+      if (el.hasAttribute('data-rr')) { cfg.onRerender && cfg.onRerender(kk); render(true); }
+      else { el.parentNode.querySelectorAll('.chp').forEach(function(c) { c.classList.remove('on'); }); el.classList.add('on'); }
+    });
+    root.addEventListener('click', function(e) {
+      var a = e.target.getAttribute && e.target.getAttribute('data-wa'); if (!a) return;
+      if (a === 'close') W.close();
+      if (a === 'prev' && step > 0) { step--; render(); }
+      if (a === 'next') next();
+    });
+  }
+  function changed(k) { cfg.onChange && cfg.onChange(k); clearTimeout(saveT); saveT = setTimeout(function() { cfg.save && cfg.save(true); }, 900); }
+  function next() {
+    var st = cfg.steps[step], msg = st.validate && st.validate(cfg.data);
+    if (msg) { toast('À compléter', msg); return; }
+    if (step < cfg.steps.length - 1) { step++; render(); } else { cfg.finish && cfg.finish(); }
+  }
+  function render(keep) {
+    var b = root.querySelector('.wz-b'), y = b.scrollTop, st = cfg.steps[step];
+    root.querySelector('.wz-t').textContent = cfg.title;
+    root.querySelector('.wz-st').textContent = 'Étape ' + (step + 1) + '/' + cfg.steps.length + ' · ' + st.title;
+    root.querySelector('.wz-bar i').style.width = Math.round((step + 1) / cfg.steps.length * 100) + '%';
+    b.innerHTML = st.render(cfg.data, W);
+    b.scrollTop = keep ? y : 0;
+    var prev = root.querySelector('[data-wa=prev]'), nx = root.querySelector('[data-wa=next]');
+    prev.style.visibility = step === 0 ? 'hidden' : 'visible';
+    nx.textContent = step === cfg.steps.length - 1 ? (cfg.finishLabel || 'Terminer') : 'Suivant';
+    nx.style.display = st.noNext ? 'none' : '';
+    st.after && st.after(b, cfg.data, W);
+  }
+  W.open = function(c) { ensure(); cfg = c; step = c.start || 0; root.classList.add('on'); document.body.classList.add('wz-open'); render(); };
+  W.rerender = function() { render(true); };
+  W.goto = function(i) { step = i; render(); };
+  W.close = function() {
+    if (cfg && cfg.save) { try { cfg.save(true); } catch (e) {} }
+    root.classList.remove('on'); document.body.classList.remove('wz-open');
+    var c = cfg; cfg = null; c && c.onClose && c.onClose();
+  };
+  W.data = function() { return cfg && cfg.data; };
+  return W;
+})();
+
+/* ===== BAIL MEUBLÉ (modèle loi n°89-462 du 6 juillet 1989) + ACTE DE CAUTION ===== */
+DOCS.Bail = (function() {
+  var B = {}, E = DOCS.esc, F = DOCS.fmtE, fd = DOCS.fmtDate, Wz = DOCS.Wz;
+
+  function irlRef(dateStr) {
+    var d = new Date((dateStr || DOCS.today()) + 'T12:00:00'); if (isNaN(d)) d = new Date();
+    var y = d.getFullYear(), best = null;
+    for (var yy = y; yy >= y - 1; yy--) for (var q = 4; q >= 1; q--) {
+      var pub = new Date(yy, q * 3, 15); /* fin du trimestre + ~15 jours */
+      if (!best && pub <= d) best = q + 'e trimestre ' + yy;
+    }
+    return best || '';
+  }
+  function cityOf(adr) { var m = String(adr || '').match(/\d{5}\s+(.+)$/); return m ? m[1].trim() : ''; }
+
+  B.defaults = function(loc, bien, dpe) {
+    bien = bien || {}; dpe = dpe || null;
+    var b = DOCS.bailleur(), typ = bien.type || '', m = typ.match(/T\s*(\d)/i);
+    var pieces = /studio/i.test(typ) ? 1 : (m ? parseInt(m[1], 10) : '');
+    var loyer = loc.loyer || bien.loyer || '', effet = loc.date_entree || DOCS.today();
+    var j = new Date(effet + 'T12:00:00');
+    return {
+      bailleur: {nom: b.nom, adresse: b.adresse, email: b.email, telephone: b.telephone || '', qualite: b.qualite || 'physique'},
+      loc1: {prenom: loc.prenom || '', nom: loc.nom || '', email: loc.email || '', telephone: loc.telephone || ''},
+      loc2: {actif: false, prenom: '', nom: '', email: ''},
+      logement: {adresse: bien.adresse || '', etage: '', ident_fiscal: '', immeuble: 'collectif', propriete: 'copro', periode: '', surface: bien.surface || '', pieces: pieces,
+        autres: [], equip: 'Cuisine équipée', sanitaires: 'Salle d\'eau, WC', chauffage: 'individuel', chauffage_prec: '', ecs: 'individuel', ecs_prec: '', dpe: dpe ? dpe.classe : '',
+        cave: '', parking: '', garage: '', autre_priv: '', communs: [], tic: ''},
+      duree: {effet: effet, mois: 12},
+      fin: {loyer: loyer, decret_evol: false, ref_maj: false, ref: '', refmaj: '', complement: false, base: '', compl_montant: '', compl_motif: '',
+        dernier: {actif: false, montant: '', date: '', revision: ''}, rev_jm: isNaN(j) ? '' : ('0' + j.getDate()).slice(-2) + '/' + ('0' + (j.getMonth() + 1)).slice(-2), irl: irlRef(effet),
+        charges_mode: 'provisions', charges: bien.charges || 0, jour: 5, depot: loyer ? loyer * 2 : ''},
+      travaux: '', conditions: '',
+      annexes: ['Diagnostic de performance énergétique', 'Notice d\'information relative aux droits et obligations des locataires et des bailleurs', 'État des lieux d\'entrée', 'Inventaire et état détaillé du mobilier'],
+      garant: {actif: false, nom: '', naissance: '', lieu: '', adresse: '', renouv: 2},
+      fait_a: cityOf(b.adresse) || '', fait_le: DOCS.today(), signatures: {}
+    };
+  };
+
+  /* ---------- rendu HTML du bail ---------- */
+  function ck(on) { return '<span class="ck' + (on ? ' on' : '') + '"></span>'; }
+  function fv(v, w) { return '<span class="fv">' + (v === '' || v == null ? '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' : E(v)) + '</span>'; }
+  function opts(list, sel) { return list.map(function(o) { return ck(sel.indexOf(o) >= 0) + E(o); }).join(' &nbsp; '); }
+  function sigBox(who, img, ts, lu) {
+    return '<div class="sigbox"><b>' + E(who) + '</b><div class="lu">' + (lu || 'Signature précédée de la mention « Lu et approuvé »') + '</div>' + (img ? '<img src="' + img + '"><div class="ts">Signé électroniquement le ' + E(ts || '') + '</div>' : '') + '</div>';
+  }
+  B.html = function(d) {
+    var L = d.logement, fi = d.fin, du = d.duree, bl = d.bailleur, l1 = d.loc1, l2 = d.loc2, g = d.garant, S = d.signatures || {};
+    var locNames = (l1.prenom + ' ' + l1.nom).trim() + (l2.actif ? ' et ' + (l2.prenom + ' ' + l2.nom).trim() : '');
+    var total = (parseFloat(fi.loyer) || 0) + (parseFloat(fi.charges) || 0);
+    var dateFin = DOCS.addMonths(du.effet, du.mois);
+    var h = '<h1>CONTRAT DE LOCATION / COLOCATION<br>LOGEMENT MEUBLÉ</h1><div class="sub">(Loi n°89-462 du 6 juillet 1989 — logement meublé constituant la résidence principale du locataire)</div>';
+
+    h += '<h2>I. Désignation des parties</h2><p>Le présent contrat est conclu entre les soussignés :</p>';
+    h += '<p><b>Le bailleur :</b> ' + fv(bl.nom) + '<br>Domicile ou siège social : ' + fv(bl.adresse) + '<br>Qualité : ' + ck(bl.qualite !== 'morale') + 'Personne physique &nbsp; ' + ck(bl.qualite === 'morale') + 'Personne morale' + (bl.email ? '<br>Adresse email : ' + fv(bl.email) : '') + (bl.telephone ? ' &nbsp; Tél. : ' + fv(bl.telephone) : '') + '<br>désigné(s) ci-après le bailleur ;</p>';
+    h += '<p>Mandataire : sans objet (location sans intermédiaire).</p>';
+    h += '<p><b>Le locataire :</b> ' + fv(locNames) + '<br>Adresse email : ' + fv(l1.email) + (l2.actif ? ' &nbsp; Second locataire : ' + fv(l2.email) : '') + '<br>désigné(s) ci-après le locataire.</p>';
+    h += '<p>Garant : ' + (g.actif ? fv(g.nom + ', ' + g.adresse) + ' (acte de cautionnement solidaire annexé)' : 'aucun') + '.</p><p>Il a été convenu ce qui suit :</p>';
+
+    h += '<h2>II. Objet du contrat</h2><p>Le présent contrat a pour objet la location d\'un logement meublé ainsi déterminé :</p><h3>A. Consistance du logement</h3>';
+    h += '<p>Adresse du logement : ' + fv(L.adresse) + '<br>Bâtiment / escalier / étage / porte : ' + fv(L.etage) + '<br>Identifiant fiscal du logement : ' + fv(L.ident_fiscal) + '<br>' + ck(L.immeuble === 'collectif') + 'Immeuble collectif &nbsp; ' + ck(L.immeuble === 'individuel') + 'Immeuble individuel &nbsp; ' + ck(L.propriete === 'mono') + 'Mono-propriété &nbsp; ' + ck(L.propriete === 'copro') + 'Copropriété</p>';
+    h += '<p>Période de construction : ' + opts(['Avant 1949', 'De 1949 à 1974', 'De 1975 à 1989', 'De 1989 à 2005', 'Depuis 2005'], [L.periode]) + '</p>';
+    h += '<p>Surface habitable : ' + fv(L.surface) + ' m² &nbsp; Nombre de pièces principales : ' + fv(L.pieces) + '</p>';
+    h += '<p>Autres parties du logement : ' + opts(['Grenier', 'Comble aménagé ou non', 'Terrasse', 'Balcon', 'Loggia', 'Jardin'], L.autres || []) + '</p>';
+    h += '<p>Éléments d\'équipements du logement : ' + fv(L.equip) + ' &nbsp; Installations sanitaires : ' + fv(L.sanitaires) + '</p>';
+    h += '<p>Production de chauffage : ' + ck(L.chauffage === 'individuel') + 'Individuel &nbsp; ' + ck(L.chauffage === 'collectif') + 'Collectif' + (L.chauffage === 'collectif' && L.chauffage_prec ? ' — répartition : ' + E(L.chauffage_prec) : '') + '<br>Production d\'eau chaude sanitaire : ' + ck(L.ecs === 'individuel') + 'Individuel &nbsp; ' + ck(L.ecs === 'collectif') + 'Collectif' + (L.ecs === 'collectif' && L.ecs_prec ? ' — répartition : ' + E(L.ecs_prec) : '') + '</p>';
+    h += '<p>Niveau de performance énergétique du logement (DPE) : classe ' + fv(L.dpe) + '</p>';
+    h += '<p class="small">Rappel : un logement décent doit respecter les critères minimaux de performance suivants. En France métropolitaine : à compter du 1er janvier 2025, classe F du DPE ; à compter du 1er janvier 2028, classe E ; à compter du 1er janvier 2034, classe D. La consommation d\'énergie finale et le niveau de performance du logement sont déterminés selon la méthode du diagnostic de performance énergétique mentionné à l\'article L. 126-26 du code de la construction et de l\'habitation.</p>';
+    h += '<h3>B. Destination des locaux</h3><p>' + ck(true) + 'Usage d\'habitation &nbsp; ' + ck(false) + 'Usage mixte professionnel et d\'habitation</p>';
+    h += '<h3>C. Locaux et équipements accessoires à usage privatif du locataire</h3><p>Cave n° ' + fv(L.cave) + ' &nbsp; Parking n° ' + fv(L.parking) + ' &nbsp; Garage n° ' + fv(L.garage) + ' &nbsp; Autre : ' + fv(L.autre_priv) + '</p>';
+    h += '<h3>D. Locaux, parties, équipements et accessoires à usage commun</h3><p>' + opts(['Garage à vélo', 'Ascenseur', 'Espaces verts', 'Aires et équipements de jeux', 'Laverie', 'Local poubelle', 'Gardiennage'], L.communs || []) + '</p>';
+    h += '<h3>E. Équipement d\'accès aux technologies de l\'information et de la communication</h3><p>' + fv(L.tic || 'Modalités de réception télévision / raccordement Internet selon l\'éligibilité de l\'immeuble') + '</p>';
+
+    h += '<h2>III. Date de prise d\'effet et durée du contrat</h2><p>Date de prise d\'effet du contrat : ' + fv(fd(du.effet)) + '<br>Durée du contrat : ' + fv(du.mois === 9 ? '9 mois (bail étudiant)' : du.mois === 12 ? '1 an (12 mois)' : du.mois + ' mois') + ', soit jusqu\'au ' + fv(fd(dateFin)) + '.</p>';
+    h += '<p class="small">À l\'exception des locations consenties à un étudiant pour une durée de 9 mois, les contrats de location de logements meublés sont reconduits tacitement à leur terme pour une durée d\'un an et dans les mêmes conditions. Le locataire peut mettre fin au bail à tout moment, après avoir donné congé. Le bailleur peut, quant à lui, mettre fin au bail à son échéance et après avoir donné congé, soit pour reprendre le logement en vue de l\'occuper lui-même ou une personne de sa famille, soit pour le vendre, soit pour un motif sérieux et légitime. Les contrats de location meublée consentis à un étudiant pour une durée de 9 mois ne sont pas reconduits tacitement à leur terme.</p>';
+
+    h += '<h2>IV. Conditions financières</h2><h3>A. Loyer</h3><p><b>1. Fixation du loyer initial</b><br>a) Montant du loyer mensuel : ' + fv(F(fi.loyer)) + '</p>';
+    h += '<p>b) Modalités particulières de fixation initiale du loyer applicables dans certaines zones tendues :<br>— le loyer est soumis au décret fixant annuellement le montant maximum d\'évolution des loyers à la relocation : ' + ck(fi.decret_evol) + 'Oui ' + ck(!fi.decret_evol) + 'Non<br>— le loyer est soumis au loyer de référence majoré fixé par arrêté préfectoral : ' + ck(fi.ref_maj) + 'Oui ' + ck(!fi.ref_maj) + 'Non' + (fi.ref_maj ? ' (loyer de référence : ' + fv(fi.ref) + ' €/m² ; majoré : ' + fv(fi.refmaj) + ' €/m²)' : '') + '<br>— un complément de loyer est prévu : ' + ck(fi.complement) + 'Oui ' + ck(!fi.complement) + 'Non' + (fi.complement ? ' (loyer de base : ' + fv(fi.base) + ' € ; complément : ' + fv(fi.compl_montant) + ' € ; caractéristiques : ' + E(fi.compl_motif) + ')' : '') + '</p>';
+    h += '<p>c) Informations relatives au loyer du dernier locataire (précédent locataire parti depuis moins de dix-huit mois) : ' + (fi.dernier.actif ? 'dernier loyer ' + fv(F(fi.dernier.montant)) + ', versé le ' + fv(fd(fi.dernier.date)) + ', dernière révision le ' + fv(fd(fi.dernier.revision)) : 'sans objet') + '.</p>';
+    h += '<p><b>2. Modalités de révision</b><br>a) Date de révision du loyer annuel : ' + fv(fi.rev_jm) + '<br>b) Trimestre de référence de l\'Indice de Référence des Loyers (IRL) : ' + fv(fi.irl) + '</p>';
+    h += '<h3>B. Charges récupérables</h3><p>1. Modalité de règlement : ' + ck(fi.charges_mode === 'provisions') + 'Provisions sur charges avec régularisation annuelle &nbsp; ' + ck(fi.charges_mode === 'forfait') + 'Forfait de charges (sans régularisation) <br>2. Montant des provisions sur charges ou du forfait : ' + fv(F(fi.charges)) + ' par mois.<br>3. Si les parties conviennent d\'un forfait de charges, ce forfait sera révisé chaque année dans les mêmes conditions que le loyer principal.</p>';
+    h += '<h3>C. Assurance pour le compte des colocataires</h3><p>' + ck(false) + 'Oui &nbsp; ' + ck(true) + 'Non</p>';
+    h += '<h3>D. Modalités de paiement</h3><p>Le loyer est payé d\'avance, mensuellement et dû avant le ' + fv(fi.jour) + ' de chaque mois.<br>Le montant total dû pour un mois de location est de ' + fv(F(total)) + ', détaillé comme suit : loyer ' + fv(F(fi.loyer)) + ' ; charges récupérables ' + fv(F(fi.charges)) + '.</p>';
+    h += '<h3>E. Réévaluation d\'un loyer manifestement sous-évalué (renouvellement uniquement)</h3><p>Sans objet.</p>';
+
+    h += '<h2>V. Travaux</h2><p>' + (d.travaux ? E(d.travaux) : 'Néant : aucun montant ni nature de travaux à mentionner. Aucune majoration ou diminution de loyer consécutive à des travaux n\'est prévue à la date de signature.') + '</p>';
+    var dep = parseFloat(fi.depot) || 0;
+    h += '<h2>VI. Garanties</h2><p class="nb">Pour la garantie de l\'exécution des obligations du locataire, il est prévu un dépôt de garantie d\'un montant de ' + fv(F(dep)) + ' (en toutes lettres : ' + fv(DOCS.euros(dep)) + '), soit ' + fv(fi.loyer ? (Math.round(dep / fi.loyer * 10) / 10).toString().replace('.', ',') : '') + ' mois de loyer hors charges (maximum légal : deux mois pour un logement meublé).</p>';
+    h += '<h2>VII. Clause de solidarité</h2><p>Pour l\'exécution de toutes les obligations du présent contrat en cas de pluralité de locataires, il y aura solidarité et indivisibilité entre eux.</p>';
+    h += '<h2>VIII. Clause résolutoire</h2><p>Le présent contrat sera résilié de plein droit : en cas de défaut de paiement du loyer, des provisions de charge ou de la régularisation annuelle de charge ; en cas de défaut de versement du dépôt de garantie ; en cas de défaut d\'assurance des risques locatifs par le locataire (sauf si le bailleur a souscrit une assurance pour le locataire) ; en cas de trouble de voisinage constaté par une décision de justice.</p>';
+    h += '<h2>IX. Honoraires de location</h2><p>Sans objet : le contrat est conclu sans le concours d\'une personne mandatée et rémunérée à cette fin.</p>';
+    h += '<h2>X. Autres conditions particulières</h2><p>' + (d.conditions ? E(d.conditions).replace(/\n/g, '<br>') : 'Néant.') + '</p>';
+    h += '<h2>XI. Annexes</h2><p class="nb">Sont annexées et jointes au contrat de location les pièces suivantes :</p><p>';
+    ['Diagnostic de performance énergétique', 'Constat de risque d\'exposition au plomb (immeubles construits avant le 1er janvier 1949)', 'État mentionnant l\'absence ou la présence d\'amiante', 'État de l\'installation intérieure d\'électricité et de gaz', 'État des risques naturels et technologiques', 'Extrait du règlement de copropriété (destination de l\'immeuble, jouissance et usage des parties privatives et communes)', 'Notice d\'information relative aux droits et obligations des locataires et des bailleurs', 'État des lieux d\'entrée', 'Inventaire et état détaillé du mobilier', 'Acte de cautionnement solidaire'].forEach(function(a) {
+      var on = (d.annexes || []).some(function(x) { return x.indexOf(a.slice(0, 18)) === 0; }) || (a.indexOf('Acte de caution') === 0 && g.actif);
+      h += ck(on) + E(a) + '<br>';
+    });
+    h += '</p><p style="margin-top:10px">Fait le ' + fv(fd(d.fait_le)) + ' à ' + fv(d.fait_a) + ', en deux exemplaires originaux dont un remis à chaque signataire.</p>';
+    h += '<div class="sigrow nb">' + sigBox('Le bailleur', S.bailleur, S.bailleur_ts) + sigBox('Le locataire' + (l2.actif ? ' (' + l1.prenom + ' ' + l1.nom + ')' : ''), S.locataire, S.locataire_ts) + (l2.actif ? sigBox('Second locataire (' + l2.prenom + ' ' + l2.nom + ')', S.locataire2, S.locataire2_ts) : '') + '</div>';
+    return h;
+  };
+
+  /* ---------- acte de cautionnement ---------- */
+  B.cautionCalc = function(d) {
+    var g = d.garant, du = d.duree, A = du.effet, Bm = du.mois / 12, C = parseInt(g.renouv, 10) || 0;
+    var Dy = Bm + Bm * C, loyer = parseFloat(d.fin.loyer) || 0;
+    var E_ = DOCS.addMonths(A, Math.round(Dy * 12));
+    return {A: A, B: Bm, C: C, D: Dy, E: E_, F: loyer, G: loyer * 12 * Dy};
+  };
+  B.cautionHtml = function(d) {
+    var g = d.garant, c = B.cautionCalc(d), S = d.signatures || {}, l1 = d.loc1, bl = d.bailleur;
+    var yrs = function(y) { return (Math.round(y * 100) / 100).toString().replace('.', ',') + (y > 1 ? ' ans' : ' an'); };
+    var h = '<h1>ACTE DE CAUTIONNEMENT</h1><div class="sub">Cautionnement solidaire d\'un bail d\'habitation (loi n°89-462 du 6 juillet 1989)</div>';
+    h += '<h2>Caractéristiques de la location et limitation de l\'engagement</h2><table>';
+    [['[A] Date de prise d\'effet du contrat', fd(c.A)], ['[B] Durée du contrat initial', yrs(c.B)], ['[C] Nombre de renouvellements pour lequel la caution est consentie', c.C], ['[D] Durée de l\'engagement de la caution B+(BxC)', yrs(c.D)], ['[E] Date de fin de l\'engagement A+D', fd(c.E)], ['[F] Loyer initial', F(c.F) + ' par mois'], ['[G] Montant initial de l\'engagement Fx12xD', F(c.G)]].forEach(function(r) { h += '<tr><td style="width:62%">' + E(r[0]) + '</td><td><b>' + E(r[1]) + '</b></td></tr>'; });
+    h += '</table>';
+    h += '<p>Je soussigné(e) ' + fv(g.nom) + ', né(e) le ' + fv(fd(g.naissance)) + ' à ' + fv(g.lieu) + ' et résidant ' + fv(g.adresse) + ', déclare me porter caution solidaire pour M/Mme ' + fv((l1.prenom + ' ' + l1.nom).trim() + (d.loc2.actif ? ' et ' + (d.loc2.prenom + ' ' + d.loc2.nom).trim() : '')) + ' au profit du bailleur M/Mme ' + fv(bl.nom) + ' pour la location d\'un logement situé ' + fv(d.logement.adresse) + '.</p>';
+    h += '<div class="box"><p>Je me porte caution solidaire, sur mes revenus et sur mes biens, avec renonciation au bénéfice de division et de discussion, pour M/Mme ' + E((l1.prenom + ' ' + l1.nom).trim()) + ' pour la durée du bail initial et, le cas échéant, pour ' + c.C + ' renouvellement(s), soit jusqu\'au ' + fd(c.E) + ', dans la limite de ' + F(c.G) + ' (' + E(DOCS.euros(c.G)) + '). Cet engagement est valable pour le paiement notamment des loyers, soit un montant de ' + F(c.F) + ' (' + E(DOCS.euros(c.F)) + ') par mois, révisable le ' + E(d.fin.rev_jm) + ' de chaque année selon l\'indice de référence des loyers publié par l\'INSEE, des charges récupérables, des indemnités d\'occupation, des dégradations et réparations locatives et des frais de procédure, indemnités, pénalités et dommages-intérêts. J\'ai une parfaite connaissance des clauses du contrat de location, dont un exemplaire m\'a été remis, ainsi que de la nature et de l\'étendue de mon engagement.</p></div>';
+    h += '<p class="small"><b>Art. 22-1 de la loi du 6 juillet 1989 :</b> « Lorsque le cautionnement d\'obligations résultant d\'un contrat de location conclu en application du présent titre ne comporte aucune indication de durée ou lorsque la durée du cautionnement est stipulée indéterminée, la caution peut le résilier unilatéralement. La résiliation prend effet au terme du contrat de location, qu\'il s\'agisse du contrat initial ou d\'un contrat reconduit ou renouvelé au cours duquel le bailleur reçoit notification de la résiliation. »</p>';
+    h += '<p style="margin-top:8px">Fait le ' + fv(fd(d.fait_le)) + ' à ' + fv(d.fait_a) + ', en deux exemplaires originaux dont un remis à chaque signataire.</p>';
+    h += '<div class="sigrow nb">' + sigBox('La caution (' + g.nom + ')', S.garant, S.garant_ts, 'Signature précédée de la mention « Lu et approuvé - Bon pour caution solidaire »') + sigBox('Le bailleur', S.bailleur, S.bailleur_ts, 'Signature précédée de la mention « Lu et approuvé - Bon pour acceptation »') + '</div>';
+    return h;
+  };
+  return B;
+})();
+
+/* ===== Assistant "Nouveau bail" ===== */
+DOCS.BailUI = (function() {
+  var U = {}, W = DOCS.Wz, E = DOCS.esc, B = DOCS.Bail;
+  var cur = null;       // dossier en cours {id,type,bien_id,locataire_id,statut,data}
+
+  function stamp() { var d = new Date(); return DOCS.fmtDate(d.toISOString().slice(0, 10)) + ' à ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+
+  var steps = [
+    { title: 'Les parties', render: function(d) {
+        return W.card('Le bailleur', W.inp('bailleur.nom', 'Nom et prénom / dénomination') + W.inp('bailleur.adresse', 'Domicile ou siège social') + W.row(W.inp('bailleur.email', 'Email', {type: 'email'}), W.inp('bailleur.telephone', 'Téléphone', {type: 'tel'})) + W.chips('bailleur.qualite', 'Qualité', [['physique', 'Personne physique'], ['morale', 'Personne morale']]), 'Enregistré pour vos prochains baux.')
+          + W.card('Le locataire', W.row(W.inp('loc1.prenom', 'Prénom'), W.inp('loc1.nom', 'Nom')) + W.row(W.inp('loc1.email', 'Email', {type: 'email'}), W.inp('loc1.telephone', 'Téléphone', {type: 'tel'})))
+          + W.card('Second locataire (colocation, couple)', W.yesno('loc2.actif', 'Y a-t-il un second locataire ?', true) + (d.loc2.actif ? W.row(W.inp('loc2.prenom', 'Prénom'), W.inp('loc2.nom', 'Nom')) + W.inp('loc2.email', 'Email', {type: 'email'}) : ''));
+      },
+      validate: function(d) { if (!d.bailleur.nom || !d.bailleur.adresse) return 'Renseignez le nom et l\'adresse du bailleur.'; if (!d.loc1.nom || !d.loc1.prenom) return 'Renseignez le nom du locataire.'; }
+    },
+    { title: 'Le logement', render: function(d) {
+        var L = d.logement, dpeWarn = L.dpe === 'G' ? W.note('⚠️ Un logement classé G ne peut plus être loué (interdit depuis le 1er janvier 2025). Vérifiez le DPE.', 'bad') : (L.dpe === 'F' ? W.note('Classe F : location encore autorisée, mais interdite à partir du 1er janvier 2028.', 'warn') : '');
+        return W.card('Adresse et description', W.inp('logement.adresse', 'Adresse du logement') + W.row(W.inp('logement.etage', 'Étage / porte / bâtiment'), W.inp('logement.ident_fiscal', 'Identifiant fiscal (facultatif)')) + W.row(W.num('logement.surface', 'Surface habitable (m²)', {step: '0.01'}), W.num('logement.pieces', 'Pièces principales')) + W.chips('logement.immeuble', 'Immeuble', [['collectif', 'Collectif'], ['individuel', 'Individuel']]) + W.chips('logement.propriete', 'Propriété', [['copro', 'Copropriété'], ['mono', 'Mono-propriété']]) + W.chips('logement.periode', 'Période de construction', ['Avant 1949', 'De 1949 à 1974', 'De 1975 à 1989', 'De 1989 à 2005', 'Depuis 2005']))
+          + W.card('Équipements et énergie', W.inp('logement.equip', 'Équipements (cuisine équipée…)') + W.inp('logement.sanitaires', 'Installations sanitaires') + W.chips('logement.chauffage', 'Chauffage', [['individuel', 'Individuel'], ['collectif', 'Collectif']], true) + (L.chauffage === 'collectif' ? W.inp('logement.chauffage_prec', 'Répartition de la consommation') : '') + W.chips('logement.ecs', 'Eau chaude', [['individuel', 'Individuel'], ['collectif', 'Collectif']], true) + (L.ecs === 'collectif' ? W.inp('logement.ecs_prec', 'Répartition de la consommation') : '') + W.chips('logement.dpe', 'Classe DPE', ['A', 'B', 'C', 'D', 'E', 'F', 'G'], true) + dpeWarn)
+          + W.card('Annexes du logement', W.multi('logement.autres', 'Autres parties', ['Grenier', 'Comble aménagé ou non', 'Terrasse', 'Balcon', 'Loggia', 'Jardin']) + W.row(W.inp('logement.cave', 'Cave n°'), W.inp('logement.parking', 'Parking n°')) + W.row(W.inp('logement.garage', 'Garage n°'), W.inp('logement.autre_priv', 'Autre')) + W.multi('logement.communs', 'Parties communes', ['Garage à vélo', 'Ascenseur', 'Espaces verts', 'Aires et équipements de jeux', 'Laverie', 'Local poubelle', 'Gardiennage']));
+      },
+      validate: function(d) { if (!d.logement.adresse) return 'Indiquez l\'adresse du logement.'; if (!d.logement.surface) return 'Indiquez la surface habitable.'; }
+    },
+    { title: 'Durée et loyer', render: function(d) {
+        var fi = d.fin, dep = parseFloat(fi.depot) || 0, loyer = parseFloat(fi.loyer) || 0;
+        return W.card('Durée', W.date('duree.effet', 'Date de prise d\'effet', {rr: true}) + W.chips('duree.mois', 'Durée du bail', [['12', '1 an (12 mois)'], ['9', '9 mois (étudiant)']], true) + W.note('Fin du bail : ' + DOCS.fmtDate(DOCS.addMonths(d.duree.effet, parseInt(d.duree.mois, 10) || 12)) + '. Reconduction tacite pour 1 an (hors bail étudiant).'))
+          + W.card('Loyer et charges', W.row(W.num('fin.loyer', 'Loyer mensuel hors charges (€)', {step: '0.01', rr: true}), W.num('fin.charges', 'Charges (€/mois)', {step: '0.01'})) + W.chips('fin.charges_mode', 'Mode de règlement des charges', [['provisions', 'Provisions + régularisation'], ['forfait', 'Forfait']]) + W.row(W.num('fin.jour', 'Payable avant le (jour)'), W.num('fin.depot', 'Dépôt de garantie (€)', {step: '0.01'})) + '<div class="chips2" style="margin:-4px 0 8px"><button type="button" class="chp" data-act="depot1">1 mois</button><button type="button" class="chp" data-act="depot2">2 mois (max. légal)</button></div>' + (dep > loyer * 2 + 0.01 && loyer ? W.note('⚠️ Le dépôt de garantie dépasse 2 mois de loyer hors charges, maximum légal pour un meublé.', 'bad') : '') + W.note('Total mensuel : <b>' + DOCS.fmtE(loyer + (parseFloat(fi.charges) || 0)) + '</b> · Dépôt en lettres : ' + E(DOCS.euros(dep))))
+          + W.card('Révision du loyer', W.row(W.inp('fin.rev_jm', 'Date de révision (jj/mm)'), W.inp('fin.irl', 'Trimestre de référence IRL')), 'Mentions du contrat. Aucune révision automatique n\'est faite par l\'application.')
+          + W.card('Zone tendue / encadrement', W.yesno('fin.decret_evol', 'Loyer soumis au décret d\'évolution des loyers à la relocation ?', true) + W.yesno('fin.ref_maj', 'Loyer de référence majoré (encadrement) ?', true) + (fi.ref_maj ? W.row(W.num('fin.ref', 'Loyer de référence (€/m²)', {step: '0.01'}), W.num('fin.refmaj', 'Référence majorée (€/m²)', {step: '0.01'})) : '') + W.yesno('fin.complement', 'Complément de loyer ?', true) + (fi.complement ? W.row(W.num('fin.base', 'Loyer de base (€)'), W.num('fin.compl_montant', 'Complément (€)')) + W.inp('fin.compl_motif', 'Caractéristiques justifiant le complément') : ''))
+          + W.card('Autres', W.area('travaux', 'Travaux (laisser vide = néant)') + W.area('conditions', 'Conditions particulières', 'Ex : animaux acceptés, interdiction de fumer…') + W.multi('annexes', 'Annexes jointes', ['Diagnostic de performance énergétique', 'Constat de risque d\'exposition au plomb', 'État mentionnant l\'absence ou la présence d\'amiante', 'État de l\'installation intérieure d\'électricité et de gaz', 'État des risques naturels et technologiques', 'Extrait du règlement de copropriété', 'Notice d\'information relative aux droits et obligations des locataires et des bailleurs', 'État des lieux d\'entrée', 'Inventaire et état détaillé du mobilier']));
+      },
+      validate: function(d) { if (!d.fin.loyer) return 'Indiquez le loyer.'; if (!d.duree.effet) return 'Indiquez la date de prise d\'effet.'; if (!d.fin.depot && d.fin.depot !== 0) return 'Indiquez le dépôt de garantie.'; }
+    },
+    { title: 'Garant (facultatif)', render: function(d) {
+        var g = d.garant, c = B.cautionCalc(d);
+        return W.card('Acte de cautionnement', W.yesno('garant.actif', 'Un garant se porte caution solidaire ?', true) + (g.actif ? W.inp('garant.nom', 'Nom et prénom de la caution') + W.row(W.date('garant.naissance', 'Né(e) le'), W.inp('garant.lieu', 'à (lieu de naissance)')) + W.inp('garant.adresse', 'Adresse de la caution') + W.num('garant.renouv', 'Nombre de renouvellements couverts', {rr: true}) + W.note('Engagement : ' + (Math.round(c.D * 100) / 100) + ' an(s), jusqu\'au <b>' + DOCS.fmtDate(c.E) + '</b>, plafonné à <b>' + DOCS.fmtE(c.G) + '</b> (' + E(DOCS.euros(c.G)) + '). L\'acte est généré selon votre modèle.') : W.note('Sans garant, passez à l\'étape suivante.')));
+      },
+      validate: function(d) { if (d.garant.actif && (!d.garant.nom || !d.garant.adresse || !d.garant.naissance)) return 'Complétez l\'identité de la caution.'; }
+    },
+    { title: 'Aperçu et signature', noNext: true, render: function(d) {
+        var S = d.signatures || {}, need = [['bailleur', 'Bailleur', d.bailleur.nom], ['locataire', 'Locataire', (d.loc1.prenom + ' ' + d.loc1.nom).trim()]];
+        if (d.loc2.actif) need.push(['locataire2', 'Second locataire', (d.loc2.prenom + ' ' + d.loc2.nom).trim()]);
+        if (d.garant.actif) need.push(['garant', 'Caution', d.garant.nom]);
+        var h = W.card('Signatures', need.map(function(n) {
+          return '<div class="sg-row"><div><b>' + n[1] + '</b><div class="wcs">' + E(n[2]) + '</div></div>' + (S[n[0]] ? '<img class="sg-img" src="' + S[n[0]] + '"><button class="btn btng btnsm" data-act="sign:' + n[0] + '">Refaire</button>' : '<button class="btn btnp btnsm" data-act="sign:' + n[0] + '">Signer</button>') + '</div>';
+        }).join(''), 'Chaque signataire signe avec le doigt sur l\'écran. La date et l\'heure sont enregistrées.');
+        var ready = need.every(function(n) { return S[n[0]]; });
+        h += W.card('Documents', '<div class="sg-actions"><button class="btn btng" data-act="preview">Voir l\'aperçu du bail</button><button class="btn btng" data-act="pdf">Télécharger le PDF</button><button class="btn btnp" data-act="send"' + (ready ? '' : ' disabled') + '>Envoyer par email à ' + E(d.loc1.email || 'le locataire') + '</button></div>' + (ready ? '' : W.note('Tous les signataires doivent signer avant l\'envoi.')) + (d.loc1.email ? '' : W.note('Aucun email pour ce locataire : renseignez-le à l\'étape 1.', 'warn')) + '<div id="bail-status" class="wcs" style="margin-top:8px">' + (cur && cur.statut === 'envoye' ? '✅ Envoyé' + (d.envoi_le ? ' le ' + E(d.envoi_le) : '') : (cur && cur.statut === 'signe' ? 'Signé' : 'Brouillon enregistré')) + '</div>');
+        return h;
+      }
+    }
+  ];
+
+  function fullHtml(d) { return B.html(d) + (d.garant.actif ? '<div class="pb"></div>' + B.cautionHtml(d) : ''); }
+  function fname(d) { return 'Bail-' + (d.loc1.nom || 'locataire').replace(/[^A-Za-z0-9]/g, '') + '-' + (d.duree.effet || '') + '.pdf'; }
+
+  async function save(silent) {
+    if (!cur) return;
+    try { await DOCS.save(cur); } catch (e) { if (!silent) toast('Enregistrement impossible', e.message || 'Table dossiers manquante ?'); }
+  }
+  async function act(name, el) {
+    var d = cur.data;
+    if (name === 'depot1' || name === 'depot2') { d.fin.depot = (parseFloat(d.fin.loyer) || 0) * (name === 'depot1' ? 1 : 2); W.rerender(); return; }
+    if (name.indexOf('sign:') === 0) {
+      var who = name.slice(5), label = {bailleur: 'Signature du bailleur', locataire: 'Signature du locataire', locataire2: 'Signature du second locataire', garant: 'Signature de la caution'}[who];
+      var url = await DOCS.signPad(label, 'Je lis le bail et je signe « Lu et approuvé ».');
+      if (!url) return;
+      d.signatures = d.signatures || {}; d.signatures[who] = url; d.signatures[who + '_ts'] = stamp();
+      var all = ['bailleur', 'locataire'].concat(d.loc2.actif ? ['locataire2'] : []).concat(d.garant.actif ? ['garant'] : []).every(function(k) { return d.signatures[k]; });
+      if (all && cur.statut !== 'envoye') cur.statut = 'signe';
+      await save(); W.rerender(); return;
+    }
+    if (name === 'preview') { showPreview(fullHtml(d)); return; }
+    if (name === 'pdf' || name === 'send') {
+      el.disabled = true; var old = el.textContent; el.textContent = 'Création du PDF…';
+      try {
+        var blob = await DOCS.makePdf(fullHtml(d), fname(d));
+        if (name === 'pdf') { DOCS.download(blob, fname(d)); toast('PDF prêt', fname(d)); }
+        else {
+          el.textContent = 'Envoi…';
+          var nom = (d.loc1.prenom + ' ' + d.loc1.nom).trim();
+          await DOCS.sendMail({to: d.loc1.email, bcc: d.bailleur.email, reply_to: d.bailleur.email, subject: 'Votre contrat de location — ' + d.logement.adresse,
+            html: '<div style="font-family:Arial,sans-serif;font-size:14px;color:#222;line-height:1.6"><p>Bonjour ' + E(nom) + ',</p><p>Veuillez trouver ci-joint votre contrat de location signé' + (d.garant.actif ? ' ainsi que l\'acte de cautionnement' : '') + ', pour le logement situé ' + E(d.logement.adresse) + '.</p><p>Conservez ce document : il fait foi de vos droits et obligations.</p><p>Cordialement,<br>' + E(d.bailleur.nom) + '</p></div>',
+            attachments: [{filename: fname(d), blob: blob}]});
+          cur.statut = 'envoye'; d.envoi_le = stamp(); await save(); toast('Email envoyé', d.loc1.email); W.rerender();
+        }
+      } catch (e) { toast('Erreur', e.message || String(e)); }
+      el.disabled = false; el.textContent = old;
+    }
+  }
+  function showPreview(html) {
+    var ov = document.createElement('div'); ov.className = 'prv-ov';
+    ov.innerHTML = '<div class="prv-h"><b>Aperçu</b><button class="btn btng btnsm">Fermer</button></div><div class="prv-b"><style>' + DOCS.PDF_CSS + '</style><div class="pdfdoc prv">' + html + '</div></div>';
+    ov.querySelector('button').onclick = function() { document.body.removeChild(ov); };
+    document.body.appendChild(ov);
+  }
+
+  /* ouverture : loc + bien + dpe, ou dossier existant */
+  U.open = function(dossier, loc, bien, dpe, onClose) {
+    cur = dossier || {type: 'bail', bien_id: bien && bien.id, locataire_id: loc.id, statut: 'brouillon', data: B.defaults(loc, bien, dpe)};
+    W.open({title: 'Bail meublé', steps: steps, data: cur.data, act: act, save: save, finishLabel: 'Terminer', onClose: function() { try { DOCS.saveBailleur(cur.data.bailleur); } catch (e) {} onClose && onClose(); },
+      onChange: function(k) { if (k === 'fin.loyer' && cur.data.fin.depot === '') cur.data.fin.depot = (parseFloat(cur.data.fin.loyer) || 0) * 2; },
+      onRerender: function(k) { if (k === 'duree.effet') { var j = new Date(cur.data.duree.effet + 'T12:00:00'); if (!isNaN(j)) { cur.data.fin.rev_jm = ('0' + j.getDate()).slice(-2) + '/' + ('0' + (j.getMonth() + 1)).slice(-2); } } },
+    });
+  };
+  U.fullHtml = fullHtml; U.fname = fname; U.showPreview = showPreview;
+  return U;
+})();
+
+/* ===== ÉTAT DES LIEUX : données + rendu ===== */
+DOCS.Edl = (function() {
+  var X = {}, E = DOCS.esc, id = DOCS.uid;
+  X.STATES = ['TB', 'B', 'C', 'M', 'HS', 'NV'];
+  X.STATE_LABEL = {TB: 'Très bon', B: 'Bon', C: 'Moyen', M: 'Mauvais', HS: 'Hors service', NV: 'Non vérifié'};
+  var COMMON = ['Portes / Menuiseries', 'Fenêtres / Volets', 'Étanchéité (humidité, froid)', 'Plafond', 'Sol / Plinthes', 'Murs / Placards', 'Prises / Interrupteurs', 'Éclairage', 'Chauffage / Tuyauterie'];
+  var ROOMS = {
+    'Salon / Pièce à vivre': COMMON,
+    'Chambre': COMMON,
+    'Cuisine': ['Portes / Menuiseries', 'Fenêtres / Volets', 'Plafond / Murs', 'Sol / Plinthes', 'Rangements', 'Plan de travail', 'Prises / Interrupteurs', 'Éviers / Robinetterie', 'Chauffage / Tuyauterie', 'Plaques de cuisson', 'Hotte aspirante'],
+    'Salle de bain': ['Portes / Menuiseries', 'Fenêtres / Volets / Stores', 'Étanchéité (humidité, froid)', 'Plafond', 'Sol / Plinthes', 'Murs / Rangements', 'Prises / Interrupteurs', 'Éclairage / Plafonnier', 'Chauffage / Tuyauterie', 'Ventilation', 'Lavabo / Robinetterie', 'Douche / Baignoire'],
+    'WC': ['Portes / Menuiseries', 'Fenêtres / Volets', 'Étanchéité (humidité, froid)', 'Plafond', 'Sol / Plinthes', 'Murs / Rangements', 'Prises / Interrupteurs', 'Éclairage / Plafonnier', 'Chauffage / Tuyauterie', 'Ventilation', 'Cuvette / Chasse d\'eau']
+  };
+  var MOB = ['Literie avec couette ou couverture', 'Dispositif d\'occultation des fenêtres (chambre)', 'Plaques de cuisson', 'Four ou four à micro-ondes', 'Réfrigérateur et compartiment congélateur', 'Vaisselle nécessaire à la prise des repas', 'Ustensiles de cuisine', 'Table et sièges', 'Étagères de rangement', 'Luminaires', 'Matériel d\'entretien ménager'];
+  function items(list) { return list.map(function(n) { return {id: id(), nom: n, e: '', s: '', comm: ''}; }); }
+  function room(nom, tpl) { return {id: id(), nom: nom, items: items(ROOMS[tpl || nom]), photos: [], comm: ''}; }
+
+  X.roomNames = function(typeBien, pieces) {
+    var n = /studio|t1/i.test(typeBien || '') ? 1 : ((String(typeBien).match(/T\s*(\d)/i) || [])[1] || pieces || 1);
+    n = parseInt(n, 10) || 1;
+    var out = [['Salon / Pièce à vivre']];
+    if (n >= 2) { if (n === 2) out.push(['Chambre']); else for (var i = 1; i < n; i++) out.push(['Chambre ' + i, 'Chambre']); }
+    out.push(['Cuisine'], ['Salle de bain'], ['WC']);
+    return out;
+  };
+  X.defaults = function(kind, loc, bien, dpe) {
+    bien = bien || {}; var b = DOCS.bailleur();
+    var rooms = X.roomNames(bien.type, bien.pieces).map(function(r) { return room(r[0], r[1]); });
+    return {
+      kind: kind, date: DOCS.today(), heure: ('0' + new Date().getHours()).slice(-2) + ':' + ('0' + new Date().getMinutes()).slice(-2),
+      logement: {adresse: bien.adresse || '', etage: '', appart: '', surface: bien.surface || '', pieces: '', type: 'Appartement', meuble: true, ancien: '', typo: bien.type || ''},
+      bailleur: {nom: b.nom, adresse: b.adresse, email: b.email},
+      loc: {prenom: loc.prenom || '', nom: loc.nom || '', email: loc.email || ''}, nouvelle_adresse: '',
+      compteurs: {elec_n: '', elec_hp: '', elec_hc: '', gaz_n: '', gaz_rel: '', eau_chaude: '', eau_froide: ''},
+      energie: {chauffage: 'electrique', ecs: 'electrique', chaudiere: '', entretien: '', ballon: ''},
+      cles: [{id: id(), type: 'Clé porte d\'entrée', nb: 2, comm: ''}, {id: id(), type: 'Clé boîte aux lettres', nb: 1, comm: ''}],
+      privatives: ['Cave', 'Parking', 'Box / Garage', 'Balcon / Terrasse', 'Jardin'].map(function(n) { return {id: id(), nom: n, e: '', s: '', num: '', comm: '', actif: false}; }),
+      equip: ['Sonnette / Interphone', 'Boîte aux lettres', 'Détecteur de fumée', 'Chenaux / Gouttières', 'Connexion Internet', 'Portail', 'Cheminée', 'Charpente / Toiture'].map(function(n) { return {id: id(), nom: n, e: '', s: '', comm: ''}; }),
+      pieces: rooms,
+      inventaire: MOB.map(function(n) { return {id: id(), nom: n, qte: 1, e: '', s: '', comm: ''}; }),
+      commentaires: '', signatures: {}
+    };
+  };
+  /* état de sortie : copie de l'entrée, colonnes sortie vides */
+  X.fromEntree = function(entree) {
+    var d = JSON.parse(JSON.stringify(entree));
+    d.kind = 'sortie'; d.entree_date = entree.date; d.date = DOCS.today(); d.signatures = {}; d.commentaires = ''; d.nouvelle_adresse = '';
+    d.compteurs_entree = entree.compteurs;
+    d.compteurs = {elec_n: entree.compteurs.elec_n, elec_hp: '', elec_hc: '', gaz_n: entree.compteurs.gaz_n, gaz_rel: '', eau_chaude: '', eau_froide: ''};
+    function clear(list) { list.forEach(function(i) { i.s = ''; }); }
+    clear(d.privatives); clear(d.equip); clear(d.inventaire);
+    d.pieces.forEach(function(p) { clear(p.items); p.photos_entree = p.photos; p.photos = []; p.comm_entree = p.comm; p.comm = ''; });
+    return d;
+  };
+  X.diffs = function(d) {
+    var out = [];
+    function chk(zone, n, e, s, comm) { if (s && e !== s) out.push({zone: zone, nom: n, e: e, s: s, comm: comm}); }
+    d.pieces.forEach(function(p) { p.items.forEach(function(i) { chk(p.nom, i.nom, i.e, i.s, i.comm); }); });
+    d.equip.forEach(function(i) { chk('Équipements', i.nom, i.e, i.s, i.comm); });
+    d.privatives.forEach(function(i) { if (i.actif) chk('Parties privatives', i.nom, i.e, i.s, i.comm); });
+    d.inventaire.forEach(function(i) { chk('Mobilier', i.nom, i.e, i.s, i.comm); });
+    return out;
+  };
+  X.progress = function(d) {
+    var tot = 0, ok = 0, f = d.kind === 'sortie' ? 's' : 'e';
+    d.pieces.forEach(function(p) { p.items.forEach(function(i) { tot++; if (i[f]) ok++; }); });
+    return {tot: tot, ok: ok};
+  };
+
+  function st(v) { return v ? '<span class="st ' + v + '">' + v + '</span>' : '<span class="small">&nbsp;—&nbsp;</span>'; }
+  function meter(label, v) { return '<td>' + E(label) + '</td><td><b>' + E(v) + '</b></td>'; }
+  function sigBox(who, img, ts) { return '<div class="sigbox"><b>' + E(who) + '</b><div class="lu">Signature précédée de « certifié exact »</div>' + (img ? '<img src="' + img + '"><div class="ts">Signé électroniquement le ' + E(ts || '') + '</div>' : '') + '</div>'; }
+  function photos(arr) { return arr && arr.length ? '<div class="ph">' + arr.map(function(p) { return '<img src="' + (p.url || p.data) + '" crossorigin="anonymous">'; }).join('') + '</div>' : ''; }
+
+  X.html = function(d) {
+    var L = d.logement, sortie = d.kind === 'sortie', C = d.compteurs, CE = d.compteurs_entree, S = d.signatures || {}, en = d.energie, h = '';
+    var typeLabel = /studio|t1/i.test(L.typo) ? 'Studio / T1' : (L.typo || 'Logement');
+    h += '<h1>ÉTAT DES LIEUX ' + (sortie ? 'DE SORTIE' : 'D\'ENTRÉE') + '</h1><div class="sub">' + E(typeLabel) + ' — ' + (sortie ? 'Sortie réalisée le ' + DOCS.fmtDate(d.date) + (d.entree_date ? ' (entrée du ' + DOCS.fmtDate(d.entree_date) + ')' : '') : 'Entrée réalisée le ' + DOCS.fmtDate(d.date) + (d.heure ? ' à ' + E(d.heure) : '')) + '</div>';
+    h += '<p class="small">Le locataire dispose d\'un délai de 10 jours pour demander au bailleur ou à son représentant de compléter le présent état des lieux (pour l\'état des équipements de chauffe, le délai est porté au 1er mois de la période de chauffe).</p>';
+    h += '<h2>Les locaux</h2><table><tr><td>Type</td><td><b>' + E(L.type) + '</b></td><td>Surface</td><td><b>' + E(L.surface) + ' m²</b></td></tr><tr><td>Adresse</td><td colspan="3"><b>' + E(L.adresse) + '</b></td></tr><tr><td>Étage / N° appartement</td><td><b>' + E(L.etage) + ' ' + E(L.appart) + '</b></td><td>Meublé</td><td><b>' + (L.meuble ? 'Oui (inventaire joint)' : 'Non') + '</b></td></tr><tr><td>Nom ancien occupant</td><td colspan="3">' + E(L.ancien) + '</td></tr></table>';
+    h += '<table><tr><td style="width:50%"><b>Le bailleur</b><br>' + E(d.bailleur.nom) + '<br>' + E(d.bailleur.adresse) + '</td><td><b>Le(s) locataire(s)</b><br>' + E((d.loc.prenom + ' ' + d.loc.nom).trim()) + (sortie && d.nouvelle_adresse ? '<br>Nouvelle adresse : ' + E(d.nouvelle_adresse) : '') + '</td></tr></table>';
+    h += '<h2>Relevé des compteurs' + (sortie ? ' (entrée / sortie)' : '') + '</h2><table><tr><th>Compteur</th>' + (sortie ? '<th>Entrée</th>' : '') + '<th>' + (sortie ? 'Sortie' : 'Relevé') + '</th></tr>';
+    [['Électricité — n° compteur', 'elec_n'], ['Électricité — heures pleines', 'elec_hp'], ['Électricité — heures creuses', 'elec_hc'], ['Gaz naturel — n° compteur', 'gaz_n'], ['Gaz naturel — relevé', 'gaz_rel'], ['Eau chaude (m³)', 'eau_chaude'], ['Eau froide (m³)', 'eau_froide']].forEach(function(m) { h += '<tr><td>' + m[0] + '</td>' + (sortie ? '<td>' + E((CE || {})[m[1]] || '') + '</td>' : '') + '<td><b>' + E(C[m[1]] || '') + '</b></td></tr>'; });
+    h += '</table>';
+    h += '<h2>Caractéristiques énergétiques</h2><p>Chauffage : <b>' + E(en.chauffage) + '</b> · Eau chaude : <b>' + E(en.ecs) + '</b>' + (en.chaudiere ? ' · Chaudière / état : <b>' + E(en.chaudiere) + '</b>' : '') + (en.entretien ? ' · Dernier entretien : <b>' + E(en.entretien) + '</b>' : '') + (en.ballon ? ' · Ballon d\'eau chaude : <b>' + E(en.ballon) + '</b>' : '') + '</p>';
+    h += '<p class="small">Abréviations : TB très bon état · B bon état · C état moyen · M mauvais état · HS hors service · NV non vérifié</p>';
+    h += '<h2>Clés</h2><table><tr><th>Type de clé</th><th>Nombre</th><th>Commentaires</th></tr>' + d.cles.map(function(k) { return '<tr><td>' + E(k.type) + '</td><td>' + E(k.nb) + '</td><td>' + E(k.comm) + '</td></tr>'; }).join('') + '</table>';
+    var priv = d.privatives.filter(function(p) { return p.actif; });
+    if (priv.length) h += '<h2>Parties privatives attachées au logement</h2><table><tr><th>Partie</th><th>N°</th><th>Entrée</th><th>Sortie</th><th>Commentaires</th></tr>' + priv.map(function(p) { return '<tr><td>' + E(p.nom) + '</td><td>' + E(p.num) + '</td><td>' + st(p.e) + '</td><td>' + st(p.s) + '</td><td>' + E(p.comm) + '</td></tr>'; }).join('') + '</table>';
+    h += '<h2>Autres équipements et aménagements</h2><table><tr><th>Équipement</th><th>Entrée</th><th>Sortie</th><th>Commentaires</th></tr>' + d.equip.map(function(p) { return '<tr' + (sortie && p.s && p.s !== p.e ? ' class="diff"' : '') + '><td>' + E(p.nom) + '</td><td>' + st(p.e) + '</td><td>' + st(p.s) + '</td><td>' + E(p.comm) + '</td></tr>'; }).join('') + '</table>';
+    d.pieces.forEach(function(p) {
+      h += '<div class="pb"></div><h2>' + E(p.nom) + '</h2><table><tr><th style="width:34%">Éléments</th><th>État d\'entrée</th><th>État de sortie</th><th>Commentaires</th></tr>' + p.items.map(function(i) { return '<tr' + (sortie && i.s && i.s !== i.e ? ' class="diff"' : '') + '><td>' + E(i.nom) + '</td><td>' + st(i.e) + '</td><td>' + st(i.s) + '</td><td>' + E(i.comm) + '</td></tr>'; }).join('') + '</table>';
+      if (p.comm) h += '<p><b>Remarques :</b> ' + E(p.comm) + '</p>';
+      if (sortie && p.photos_entree && p.photos_entree.length) h += '<p class="small">Photos à l\'entrée :</p>' + photos(p.photos_entree);
+      h += (p.photos && p.photos.length ? '<p class="small">' + (sortie ? 'Photos à la sortie :' : 'Photos :') + '</p>' : '') + photos(p.photos);
+    });
+    h += '<div class="pb"></div><h2>Inventaire et état détaillé du mobilier</h2><table><tr><th>Élément</th><th>Qté</th><th>Entrée</th><th>Sortie</th><th>Commentaires</th></tr>' + d.inventaire.filter(function(i) { return i.qte !== 0 && i.qte !== '0'; }).map(function(i) { return '<tr' + (sortie && i.s && i.s !== i.e ? ' class="diff"' : '') + '><td>' + E(i.nom) + '</td><td>' + E(i.qte) + '</td><td>' + st(i.e) + '</td><td>' + st(i.s) + '</td><td>' + E(i.comm) + '</td></tr>'; }).join('') + '</table>';
+    if (sortie) {
+      var df = X.diffs(d);
+      h += '<h2>Annexe — éléments non conformes à l\'état d\'entrée</h2>' + (df.length ? '<table><tr><th>Pièce</th><th>Élément</th><th>Entrée</th><th>Sortie</th><th>Commentaire / montant estimé</th></tr>' + df.map(function(x) { return '<tr><td>' + E(x.zone) + '</td><td>' + E(x.nom) + '</td><td>' + st(x.e) + '</td><td>' + st(x.s) + '</td><td>' + E(x.comm) + '</td></tr>'; }).join('') + '</table>' : '<p>Aucune différence constatée avec l\'état des lieux d\'entrée.</p>');
+    }
+    h += '<h2>Commentaires généraux</h2><p>' + (d.commentaires ? E(d.commentaires).replace(/\n/g, '<br>') : '—') + '</p>';
+    h += '<p class="small">Entretien courant et réparations mineures : le locataire doit veiller à maintenir en l\'état le logement qu\'il occupe. À ce titre, il doit assurer l\'entretien normal du logement et de ses éléments d\'équipement, ainsi que les menues réparations nécessaires, à moins qu\'il ne prouve qu\'elles sont dues à la vétusté, à une malfaçon ou à la force majeure. À défaut, le bailleur peut retenir sur le dépôt de garantie les sommes correspondant aux réparations locatives qui n\'ont pas été effectuées par le locataire, justificatifs à l\'appui.</p>';
+    h += '<p class="nb">Fait le ' + DOCS.fmtDate(d.date) + ', en deux exemplaires, dont un remis à ce jour au locataire qui le reconnaît.</p><div class="sigrow nb">' + sigBox('Le bailleur (ou son mandataire)', S.bailleur, S.bailleur_ts) + sigBox('Le(s) locataire(s)', S.locataire, S.locataire_ts) + '</div>';
+    return h;
+  };
+  return X;
+})();
+
+/* ===== Assistant "État des lieux" ===== */
+DOCS.EdlUI = (function() {
+  var U = {}, W = DOCS.Wz, E = DOCS.esc, X = DOCS.Edl;
+  var cur = null, cfg = null;
+
+  function stamp() { var d = new Date(); return DOCS.fmtDate(d.toISOString().slice(0, 10)) + ' à ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+  function itemRow(base, it, kind, wide) {
+    var f = kind === 'sortie' ? 's' : 'e', v = it[f];
+    var h = '<div class="it' + (kind === 'sortie' && it.s && it.s !== it.e ? ' diff' : '') + '"><div class="it-h"><span class="it-n">' + E(it.nom) + '</span>' + (kind === 'sortie' ? '<span class="it-e">Entrée : <b>' + (it.e || '—') + '</b></span>' : '') + '</div><div class="stc">';
+    X.STATES.forEach(function(s) { h += '<button type="button" class="chp sm st-' + s + (v === s ? ' on' : '') + '" data-k="' + base + '.' + f + '" data-v="' + s + '" title="' + X.STATE_LABEL[s] + '">' + s + '</button>'; });
+    return h + '</div><input class="fi sm" data-k="' + base + '.comm" placeholder="Commentaire (facultatif)" value="' + E(it.comm || '') + '"></div>';
+  }
+  var LEGEND = '<div class="legend">TB très bon · B bon · C moyen · M mauvais · HS hors service · NV non vérifié</div>';
+
+  function infoStep() {
+    return { title: 'Généralités', render: function(d) {
+      var sortie = d.kind === 'sortie', CE = d.compteurs_entree || {};
+      function hint(k) { return sortie && CE[k] ? '<div class="hint">Entrée : ' + E(CE[k]) + '</div>' : ''; }
+      return W.card('Le rendez-vous', W.row(W.date('date', 'Date'), W.inp('heure', 'Heure', {type: 'time'})) + W.row(W.inp('loc.prenom', 'Locataire — prénom'), W.inp('loc.nom', 'Nom')) + (sortie ? W.inp('nouvelle_adresse', 'Nouvelle adresse du locataire (obligatoire)') : '') + W.inp('logement.ancien', 'Nom de l\'ancien occupant (facultatif)'))
+        + W.card('Le logement', W.inp('logement.adresse', 'Adresse') + W.row(W.inp('logement.etage', 'Étage'), W.inp('logement.appart', 'N° d\'appartement')) + W.row(W.num('logement.surface', 'Surface (m²)', {step: '0.01'}), W.chips('logement.type', 'Type', ['Appartement', 'Maison', 'Autre'])))
+        + W.card('Compteurs', W.row(W.inp('compteurs.elec_n', 'Électricité — n° compteur'), W.inp('compteurs.elec_hp', 'Heures pleines')) + hint('elec_hp') + W.row(W.inp('compteurs.elec_hc', 'Heures creuses'), W.inp('compteurs.gaz_n', 'Gaz — n° compteur')) + W.inp('compteurs.gaz_rel', 'Gaz — relevé') + hint('gaz_rel') + W.row(W.inp('compteurs.eau_chaude', 'Eau chaude (m³)'), W.inp('compteurs.eau_froide', 'Eau froide (m³)')) + hint('eau_froide'), 'Photographiez aussi les compteurs : bouton photos de la 1re pièce.')
+        + W.card('Énergie', W.chips('energie.chauffage', 'Chauffage', [['electrique', 'Électrique'], ['gaz', 'Gaz'], ['collectif', 'Collectif'], ['autre', 'Autre']]) + W.chips('energie.ecs', 'Eau chaude', [['electrique', 'Électrique'], ['gaz', 'Gaz'], ['collectif', 'Collectif'], ['autre', 'Autre']]) + W.row(W.inp('energie.chaudiere', 'Chaudière / état'), W.inp('energie.entretien', 'Dernier entretien')) + W.inp('energie.ballon', 'Ballon d\'eau chaude / état'));
+    }, validate: function(d) { if (!d.logement.adresse) return 'Indiquez l\'adresse.'; if (d.kind === 'sortie' && !d.nouvelle_adresse) return 'La nouvelle adresse du locataire est obligatoire.'; } };
+  }
+  function keysStep() {
+    return { title: 'Clés et équipements', render: function(d) {
+      var sortie = d.kind === 'sortie', h = LEGEND;
+      h += W.card('Clés remises', d.cles.map(function(k, i) { return '<div class="keyrow"><input class="fi sm" data-k="cles.' + i + '.type" value="' + E(k.type) + '"><input class="fi sm n" type="number" data-t="num" data-k="cles.' + i + '.nb" value="' + E(k.nb) + '"><button class="btn btng btnsm" data-act="delkey:' + i + '">×</button></div>'; }).join('') + '<button class="btn btng btnsm" data-act="addkey">+ Ajouter une clé</button>');
+      h += W.card('Parties privatives', d.privatives.map(function(p, i) { return '<div class="it"><div class="it-h"><span class="it-n">' + E(p.nom) + '</span><button type="button" class="chp sm' + (p.actif ? ' on' : '') + '" data-k="privatives.' + i + '.actif" data-b="' + (p.actif ? '0' : '1') + '" data-rr="1">' + (p.actif ? 'Concerné' : 'Non concerné') + '</button></div>' + (p.actif ? '<input class="fi sm" data-k="privatives.' + i + '.num" placeholder="N°" value="' + E(p.num) + '">' + stOnly('privatives.' + i, p, sortie) : '') + '</div>'; }).join(''));
+      h += W.card('Équipements et aménagements', d.equip.map(function(p, i) { return itemRow('equip.' + i, p, d.kind); }).join(''));
+      return h;
+    } };
+  }
+  function stOnly(base, it, sortie) {
+    var f = sortie ? 's' : 'e', h = '<div class="stc">';
+    X.STATES.forEach(function(s) { h += '<button type="button" class="chp sm st-' + s + (it[f] === s ? ' on' : '') + '" data-k="' + base + '.' + f + '" data-v="' + s + '">' + s + '</button>'; });
+    return h + '</div>';
+  }
+  function roomStep(pi) {
+    return { title: '', roomIdx: pi, render: function(d) {
+      var p = d.pieces[pi], sortie = d.kind === 'sortie', h = LEGEND;
+      h += '<div class="room-h"><div class="room-t">' + E(p.nom) + '</div><button class="btn btng btnsm" data-act="allB:' + pi + '">Tout « B »</button></div>';
+      h += W.card('Éléments', p.items.map(function(it, i) { return itemRow('pieces.' + pi + '.items.' + i, it, d.kind); }).join(''));
+      h += W.card('Photos', '<div class="phs">' + (p.photos || []).map(function(ph, j) { return '<div class="phs-i"><img src="' + (ph.url || ph.data) + '"><button data-act="delphoto:' + pi + ':' + j + '" aria-label="Supprimer">×</button></div>'; }).join('') + '</div><button class="btn btnp btnsm" data-act="addphoto:' + pi + '" style="width:100%;margin-top:8px">📷 Ajouter des photos</button>' + (sortie && p.photos_entree && p.photos_entree.length ? '<div class="wcs" style="margin-top:8px">' + p.photos_entree.length + ' photo(s) prise(s) à l\'entrée (jointes au document).</div>' : ''));
+      h += W.area('pieces.' + pi + '.comm', 'Remarques sur cette pièce');
+      return h;
+    } };
+  }
+  function mobStep() {
+    return { title: 'Inventaire du mobilier', render: function(d) {
+      return LEGEND + W.note('Liste minimale d\'un logement meublé (décret du 31 juillet 2015). Mettez la quantité à 0 pour un élément absent.') + W.card('Mobilier et équipements', d.inventaire.map(function(it, i) { return '<div class="it"><div class="it-h"><span class="it-n">' + E(it.nom) + '</span><span class="qte">Qté <input class="fi sm n" type="number" data-t="num" data-k="inventaire.' + i + '.qte" value="' + E(it.qte) + '"></span></div>' + (it.qte === 0 ? '' : stOnly('inventaire.' + i, it, d.kind === 'sortie') + (d.kind === 'sortie' ? '<div class="it-e">Entrée : <b>' + (it.e || '—') + '</b></div>' : '')) + '<input class="fi sm" data-k="inventaire.' + i + '.comm" placeholder="Commentaire" value="' + E(it.comm || '') + '"></div>'; }).join('') + '<button class="btn btng btnsm" data-act="addmob">+ Ajouter un élément</button>');
+    } };
+  }
+  function endStep() {
+    return { title: 'Conclusion et signature', noNext: true, render: function(d) {
+      var S = d.signatures || {}, sortie = d.kind === 'sortie', pr = X.progress(d), df = sortie ? X.diffs(d) : [];
+      var h = '';
+      if (pr.ok < pr.tot) h += W.note('⚠️ ' + (pr.tot - pr.ok) + ' élément(s) sans état sur ' + pr.tot + '. Vous pouvez signer quand même.', 'warn');
+      if (sortie) h += W.card('Écarts avec l\'entrée', df.length ? df.map(function(x) { return '<div class="fl2r"><span>' + E(x.zone) + ' — ' + E(x.nom) + '</span><span><span class="st-b ' + x.e + '">' + x.e + '</span> → <span class="st-b ' + x.s + '">' + x.s + '</span></span></div>'; }).join('') : '<div class="wcs">Aucune différence avec l\'état des lieux d\'entrée.</div>');
+      h += W.area('commentaires', 'Commentaires généraux');
+      var need = [['bailleur', 'Bailleur', d.bailleur.nom], ['locataire', 'Locataire', (d.loc.prenom + ' ' + d.loc.nom).trim()]];
+      h += W.card('Signatures', need.map(function(n) { return '<div class="sg-row"><div><b>' + n[1] + '</b><div class="wcs">' + E(n[2]) + '</div></div>' + (S[n[0]] ? '<img class="sg-img" src="' + S[n[0]] + '"><button class="btn btng btnsm" data-act="sign:' + n[0] + '">Refaire</button>' : '<button class="btn btnp btnsm" data-act="sign:' + n[0] + '">Signer</button>') + '</div>'; }).join(''), 'Mention « certifié exact » : le signataire signe à l\'écran.');
+      var ready = S.bailleur && S.locataire;
+      h += W.card('Document', '<div class="sg-actions"><button class="btn btng" data-act="preview">Voir l\'aperçu</button><button class="btn btng" data-act="pdf">Télécharger le PDF</button><button class="btn btnp" data-act="send"' + (ready ? '' : ' disabled') + '>Envoyer par email à ' + E(d.loc.email || 'le locataire') + '</button></div>' + (ready ? '' : W.note('Les deux signatures sont nécessaires avant l\'envoi.')) + (d.loc.email ? '' : W.note('Aucun email pour ce locataire : renseignez-le dans sa fiche.', 'warn')) + '<div class="wcs" style="margin-top:8px">' + (cur.statut === 'envoye' ? '✅ Envoyé' : (cur.statut === 'signe' ? 'Signé' : 'Brouillon enregistré')) + '</div>');
+      return h;
+    } };
+  }
+  function buildSteps(d) {
+    var s = [infoStep(), keysStep()];
+    d.pieces.forEach(function(p, i) { var st = roomStep(i); st.title = p.nom; s.push(st); });
+    s.push(mobStep(), endStep());
+    return s;
+  }
+  function fname(d) { return 'EDL-' + (d.kind === 'sortie' ? 'sortie' : 'entree') + '-' + (d.loc.nom || 'locataire').replace(/[^A-Za-z0-9]/g, '') + '-' + d.date + '.pdf'; }
+
+  async function save(silent) { if (!cur) return; try { await DOCS.save(cur); } catch (e) { if (!silent) toast('Enregistrement impossible', e.message || 'Table dossiers manquante ?'); } }
+
+  async function addPhotos(pi) {
+    var inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true;
+    inp.onchange = async function() {
+      var d = cur.data, p = d.pieces[pi], files = [].slice.call(inp.files);
+      toast('Photos', files.length + ' en cours de traitement…');
+      for (var i = 0; i < files.length; i++) {
+        try {
+          var data = await DOCS.resizeImage(files[i], 1280, 0.72), ph = {data: data};
+          p.photos.push(ph); W.rerender();
+          var url = await DOCS.uploadDataUrl(data, 'dossiers/' + CU.id + '/' + (cur.id || 'tmp') + '/' + Date.now() + '_' + i + '.jpg');
+          if (url) { ph.url = url; delete ph.data; }
+        } catch (e) {}
+      }
+      await save(true); W.rerender();
+    };
+    inp.click();
+  }
+  async function act(name, el) {
+    var d = cur.data, a = name.split(':');
+    if (a[0] === 'addkey') { d.cles.push({id: DOCS.uid(), type: 'Clé', nb: 1, comm: ''}); return W.rerender(); }
+    if (a[0] === 'delkey') { d.cles.splice(+a[1], 1); return W.rerender(); }
+    if (a[0] === 'addmob') { var n = prompt && null; d.inventaire.push({id: DOCS.uid(), nom: 'Nouvel élément', qte: 1, e: '', s: '', comm: ''}); return W.rerender(); }
+    if (a[0] === 'allB') { var f = d.kind === 'sortie' ? 's' : 'e'; d.pieces[+a[1]].items.forEach(function(it) { if (!it[f]) it[f] = 'B'; }); await save(true); return W.rerender(); }
+    if (a[0] === 'addphoto') return addPhotos(+a[1]);
+    if (a[0] === 'delphoto') { d.pieces[+a[1]].photos.splice(+a[2], 1); await save(true); return W.rerender(); }
+    if (a[0] === 'sign') {
+      var who = a[1], url = await DOCS.signPad(who === 'bailleur' ? 'Signature du bailleur' : 'Signature du locataire', 'Je certifie l\'exactitude de cet état des lieux.');
+      if (!url) return;
+      d.signatures = d.signatures || {}; d.signatures[who] = url; d.signatures[who + '_ts'] = stamp();
+      if (d.signatures.bailleur && d.signatures.locataire && cur.statut !== 'envoye') cur.statut = 'signe';
+      await save(); return W.rerender();
+    }
+    if (a[0] === 'preview') return DOCS.BailUI.showPreview(X.html(d));
+    if (a[0] === 'pdf' || a[0] === 'send') {
+      el.disabled = true; var old = el.textContent; el.textContent = 'Création du PDF…';
+      try {
+        var blob = await DOCS.makePdf(X.html(d), fname(d));
+        if (a[0] === 'pdf') { DOCS.download(blob, fname(d)); toast('PDF prêt', fname(d)); }
+        else {
+          el.textContent = 'Envoi…';
+          var nom = (d.loc.prenom + ' ' + d.loc.nom).trim();
+          await DOCS.sendMail({to: d.loc.email, bcc: d.bailleur.email, reply_to: d.bailleur.email, subject: 'État des lieux ' + (d.kind === 'sortie' ? 'de sortie' : 'd\'entrée') + ' — ' + d.logement.adresse,
+            html: '<div style="font-family:Arial,sans-serif;font-size:14px;color:#222;line-height:1.6"><p>Bonjour ' + E(nom) + ',</p><p>Veuillez trouver ci-joint l\'état des lieux ' + (d.kind === 'sortie' ? 'de sortie' : 'd\'entrée') + ' du logement situé ' + E(d.logement.adresse) + ', signé le ' + E(DOCS.fmtDate(d.date)) + '.</p>' + (d.kind === 'entree' ? '<p>Vous disposez de 10 jours pour demander qu\'il soit complété (et jusqu\'au premier mois de la période de chauffe pour l\'état des équipements de chauffage).</p>' : '') + '<p>Cordialement,<br>' + E(d.bailleur.nom) + '</p></div>',
+            attachments: [{filename: fname(d), blob: blob}]});
+          cur.statut = 'envoye'; await save(); toast('Email envoyé', d.loc.email); W.rerender();
+        }
+      } catch (e) { toast('Erreur', e.message || String(e)); }
+      el.disabled = false; el.textContent = old;
+    }
+  }
+
+  U.open = function(dossier, loc, bien, dpe, kind, entree, onClose) {
+    if (dossier) cur = dossier;
+    else {
+      var data = kind === 'sortie' ? X.fromEntree(entree.data) : X.defaults('entree', loc, bien, dpe);
+      cur = {type: kind === 'sortie' ? 'edl_sortie' : 'edl_entree', bien_id: bien && bien.id, locataire_id: loc.id, statut: 'brouillon', data: data};
+    }
+    var steps = buildSteps(cur.data);
+    W.open({title: cur.data.kind === 'sortie' ? 'État des lieux de sortie' : 'État des lieux d\'entrée', steps: steps, data: cur.data, act: act, save: save, onClose: onClose});
+  };
+  return U;
+})();
+
+/* ===== Page "Documents" : baux et états des lieux par locataire ===== */
+(function() {
+  var E = DOCS.esc;
+  var STAT = {brouillon: ['Brouillon', 'wn'], signe: ['Signé', 'ok'], envoye: ['Envoyé', 'ok']};
+  function chip(ds) { if (!ds) return '<span class="pill nt">Pas encore créé</span>'; var s = STAT[ds.statut] || STAT.brouillon; return '<span class="pill ' + s[1] + '">' + s[0] + '</span>'; }
+  function row(label, ds, locId, kind, disabledMsg) {
+    return '<div class="dc-row"><div><div class="dc-l">' + label + '</div>' + chip(ds) + (ds && ds.updated_at ? ' <span class="dc-d">' + DOCS.fmtDate(String(ds.updated_at).slice(0, 10)) + '</span>' : '') + '</div><div class="dc-a">' +
+      (ds ? '<button class="btn btnp btnsm" data-d="open" data-id="' + ds.id + '">Ouvrir</button><button class="btn btng btnsm" data-d="del" data-id="' + ds.id + '" aria-label="Supprimer">🗑</button>' : '<button class="btn btng btnsm" data-d="new" data-k="' + kind + '" data-l="' + locId + '">+ Créer</button>') + '</div></div>';
+  }
+  function setupCard() {
+    return '<div class="card"><div class="ch"><div class="ct">Une étape de préparation</div></div><div style="padding:0 18px 18px"><p style="font-size:13.5px;line-height:1.5;margin-bottom:10px">Pour enregistrer vos baux et états des lieux, il faut créer une table dans votre base Supabase. À faire une seule fois :</p><ol style="font-size:13.5px;line-height:1.7;padding-left:20px;margin-bottom:10px"><li>Touchez « Copier le code ».</li><li>Ouvrez Supabase, puis <b>SQL Editor</b>, puis <b>New query</b>.</li><li>Collez le code et touchez <b>Run</b>.</li><li>Revenez ici et touchez « Vérifier ».</li></ol><pre class="sqlbox">' + E(DOCS.SQL) + '</pre><div style="display:flex;gap:8px;margin-top:10px"><button class="btn btnp btnsm" data-d="copy">Copier le code</button><button class="btn btng btnsm" data-d="recheck">Vérifier</button></div></div></div>';
+  }
+  async function dpeFor(bienId) { try { var r = await SB.from('dpe').select('*').eq('bien_id', bienId).eq('user_id', CU.id).single(); return r.data || null; } catch (e) { return null; } }
+
+  window.loadDocuments = async function() {
+    var box = ge('doc-main'); if (!box || !CU) return;
+    var locs = await getLocs(), biens = await getBiens(), res = await DOCS.list();
+    if (res.error) { box.innerHTML = setupCard(); return; }
+    var ds = res.data;
+    if (!locs.length) { box.innerHTML = ''; box.appendChild(makeEmpty('&#128196;', 'Aucun locataire', 'Ajoutez un locataire pour créer son bail')); return; }
+    var h = '';
+    locs.forEach(function(loc) {
+      var bien = biens.find(function(b) { return b.id === loc.bien_id; }), mine = ds.filter(function(x) { return x.locataire_id === loc.id; });
+      var bail = mine.find(function(x) { return x.type === 'bail'; }), ein = mine.find(function(x) { return x.type === 'edl_entree'; }), eout = mine.find(function(x) { return x.type === 'edl_sortie'; });
+      h += '<div class="card dc"><div class="dc-h"><div class="lc-av" style="background:linear-gradient(135deg,#C8502A,#E8895F)">' + E((loc.prenom || '?').charAt(0) + (loc.nom || '').charAt(0)) + '</div><div><div class="dc-n">' + E(loc.prenom + ' ' + loc.nom) + '</div><div class="dc-b">' + E(bien ? bien.nom : 'Aucun bien associé') + '</div></div></div>'
+        + row('Bail meublé', bail, loc.id, 'bail') + row('État des lieux d\'entrée', ein, loc.id, 'edl_entree') + row('État des lieux de sortie', eout, loc.id, 'edl_sortie') + '</div>';
+    });
+    box.innerHTML = h;
+    box._ds = ds; box._locs = locs; box._biens = biens;
+  };
+
+  document.addEventListener('click', async function(e) {
+    var el = e.target.closest && e.target.closest('#doc-main [data-d]'); if (!el) return;
+    var box = ge('doc-main'), a = el.getAttribute('data-d');
+    if (a === 'copy') { try { await navigator.clipboard.writeText(DOCS.SQL); toast('Copié', 'Collez-le dans le SQL Editor de Supabase.'); } catch (x) { var pre = box.querySelector('.sqlbox'); var r = document.createRange(); r.selectNodeContents(pre); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); toast('Sélectionné', 'Copiez le texte sélectionné.'); } return; }
+    if (a === 'recheck') return loadDocuments();
+    var refresh = function() { loadDocuments(); };
+    if (a === 'del') { if (confirm('Supprimer ce document ? Cette action est définitive.')) { await DOCS.remove(el.getAttribute('data-id')); refresh(); } return; }
+    var ds = box._ds || [], locs = box._locs || [], biens = box._biens || [];
+    if (a === 'open') {
+      var d = ds.find(function(x) { return x.id === el.getAttribute('data-id'); }); if (!d) return;
+      var loc = locs.find(function(l) { return l.id === d.locataire_id; }) || {}, bien = biens.find(function(b) { return b.id === d.bien_id; }), dpe = bien ? await dpeFor(bien.id) : null;
+      if (d.type === 'bail') DOCS.BailUI.open(d, loc, bien, dpe, refresh);
+      else DOCS.EdlUI.open(d, loc, bien, dpe, d.type === 'edl_sortie' ? 'sortie' : 'entree', null, refresh);
+    }
+    if (a === 'new') {
+      var k = el.getAttribute('data-k'), loc2 = locs.find(function(l) { return l.id === el.getAttribute('data-l'); }), bien2 = biens.find(function(b) { return b.id === loc2.bien_id; }), dpe2 = bien2 ? await dpeFor(bien2.id) : null;
+      if (k === 'bail') DOCS.BailUI.open(null, loc2, bien2, dpe2, refresh);
+      else if (k === 'edl_entree') DOCS.EdlUI.open(null, loc2, bien2, dpe2, 'entree', null, refresh);
+      else {
+        var ein = ds.find(function(x) { return x.locataire_id === loc2.id && x.type === 'edl_entree'; });
+        var entree = ein || {data: DOCS.Edl.defaults('entree', loc2, bien2, dpe2)};
+        DOCS.EdlUI.open(null, loc2, bien2, dpe2, 'sortie', entree, refresh);
+      }
+    }
+  });
+})();
+
+/* ===== Banque : lecture du compte (Enable Banking via Worker) et rapprochement des loyers ===== */
+(function() {
+  var W = 'https://bailsmart.mikaeldonde.workers.dev';
+  var MOIS = ['Janvier','Fevrier','Mars','Avril','Mai','Juin','Juillet','Aout','Septembre','Octobre','Novembre','Decembre'];
+  var B = window.BANK = {row: null};
+  function norm(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim(); }
+  window.bsMoisKey = function(m) {
+    m = String(m || ''); var iso = m.match(/^(\d{4})-(\d{2})/); if (iso) return iso[1] + '-' + iso[2];
+    var p = norm(m).split(' '), i = MOIS.map(norm).indexOf(p[0]), y = parseInt(p[1], 10);
+    return i >= 0 && y ? y + '-' + ('0' + (i + 1)).slice(-2) : '';
+  };
+  function moisLabel(key) { var a = key.split('-'); return MOIS[parseInt(a[1], 10) - 1] + ' ' + a[0]; }
+  async function call(action, payload) {
+    var s = await SB.auth.getSession(), tok = s && s.data && s.data.session && s.data.session.access_token;
+    var r = await fetch(W, {method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok}, body: JSON.stringify(Object.assign({action: action}, payload))});
+    var j = await r.json().catch(function() { return {}; });
+    if (!r.ok) throw new Error(j.error || ('Erreur ' + r.status));
+    return j;
+  }
+  B.load = async function() {
+    var r = await SB.from('dossiers').select('*').eq('user_id', CU.id).eq('type', 'banque');
+    if (r.error) { B.row = null; B.noTable = true; return null; }
+    B.noTable = false; B.row = (r.data || [])[0] || null; return B.row;
+  };
+  async function saveRow(data) {
+    var row = {user_id: CU.id, type: 'banque', statut: 'actif', data: data, updated_at: new Date().toISOString()};
+    if (B.row) { var u = await SB.from('dossiers').update(row).eq('id', B.row.id); if (u.error) throw u.error; B.row.data = data; }
+    else { var r = await SB.from('dossiers').insert(row).select().single(); if (r.error) throw r.error; B.row = r.data; }
+  }
+  B.connect = async function() {
+    try {
+      var st = 'bs' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      try { localStorage.setItem('bailsmart_bank_state', st); } catch (e) {}
+      var j = await call('bank_auth', {state: st, redirect_url: 'https://mikaeldonde.github.io/bailsmart/'});
+      location.href = j.url;
+    } catch (e) { toast('Banque', e.message); }
+  };
+  B.handleReturn = async function() {
+    var q = new URLSearchParams(location.search), code = q.get('code'), st = q.get('state');
+    if (!code || !st || st.indexOf('bs') !== 0) return false;
+    var saved = null; try { saved = localStorage.getItem('bailsmart_bank_state'); } catch (e) {}
+    history.replaceState(null, '', location.pathname);
+    if (saved && saved !== st) { toast('Banque', 'Retour inattendu : connexion annulée.'); return true; }
+    try {
+      await B.load();
+      var j = await call('bank_session', {code: code});
+      await saveRow({session_id: j.session_id, valid_until: j.valid_until, accounts: j.accounts, last_sync: null});
+      try { localStorage.removeItem('bailsmart_bank_state'); } catch (e) {}
+      toast('Banque connectée', 'Synchronisation en cours…');
+      await B.sync(true);
+    } catch (e) { toast('Banque', e.message); }
+    return true;
+  };
+  function amountOk(t, exp) { return exp.some(function(e) { return Math.abs(t.amount - e) <= 0.5; }); }
+  B.sync = async function(manual) {
+    if (!B.row) await B.load(); var d = B.row && B.row.data;
+    if (!d || !d.accounts || !d.accounts.length) { if (manual) toast('Banque', 'Aucun compte connecté.'); return null; }
+    var now = new Date(), start = new Date(now.getFullYear(), now.getMonth() - 3, 20), df = start.toISOString().slice(0, 10);
+    var tx = [];
+    for (var i = 0; i < d.accounts.length; i++) tx = tx.concat((await call('bank_transactions', {account_uid: d.accounts[i].uid, date_from: df})).transactions || []);
+    tx = tx.filter(function(t) { return t.credit && t.date && t.amount > 0; });
+    var locs = await getLocs(), biens = await getBiens();
+    var pr = await SB.from('paiements').select('*').eq('user_id', CU.id), pays = pr.data || [];
+    var used = {}, res = {ok: 0, pt: 0, manque: [], confirmer: []}, cur = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2);
+    for (var k = 2; k >= 0; k--) {
+      var md = new Date(now.getFullYear(), now.getMonth() - k, 1), key = md.getFullYear() + '-' + ('0' + (md.getMonth() + 1)).slice(-2);
+      var from = new Date(md.getFullYear(), md.getMonth() - 1, 25).toISOString().slice(0, 10), to = new Date(md.getFullYear(), md.getMonth() + 1, 0).toISOString().slice(0, 10);
+      for (var j = 0; j < locs.length; j++) {
+        var l = locs[j], b = biens.find(function(x) { return x.id === l.bien_id; }) || {};
+        if (l.date_entree && l.date_entree.slice(0, 7) > key) continue;
+        if (l.date_sortie && l.date_sortie.slice(0, 7) < key) continue;
+        var loyer = Number(l.loyer || b.loyer || 0), ch = Number(l.charges || b.charges || 0); if (!loyer) continue;
+        var exp = [loyer, loyer + ch], nom = norm(l.nom), pre = norm(l.prenom);
+        var have = pays.find(function(p) { return p.locataire_id === l.id && bsMoisKey(p.mois) === key; });
+        if (have && have.statut === 'ok') continue;
+        var cands = tx.filter(function(t) { return !used[t.id || t.date + t.amount + t.debtor] && t.date >= from && t.date <= to; });
+        var byName = cands.filter(function(t) { var h = norm(t.debtor + ' ' + t.info); return nom.length >= 3 && h.indexOf(nom) >= 0 && (!pre || true); });
+        var full = byName.filter(function(t) { return amountOk(t, exp) || t.amount > exp[1]; })[0];
+        var part = !full && byName[0];
+        var amt = cands.filter(function(t) { return byName.indexOf(t) < 0 && amountOk(t, exp); });
+        var others = locs.filter(function(o) { return o.id !== l.id && (Number(o.loyer) === loyer || Number(o.loyer) + Number(o.charges || 0) === loyer + ch); }).length;
+        var hit = full || part || null, statut = full ? 'ok' : (part ? 'pt' : null);
+        if (!hit && amt.length === 1 && !others) { hit = amt[0]; statut = 'ok'; }
+        if (!hit && amt.length) { res.confirmer.push(l.prenom + ' ' + l.nom + ' · ' + moisLabel(key)); }
+        if (!hit) { if (key < cur || now.getDate() > 5) res.manque.push({loc: l.prenom + ' ' + l.nom, mois: moisLabel(key)}); continue; }
+        used[hit.id || hit.date + hit.amount + hit.debtor] = 1;
+        var rowp = {user_id: CU.id, locataire_id: l.id, bien_id: l.bien_id || null, mois: moisLabel(key), montant: hit.amount, statut: statut};
+        var e1 = have ? await SB.from('paiements').update({montant: hit.amount, statut: statut}).eq('id', have.id) : await SB.from('paiements').insert(rowp);
+        if (e1 && e1.error) throw e1.error;
+        res[statut]++;
+      }
+    }
+    d.last_sync = new Date().toISOString(); d.last_result = {ok: res.ok, pt: res.pt, manque: res.manque.length, confirmer: res.confirmer.length};
+    await saveRow(d);
+    if (manual) toast('Banque synchronisée', res.ok + ' loyer(s) reconnu(s)' + (res.manque.length ? ', ' + res.manque.length + ' non retrouvé(s)' : ''));
+    B.last = res; return res;
+  };
+  function daysLeft(d) { return d && d.valid_until ? Math.ceil((new Date(d.valid_until) - new Date()) / 864e5) : null; }
+  B.render = async function() {
+    var box = ge('bank-card'); if (!box || !CU) return;
+    await B.load();
+    if (B.noTable) { box.innerHTML = ''; return; }
+    var d = B.row && B.row.data, h;
+    if (!d) {
+      h = '<div class="ch"><div class="ct">Banque</div></div><div style="padding:0 18px 18px"><p style="font-size:13.5px;line-height:1.5;margin-bottom:12px">Connectez votre compte Caisse d\'Epargne : BailSmart repère les virements de loyer et marque les paiements tout seul.</p><button class="btn btnp" id="bk-conn">Connecter ma banque</button></div>';
+    } else {
+      var n = daysLeft(d), exp = n !== null && n <= 0, soon = n !== null && n > 0 && n <= 10, r = d.last_result || {};
+      h = '<div class="ch"><div class="ct">Banque</div><span class="pill ' + (exp ? 'dng' : soon ? 'wn' : 'ok') + '">' + (exp ? 'Accès expiré' : soon ? 'Expire dans ' + n + ' j' : 'Connectée') + '</span></div><div style="padding:0 18px 18px">' +
+        '<p style="font-size:13.5px;line-height:1.5;margin-bottom:12px">' + (d.last_sync ? 'Dernière synchro : ' + new Date(d.last_sync).toLocaleString('fr-FR', {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'}) + '. ' : '') +
+        (d.last_result ? r.ok + ' loyer(s) reconnu(s)' + (r.manque ? ', ' + r.manque + ' non retrouvé(s)' : '') + (r.confirmer ? ', ' + r.confirmer + ' à vérifier à la main' : '') + '.' : '') + '</p>' +
+        (exp || soon ? '<button class="btn btnp" id="bk-conn">Renouveler l\'accès</button> ' : '') + (!exp ? '<button class="btn btng" id="bk-sync">Synchroniser maintenant</button>' : '') + '</div>';
+    }
+    box.innerHTML = h;
+    var c = ge('bk-conn'), s = ge('bk-sync');
+    if (c) c.onclick = B.connect;
+    if (s) s.onclick = async function() { s.disabled = true; s.textContent = 'Synchronisation…'; try { await B.sync(true); } catch (e) { toast('Banque', e.message); } B.render(); if (window.loadLoyers) loadLoyers(); };
+  };
+  var _ll = window.loadLoyers;
+  window.loadLoyers = async function() { var r = _ll.apply(this, arguments); try { B.render(); } catch (e) {} return r; };
+  var tries = 0, iv = setInterval(async function() {
+    if (++tries > 120) return clearInterval(iv);
+    if (typeof CU === 'undefined' || !CU) return; clearInterval(iv);
+    try {
+      var back = await B.handleReturn();
+      if (back) { goTo('loyers', null); return; }
+      await B.load();
+      var d = B.row && B.row.data, n = daysLeft(d);
+      if (d && (n === null || n > 0) && (!d.last_sync || Date.now() - new Date(d.last_sync) > 6 * 36e5)) { await B.sync(false); if (window.loadLoyers && ge('p-loyers') && ge('p-loyers').classList.contains('on')) loadLoyers(); }
+    } catch (e) {}
+  }, 500);
+})();
 
 </script>
 </body>
