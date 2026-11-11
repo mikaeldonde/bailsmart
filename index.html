@@ -473,6 +473,7 @@ textarea.fi{resize:vertical;min-height:70px}
       <div class="ni" onclick="goTo('fiscalite',this)"><span class="nico">&#128202;</span> Fiscalite</div>
       <div class="ns">Outils</div>
       <div class="ni" onclick="goTo('quittances',this)"><span class="nico">&#129398;</span> Quittances</div>
+      <div class="ni" onclick="goTo('elec',this)"><span class="nico">&#9889;</span> &Eacute;lectricit&eacute;</div>
       <div class="ni" onclick="goTo('documents',this)"><span class="nico">&#128196;</span> Documents</div>
       <div class="ni" onclick="goTo('juridique',this)"><span class="nico">&#9878;</span> Juridique</div>
       <div class="ni" onclick="goTo('annonces',this)"><span class="nico">&#128228;</span> Annonces IA</div>
@@ -761,6 +762,11 @@ textarea.fi{resize:vertical;min-height:70px}
     <div class="pg" id="p-documents">
       <div class="topb"><div class="tbl"><div><div class="tbti">Documents</div><div class="tbsu">Baux et &eacute;tats des lieux</div></div></div></div>
       <div class="cnt" id="doc-main"><div class="loading"><div class="spin"></div></div></div>
+    </div>
+
+    <div class="pg" id="p-elec">
+      <div class="topb"><div class="tbl"><div><div class="tbti">&Eacute;lectricit&eacute;</div><div class="tbsu">Relev&eacute;s et refacturation</div></div></div></div>
+      <div class="cnt" id="elec-main"><div class="loading"><div class="spin"></div></div></div>
     </div>
 
     <!-- JURIDIQUE -->
@@ -1260,6 +1266,7 @@ function goTo(p, navEl) {
   if (p === 'fiscalite') loadFiscalite();
   if (p === 'quittances') loadQuittances();
   if (p === 'documents') loadDocuments();
+  if (p === 'elec') loadElec();
   if (p === 'juridique') loadJuridique();
   if (p === 'annonces') loadAnnonces();
   if (p === 'carte') loadCarte();
@@ -1348,7 +1355,7 @@ var _JOURS = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi']
 function syncBnav(p) {
   document.querySelectorAll('.bn').forEach(function(b) {
     var k = b.getAttribute('data-p');
-    b.classList.toggle('on', k === p || (k === 'more' && ['locataires','charges','fiscalite','quittances','documents','juridique','annonces','carte','compta','parametres'].indexOf(p) !== -1));
+    b.classList.toggle('on', k === p || (k === 'more' && ['locataires','charges','fiscalite','quittances','documents','elec','juridique','annonces','carte','compta','parametres'].indexOf(p) !== -1));
   });
 }
 function openQA() { closeSB(); ge('qa').classList.add('open'); ge('qa-ov').classList.add('show'); }
@@ -5009,6 +5016,290 @@ DOCS.EdlUI = (function() {
     sec.querySelectorAll('.ar-rs').forEach(function(b) { b.onclick = function() { restore(this.dataset.id); }; });
     sec.querySelectorAll('.ar-del').forEach(function(b) { b.onclick = function() { askDelete('loc', this.dataset.id, this.dataset.label); }; });
   };
+})();
+
+/* ===== Électricité : relevés des sous-compteurs, refacturation aux locataires ===== */
+(function() {
+  var E = DOCS.esc, F = DOCS.fmtE, FD = DOCS.fmtDate;
+  var W = 'https://bailsmart.mikaeldonde.workers.dev';
+  var X = window.ELEC = {sel: null, cfgs: {}, rel: [], busy: false};
+  var R2 = function(x) { return Math.round(x * 100) / 100; };
+  var num = function(v) { var n = parseFloat(String(v).replace(/\s/g, '').replace(',', '.')); return isNaN(n) ? null : n; };
+  var N = function(x, d) { return (x === null || x === undefined || isNaN(x)) ? '' : Number(x).toLocaleString('fr-FR', {minimumFractionDigits: d || 0, maximumFractionDigits: d === undefined ? 2 : d}); };
+  var today = function() { return new Date().toISOString().slice(0, 10); };
+  var days = function(a, b) { return Math.round((new Date(b + 'T12:00:00') - new Date(a + 'T12:00:00')) / 864e5); };
+
+  /* ---------- calcul (pur) ---------- */
+  function tarifAt(ts, d) { var t = ts[0]; ts.forEach(function(x) { if (x.from <= d) t = x; }); return t; }
+  function segments(ts, d0, d1) {
+    ts = ts.slice().sort(function(a, b) { return a.from < b.from ? -1 : 1; });
+    var cuts = [d0]; ts.forEach(function(t) { if (t.from > d0 && t.from < d1) cuts.push(t.from); }); cuts.push(d1);
+    var out = []; for (var i = 0; i < cuts.length - 1; i++) { var n = days(cuts[i], cuts[i + 1]); if (n > 0) out.push({t: tarifAt(ts, cuts[i]), days: n}); }
+    return out;
+  }
+  X.calc = function(cfg, mode, prev, cur) {
+    var d = days(prev.date, cur.date);
+    if (d <= 0) return {err: 'La date du relevé doit être après le relevé précédent (' + FD(prev.date) + ').'};
+    if (!cfg.tarifs || !cfg.tarifs.length) return {err: 'Aucun tarif défini.'};
+    var sg = segments(cfg.tarifs, prev.date, cur.date), months = (d >= 27 && d <= 34) ? 1 : d / 30.4375, parts = cfg.parts || 3, hcs = cfg.hc_share == null ? 0.33 : cfg.hc_share;
+    var kHP = null, kHC = null, kT = null;
+    if (mode === 'hphc') { kHP = cur.hp - prev.hp; kHC = cur.hc - prev.hc; if (kHP < 0 || kHC < 0) return {err: 'Un index est inférieur au précédent.'}; }
+    else { kT = cur.idx - prev.idx; if (kT < 0) return {err: "L'index est inférieur au précédent."}; }
+    var aHP = 0, aHC = 0, aT = 0, fixed = 0, aboLast = 0;
+    sg.forEach(function(s) {
+      var sh = s.days / d; aboLast = s.t.abo;
+      if (mode === 'hphc') { aHP += kHP * sh * s.t.hp; aHC += kHC * sh * s.t.hc; }
+      else { aT += kT * sh * (hcs * s.t.hc + (1 - hcs) * s.t.hp); }
+      fixed += sh * months * s.t.abo / parts;
+    });
+    var lines = [];
+    if (mode === 'hphc') {
+      lines.push({label: 'Heures pleines', kwh: kHP, pu: kHP ? aHP / kHP : 0, amt: R2(aHP), from: prev.hp, to: cur.hp});
+      lines.push({label: 'Heures creuses', kwh: kHC, pu: kHC ? aHC / kHC : 0, amt: R2(aHC), from: prev.hc, to: cur.hc});
+    } else lines.push({label: 'Consommation', kwh: kT, pu: kT ? aT / kT : 0, amt: R2(aT), from: prev.idx, to: cur.idx});
+    var fx = {label: 'Part des charges fixes (abonnement 1/' + parts + ')', amt: R2(fixed), abo: aboLast, months: months, parts: parts};
+    var total = R2(lines.reduce(function(s, l) { return s + l.amt; }, 0) + fx.amt);
+    return {days: d, lines: lines, fixed: fx, total: total, multi: sg.length > 1};
+  };
+
+  /* ---------- données ---------- */
+  async function call(action, payload) {
+    var s = await SB.auth.getSession(), tok = s && s.data && s.data.session && s.data.session.access_token;
+    var r = await fetch(W, {method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok}, body: JSON.stringify(Object.assign({action: action}, payload))});
+    var j = await r.json().catch(function() { return {}; });
+    if (!r.ok) throw new Error(j.error || ('Erreur ' + r.status));
+    return j;
+  }
+  async function loadAll() {
+    var r = await DOCS.list(); if (r.error) { X.noTable = true; return; } X.noTable = false;
+    X.cfgs = {}; X.rel = [];
+    r.data.forEach(function(d) { if (d.type === 'elec_cfg') X.cfgs[d.data.immeuble_id] = {row: d, c: d.data}; else if (d.type === 'elec_releve') X.rel.push(d); });
+    X.rel.sort(function(a, b) { return (b.data.date || '').localeCompare(a.data.date || ''); });
+  }
+  async function saveCfg(imm, c) {
+    var cur = X.cfgs[imm.id]; c.immeuble_id = imm.id;
+    var row = {user_id: CU.id, type: 'elec_cfg', statut: 'actif', data: c, updated_at: new Date().toISOString()};
+    if (cur) { var u = await SB.from('dossiers').update(row).eq('id', cur.row.id); if (u.error) throw u.error; cur.c = c; cur.row.data = c; }
+    else { var r = await SB.from('dossiers').insert(row).select().single(); if (r.error) throw r.error; X.cfgs[imm.id] = {row: r.data, c: c}; }
+  }
+  function defaultCfg(imm, biens) {
+    var edf = /orange/i.test(imm.nom || '');
+    return {immeuble_id: imm.id, mode: edf ? 'edf' : 'manuel', option: edf ? 'HC' : 'Base', kva: edf ? 18 : null, parts: Math.max(biens.length, 1), hc_share: 0.33, auto_send: true, auto_update: true,
+      lots: {}, tarifs: edf ? [{from: '2026-08-01', abo: 31.14, hc: 0.1589, hp: 0.2142, src: 'manuel'}] : [], log: []};
+  }
+  function lastBefore(bienId, date) {
+    return X.rel.filter(function(r) { return r.bien_id === bienId && r.data.date < date; }).sort(function(a, b) { return b.data.date.localeCompare(a.data.date); })[0] || null;
+  }
+  function lotMode(c, bienId) { return (c.lots && c.lots[bienId] && c.lots[bienId].mode) || (c.option === 'Base' ? 'single' : 'hphc'); }
+
+  /* ---------- feuille modale ---------- */
+  function sheet(html) {
+    var ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(20,18,16,.55);z-index:9000;display:flex;align-items:flex-end;justify-content:center;overflow:auto';
+    ov.innerHTML = '<div style="background:var(--sf);width:100%;max-width:520px;border-radius:22px 22px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto">' + html + '</div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click', function(e) { if (e.target === ov) ov.remove(); });
+    return ov;
+  }
+
+  /* ---------- tarifs : mise à jour automatique ---------- */
+  function plausible(n, o) { return o && Math.abs(n - o) / o <= 0.12; }
+  X.refresh = async function(imm, manual) {
+    var cur = X.cfgs[imm.id]; if (!cur || cur.c.mode !== 'edf') { if (manual) toast('Tarifs', 'Les tarifs de cet immeuble se saisissent à la main.'); return; }
+    var c = cur.c;
+    try {
+      var j = await call('tarifs_refresh', {option: c.option === 'Base' ? 'base' : 'hc', kva: c.kva});
+      c.last_check = new Date().toISOString();
+      if (j.erreur || j.error || !j.abo) { await saveCfg(imm, c); if (manual) toast('Tarifs', j.erreur || j.error || 'Tarif introuvable.'); return; }
+      var cands = [{from: j.from, abo: +j.abo, hc: +j.hc, hp: +j.hp, src: 'auto'}];
+      if (j.prochain && j.prochain.from && j.prochain.from > today() && +j.prochain.abo) cands.push({from: j.prochain.from, abo: +j.prochain.abo, hc: +j.prochain.hc, hp: +j.prochain.hp, src: 'auto'});
+      var applied = 0, pending = null;
+      cands.forEach(function(n) {
+        if (!n.from || !(n.abo > 5 && n.abo < 100 && n.hc > 0.05 && n.hc < 0.6 && n.hp > 0.05 && n.hp < 0.6 && n.hc <= n.hp)) return;
+        var ref = tarifAt(c.tarifs.slice().sort(function(a, b) { return a.from < b.from ? -1 : 1; }), n.from);
+        if (ref && ref.from === n.from && ref.abo === n.abo && ref.hc === n.hc && ref.hp === n.hp) return;
+        if (c.tarifs.some(function(t) { return t.from === n.from; })) return;
+        if (!ref || (plausible(n.abo, ref.abo) && plausible(n.hc, ref.hc) && plausible(n.hp, ref.hp)) && c.auto_update) { c.tarifs.push(n); applied++; c.log = (c.log || []).concat([{d: today(), m: 'Nouveau tarif au ' + n.from + ' : abo ' + n.abo + ' €, HC ' + n.hc + ' €, HP ' + n.hp + ' €'}]); }
+        else pending = Object.assign({source: j.source}, n);
+      });
+      c.tarifs.sort(function(a, b) { return a.from < b.from ? -1 : 1; }); c.pending = pending || null;
+      await saveCfg(imm, c);
+      if (applied) toast('Tarifs mis à jour', applied + ' nouveau(x) tarif(s) appliqué(s).'); else if (pending) toast('Tarifs', 'Un nouveau tarif est à confirmer.'); else if (manual) toast('Tarifs', 'Déjà à jour.');
+    } catch (e) { if (manual) toast('Tarifs', e.message); }
+  };
+
+  /* ---------- rendu ---------- */
+  function latestTarif(c) { return c.tarifs.length ? tarifAt(c.tarifs.slice().sort(function(a, b) { return a.from < b.from ? -1 : 1; }), today()) : null; }
+  function setupHint(imm) { return '<div class="card"><div class="ch"><div class="ct">Configurer ' + E(imm.nom) + '</div></div><div style="padding:0 18px 18px"><p style="font-size:13.5px;line-height:1.5;margin-bottom:12px">Indiquez le tarif et le nombre de parts pour répartir les charges fixes. C\'est à faire une seule fois.</p><button class="btn btnp" id="el-cfg">Configurer</button></div></div>'; }
+  window.loadElec = async function() {
+    var box = ge('elec-main'); if (!box || !CU) return;
+    var imms = await getImmeubles(), allBiens = await getBiens(), locs = await getLocs();
+    await loadAll();
+    if (X.noTable) { box.innerHTML = '<div class="card"><div class="ch"><div class="ct">Une étape de préparation</div></div><div style="padding:0 18px 18px"><p style="font-size:13.5px;line-height:1.5">Ouvrez d\'abord l\'onglet Documents : il vous guide pour créer la table nécessaire (une seule fois).</p></div></div>'; return; }
+    if (!imms.length) { box.innerHTML = ''; box.appendChild(makeEmpty('&#9889;', 'Aucun immeuble', 'Créez un immeuble dans l\'onglet Biens et rattachez-y vos appartements')); return; }
+    if (!X.sel || !imms.some(function(i) { return i.id === X.sel; })) X.sel = imms[0].id;
+    var imm = imms.find(function(i) { return i.id === X.sel; }), biens = allBiens.filter(function(b) { return b.immeuble_id === imm.id; });
+    var cur = X.cfgs[imm.id], c = cur ? cur.c : null, h = '';
+    if (imms.length > 1) { h += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">' + imms.map(function(i) { return '<button class="btn ' + (i.id === imm.id ? 'btnp' : 'btng') + ' btnsm el-imm" data-id="' + i.id + '">' + E(i.nom) + '</button>'; }).join('') + '</div>'; }
+    if (!biens.length) { h += '<div class="card"><div style="padding:18px;font-size:13.5px;line-height:1.5">Aucun appartement n\'est rattaché à « ' + E(imm.nom) + ' ». Ouvrez un bien (Modifier) et choisissez cet immeuble.</div></div>'; box.innerHTML = h; bind(box, imm, biens, locs); return; }
+    if (!c) { h += setupHint(imm); box.innerHTML = h; bind(box, imm, biens, locs, defaultCfg(imm, biens)); return; }
+    var t = latestTarif(c);
+    h += '<div class="card" style="margin-bottom:14px"><div class="ch"><div class="ct">Tarif · ' + (c.mode === 'edf' ? 'EDF Tarif Bleu ' + E(c.option) + ' ' + c.kva + ' kVA' : 'Abonnement ' + (c.option === 'Base' ? 'à tarif unique' : 'heures creuses') + ' (saisie manuelle)') + '</div><button class="btn btng btnsm" id="el-cfg">Modifier</button></div><div style="padding:0 18px 16px;font-size:13.5px;line-height:1.6">' +
+      (t ? 'Abonnement <strong>' + F(t.abo) + '</strong>/mois · ' + (c.option === 'Base' ? 'kWh <strong>' + N(t.hp, 4) + ' €</strong>' : 'HC <strong>' + N(t.hc, 4) + ' €</strong> · HP <strong>' + N(t.hp, 4) + ' €</strong> le kWh') + '<br><span style="color:var(--mu)">en vigueur depuis le ' + FD(t.from) + ' · charges fixes réparties en ' + c.parts + ' parts</span>' : '<span style="color:var(--a2)">Aucun tarif : cliquez sur Modifier.</span>') +
+      (c.pending ? '<div style="margin-top:10px;padding:10px 12px;background:var(--s2);border-radius:12px">Nouveau tarif détecté au ' + FD(c.pending.from) + ' : abo ' + F(c.pending.abo) + ', HC ' + N(c.pending.hc, 4) + ' €, HP ' + N(c.pending.hp, 4) + ' €. <button class="btn btnp btnsm" id="el-apply" style="margin-left:6px">Appliquer</button></div>' : '') +
+      (c.mode === 'edf' ? '<div style="margin-top:10px"><button class="btn btng btnsm" id="el-ref">Vérifier les tarifs maintenant</button>' + (c.last_check ? ' <span style="color:var(--mu);font-size:12px">dernière vérification le ' + FD(c.last_check.slice(0, 10)) + '</span>' : '') + '</div>' : '') + '</div></div>';
+    h += newCard(c, biens, locs);
+    h += histCard(biens, locs);
+    box.innerHTML = h; bind(box, imm, biens, locs, c);
+    if (c.mode === 'edf' && c.auto_update !== false && (!c.last_check || Date.now() - new Date(c.last_check) > 7 * 864e5) && !X.busy) { X.busy = true; X.refresh(imm, false).then(function() { X.busy = false; loadElecSoft(); }); }
+  };
+  function loadElecSoft() { var p = ge('p-elec'); if (p && p.classList.contains('on')) window.loadElec(); }
+
+  function lotRow(c, b, loc, date) {
+    var mode = lotMode(c, b.id), prev = lastBefore(b.id, date || '9999-12-31'), p = prev ? prev.data : null, id = b.id;
+    var h = '<div class="el-lot" data-b="' + id + '" style="border:1px solid var(--bd);border-radius:16px;padding:12px 14px;margin-bottom:10px">' +
+      '<div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><div><div style="font-weight:700">' + E(b.nom) + '</div><div style="font-size:12.5px;color:var(--mu)">' + (loc ? E(loc.prenom + ' ' + loc.nom) : 'Vacant : rien n\'est facturé') + '</div></div><div style="display:flex;gap:6px">' + (mode === 'hphc' ? '<button class="btn btng btnsm el-ph" data-b="' + id + '" data-t="hp">📷 HP</button><button class="btn btng btnsm el-ph" data-b="' + id + '" data-t="hc">📷 HC</button>' : '<button class="btn btng btnsm el-ph" data-b="' + id + '" data-t="idx">📷 Photo</button>') + '</div></div>' +
+      '<div style="font-size:12.5px;color:var(--mu);margin:6px 0">' + (p ? 'Dernier relevé le ' + FD(p.date) + ' : ' + (mode === 'hphc' ? 'HP ' + N(p.hp, 0) + ' · HC ' + N(p.hc, 0) : 'index ' + N(p.idx, 0)) : 'Premier relevé : il sert de point de départ, rien n\'est facturé.') + '</div>' +
+      '<div style="display:flex;gap:8px">' + (mode === 'hphc' ? '<div class="fg" style="flex:1;margin:0"><label class="fl">Index HP</label><input class="fi el-in" inputmode="decimal" data-k="hp" data-b="' + id + '"></div><div class="fg" style="flex:1;margin:0"><label class="fl">Index HC</label><input class="fi el-in" inputmode="decimal" data-k="hc" data-b="' + id + '"></div>' : '<div class="fg" style="flex:1;margin:0"><label class="fl">Index</label><input class="fi el-in" inputmode="decimal" data-k="idx" data-b="' + id + '"></div>') + '</div>' +
+      '<div class="el-msg" data-b="' + id + '" style="font-size:12.5px;margin-top:6px;color:var(--mu)"></div><div class="el-prev" data-b="' + id + '" style="margin-top:6px"></div></div>';
+    return h;
+  }
+  function newCard(c, biens, locs) {
+    return '<div class="card" style="margin-bottom:14px"><div class="ch"><div class="ct">Nouveau relevé</div></div><div style="padding:0 18px 18px"><div class="fg"><label class="fl">Date du relevé</label><input class="fi" type="date" id="el-date" value="' + today() + '"></div>' +
+      '<div id="el-lots">' + biens.map(function(b) { return lotRow(c, b, locs.find(function(l) { return l.bien_id === b.id; }), today()); }).join('') + '</div>' +
+      '<button class="btn btnp" id="el-save" style="width:100%">' + (c.auto_send ? 'Valider et envoyer aux locataires' : 'Enregistrer les relevés') + '</button>' +
+      '<p style="font-size:12px;color:var(--mu);margin-top:8px">Les photos ne sont jamais enregistrées : seuls les index sont conservés.</p></div></div>';
+  }
+  function histCard(biens, locs) {
+    var ids = biens.map(function(b) { return b.id; }), list = X.rel.filter(function(r) { return ids.indexOf(r.bien_id) >= 0; }).slice(0, 18);
+    var h = '<div class="card"><div class="ch"><div class="ct">Historique</div></div><div style="padding:0 18px 14px">';
+    if (!list.length) return h + '<p style="font-size:13.5px;color:var(--mu)">Aucun relevé pour l\'instant.</p></div></div>';
+    list.forEach(function(r) {
+      var d = r.data, b = biens.find(function(x) { return x.id === r.bien_id; }), loc = locs.find(function(l) { return l.id === r.locataire_id; });
+      h += '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--bd)"><div style="min-width:0"><div style="font-weight:600;font-size:14px">' + FD(d.date) + ' · ' + E(b ? b.nom : '') + '</div><div style="font-size:12.5px;color:var(--mu)">' + (d.base ? 'Relevé de départ' : (loc ? E(loc.prenom + ' ' + loc.nom) + ' · ' : '') + N(d.kwh, 0) + ' kWh') + '</div></div><div style="text-align:right;white-space:nowrap">' +
+        (d.base ? '' : '<div style="font-weight:700;color:var(--ac)">' + F(d.total) + '</div><span class="pill ' + (r.statut === 'envoye' ? 'ok' : 'wn') + '">' + (r.statut === 'envoye' ? 'Envoyé' : 'À envoyer') + '</span> ' + (d.locataire_id || r.locataire_id ? '<button class="btn btng btnsm el-send" data-id="' + r.id + '">' + (r.statut === 'envoye' ? 'Renvoyer' : 'Envoyer') + '</button>' : '')) + ' <button class="btn btng btnsm el-del" data-id="' + r.id + '" aria-label="Supprimer">🗑</button></div></div>';
+    });
+    return h + '</div></div>';
+  }
+
+  /* ---------- interactions ---------- */
+  function readVals(box, c, b) {
+    var mode = lotMode(c, b.id), o = {};
+    box.querySelectorAll('.el-in[data-b="' + b.id + '"]').forEach(function(i) { o[i.dataset.k] = num(i.value); });
+    var ok = mode === 'hphc' ? (o.hp != null && o.hc != null) : o.idx != null;
+    return ok ? o : null;
+  }
+  function preview(box, imm, c, b, loc) {
+    var date = ge('el-date').value, vals = readVals(box, c, b), out = box.querySelector('.el-prev[data-b="' + b.id + '"]'); if (!out) return;
+    var prev = lastBefore(b.id, date); if (!vals || !prev) { out.innerHTML = ''; return; }
+    var r = X.calc(c, lotMode(c, b.id), prev.data, Object.assign({date: date}, vals));
+    out.innerHTML = r.err ? '<span style="color:var(--dg);font-size:13px">' + E(r.err) + '</span>' : '<span style="font-size:13.5px">' + r.lines.map(function(l) { return N(l.kwh, 0) + ' kWh ' + l.label.toLowerCase(); }).join(' + ') + ' · <strong>' + F(r.total) + '</strong> TTC</span>';
+  }
+  function emailHtml(imm, b, loc, d, r, c) {
+    var bl = DOCS.bailleur(), rows = d.calc.lines.map(function(l) { return '<tr><td style="padding:6px 8px;border:1px solid #ddd">' + l.label + '</td><td style="padding:6px 8px;border:1px solid #ddd">' + N(l.from, 0) + ' → ' + N(l.to, 0) + '</td><td style="padding:6px 8px;border:1px solid #ddd">' + N(l.kwh, 0) + ' kWh × ' + N(l.pu, 4) + ' €</td><td style="padding:6px 8px;border:1px solid #ddd;text-align:right">' + F(l.amt) + '</td></tr>'; }).join('');
+    return '<div style="font-family:Arial,sans-serif;font-size:14px;color:#222;max-width:560px"><p>Bonjour ' + E(loc.prenom) + ',</p><p>Voici votre consommation d\'électricité pour ' + E(b.nom) + ', du ' + FD(d.prev_date) + ' au ' + FD(d.date) + ' (' + d.calc.days + ' jours).</p>' +
+      '<table style="border-collapse:collapse;width:100%;font-size:13px"><tr style="background:#f2efe9"><th style="padding:6px 8px;border:1px solid #ddd;text-align:left">Poste</th><th style="padding:6px 8px;border:1px solid #ddd;text-align:left">Index</th><th style="padding:6px 8px;border:1px solid #ddd;text-align:left">Détail</th><th style="padding:6px 8px;border:1px solid #ddd;text-align:right">Montant TTC</th></tr>' + rows +
+      '<tr><td colspan="3" style="padding:6px 8px;border:1px solid #ddd">' + E(d.calc.fixed.label) + '</td><td style="padding:6px 8px;border:1px solid #ddd;text-align:right">' + F(d.calc.fixed.amt) + '</td></tr>' +
+      '<tr style="background:#f2efe9"><td colspan="3" style="padding:8px;border:1px solid #ddd"><strong>Total à régler</strong></td><td style="padding:8px;border:1px solid #ddd;text-align:right"><strong>' + F(d.total) + '</strong></td></tr></table>' +
+      '<p>Merci de régler ce montant par virement, séparément du loyer.</p><p>Cordialement,<br>' + E(bl.nom || '') + '</p></div>';
+  }
+  async function send(imm, c, rel, biens, locs) {
+    var d = rel.data, b = biens.find(function(x) { return x.id === rel.bien_id; }), loc = locs.find(function(l) { return l.id === rel.locataire_id; });
+    if (!loc || !loc.email) throw new Error((loc ? loc.prenom + ' ' + loc.nom : 'Locataire') + ' : pas d\'adresse email.');
+    var bl = DOCS.bailleur();
+    await DOCS.sendMail({to: loc.email, bcc: bl.email || CU.email, reply_to: bl.email || CU.email, subject: 'Consommation électrique ' + b.nom + ' – relevé du ' + FD(d.date), html: emailHtml(imm, b, loc, d, rel, c)});
+    var u = await SB.from('dossiers').update({statut: 'envoye', data: Object.assign({}, d, {sent_at: new Date().toISOString()}), updated_at: new Date().toISOString()}).eq('id', rel.id);
+    if (u.error) throw u.error; rel.statut = 'envoye'; rel.data.sent_at = new Date().toISOString();
+  }
+  function bind(box, imm, biens, locs, c0) {
+    var cur = X.cfgs[imm.id], c = cur ? cur.c : c0;
+    box.querySelectorAll('.el-imm').forEach(function(b) { b.onclick = function() { X.sel = this.dataset.id; window.loadElec(); }; });
+    var cfgBtn = ge('el-cfg'); if (cfgBtn) cfgBtn.onclick = function() { configSheet(imm, biens, c); };
+    var ap = ge('el-apply'); if (ap) ap.onclick = async function() { c.tarifs.push(Object.assign({}, c.pending, {src: 'auto'})); delete c.tarifs[c.tarifs.length - 1].source; c.pending = null; await saveCfg(imm, c); toast('Tarif appliqué', ''); window.loadElec(); };
+    var rf = ge('el-ref'); if (rf) rf.onclick = async function() { rf.disabled = true; rf.textContent = 'Vérification…'; await X.refresh(imm, true); window.loadElec(); };
+    if (!cur) return;
+    var upd = function(bid) { var b = biens.find(function(x) { return x.id === bid; }); preview(box, imm, c, b, locs.find(function(l) { return l.bien_id === bid; })); };
+    box.querySelectorAll('.el-in').forEach(function(i) { i.oninput = function() { upd(this.dataset.b); }; });
+    var dt = ge('el-date'); if (dt) dt.onchange = function() { biens.forEach(function(b) { upd(b.id); }); };
+    box.querySelectorAll('.el-ph').forEach(function(btn) { btn.onclick = function() { photo(box, c, this.dataset.b, upd, this.dataset.t); }; });
+    var sv = ge('el-save'); if (sv) sv.onclick = function() { saveAll(box, imm, c, biens, locs, sv); };
+    box.querySelectorAll('.el-send').forEach(function(btn) { btn.onclick = async function() { var rel = X.rel.find(function(r) { return r.id === this.dataset.id; }.bind(this)); this.disabled = true; try { await send(imm, c, rel, biens, locs); toast('Envoyé', 'Email envoyé au locataire.'); } catch (e) { toast('Envoi impossible', e.message); } window.loadElec(); }; });
+    box.querySelectorAll('.el-del').forEach(function(btn) { btn.onclick = async function() { if (!confirm('Supprimer ce relevé ?')) return; await SB.from('dossiers').delete().eq('id', this.dataset.id); window.loadElec(); }; });
+  }
+  function photo(box, c, bid, upd, target) {
+    var inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+    inp.onchange = async function() {
+      var f = inp.files[0]; if (!f) return; var msg = box.querySelector('.el-msg[data-b="' + bid + '"]'); msg.style.color = 'var(--mu)'; msg.textContent = 'Lecture de la photo…';
+      try {
+        var url = await DOCS.resizeImage(f, 1024, 0.7), j = await call('read_meter', {image_base64: url.split(',')[1], media_type: 'image/jpeg'}); url = null;
+        var v = j.valeurs || []; if (v.length > 1) { var m1 = v.filter(function(x) { return String(x.libelle || '').toUpperCase() === String(target).toUpperCase(); }); v = m1.length ? m1 : v; } if (!v.length) { msg.style.color = 'var(--dg)'; msg.textContent = 'Index illisible : saisissez-le à la main.'; return; }
+        var mode = lotMode(c, bid), get = function(k) { return box.querySelector('.el-in[data-b="' + bid + '"][data-k="' + k + '"]'); }, filled = [];
+        v.forEach(function(x) {
+          var lab = String(x.libelle || '').toUpperCase(), val = Math.round(Number(x.valeur)), t = null;
+          if (filled.length) return;
+          t = get(target || (mode === 'hphc' ? 'hp' : 'idx'));
+          if (t && val >= 0) { t.value = val; filled.push((t.dataset.k === 'hp' ? 'HP ' : t.dataset.k === 'hc' ? 'HC ' : '') + N(val, 0)); }
+        });
+        msg.textContent = 'Lu : ' + filled.join(' · ') + ' · vérifiez avant de valider' + (j.confiance && j.confiance !== 'haute' ? ' (lecture ' + j.confiance + ')' : '') + '.'; upd(bid);
+      } catch (e) { msg.style.color = 'var(--dg)'; msg.textContent = e.message; }
+    };
+    inp.click();
+  }
+  async function saveAll(box, imm, c, biens, locs, btn) {
+    var date = ge('el-date').value; if (!date) { toast('Relevé', 'Indiquez la date du relevé.'); return; }
+    var todo = [], errs = [];
+    biens.forEach(function(b) {
+      var vals = readVals(box, c, b); if (!vals) return;
+      var loc = locs.find(function(l) { return l.bien_id === b.id; }), mode = lotMode(c, b.id), prev = lastBefore(b.id, date);
+      var data = {immeuble_id: imm.id, date: date, mode: mode, hp: vals.hp, hc: vals.hc, idx: vals.idx};
+      if (!prev) data.base = true;
+      else { var r = X.calc(c, mode, prev.data, Object.assign({date: date}, vals)); if (r.err) { errs.push(b.nom + ' : ' + r.err); return; } data.calc = r; data.total = r.total; data.prev_date = prev.data.date; data.kwh = r.lines.reduce(function(s, l) { return s + l.kwh; }, 0); }
+      todo.push({b: b, loc: loc, data: data});
+    });
+    if (errs.length) { toast('À corriger', errs[0]); return; }
+    if (!todo.length) { toast('Relevé', 'Saisissez au moins un index.'); return; }
+    btn.disabled = true; var sent = 0, fail = [];
+    for (var i = 0; i < todo.length; i++) {
+      var t = todo[i], row = {user_id: CU.id, type: 'elec_releve', bien_id: t.b.id, locataire_id: t.loc ? t.loc.id : null, statut: t.data.base ? 'base' : 'brouillon', data: t.data, updated_at: new Date().toISOString()};
+      var r = await SB.from('dossiers').insert(row).select().single(); if (r.error) { toast('Erreur', r.error.message); btn.disabled = false; return; }
+      X.rel.push(r.data);
+      if (c.auto_send && !t.data.base && t.loc) { try { await send(imm, c, r.data, biens, locs); sent++; } catch (e) { fail.push(e.message); } }
+    }
+    toast('Relevé enregistré', (sent ? sent + ' email(s) envoyé(s). ' : '') + (fail.length ? fail[0] : ''));
+    window.loadElec();
+  }
+
+  /* ---------- configuration ---------- */
+  function configSheet(imm, biens, c0) {
+    var c = JSON.parse(JSON.stringify(c0)), t = latestTarif(c) || {from: today(), abo: '', hc: '', hp: ''};
+    var h = '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-weight:800;font-size:20px;margin-bottom:12px">Électricité · ' + E(imm.nom) + '</div>' +
+      '<div class="fg"><label class="fl">Fournisseur</label><select class="fi" id="ec-mode"><option value="edf"' + (c.mode === 'edf' ? ' selected' : '') + '>EDF Tarif Bleu (tarifs mis à jour automatiquement)</option><option value="manuel"' + (c.mode !== 'edf' ? ' selected' : '') + '>Autre fournisseur (tarifs saisis à la main)</option></select></div>' +
+      '<div style="display:flex;gap:8px"><div class="fg" style="flex:1"><label class="fl">Option</label><select class="fi" id="ec-opt"><option value="HC"' + (c.option !== 'Base' ? ' selected' : '') + '>Heures creuses</option><option value="Base"' + (c.option === 'Base' ? ' selected' : '') + '>Tarif unique (un seul prix du kWh)</option></select></div><div class="fg" style="flex:1"><label class="fl">Puissance (kVA)</label><input class="fi" id="ec-kva" inputmode="decimal" value="' + (c.kva || 18) + '"></div></div>' +
+      '<div class="fg"><label class="fl">Nombre de parts pour les charges fixes</label><input class="fi" id="ec-parts" inputmode="numeric" value="' + (c.parts || biens.length) + '"></div>' +
+      '<div style="font-weight:700;margin:12px 0 6px">Tarif TTC en vigueur</div>' +
+      '<div style="display:flex;gap:8px"><div class="fg" style="flex:1"><label class="fl">Abonnement €/mois</label><input class="fi" id="ec-abo" inputmode="decimal" value="' + N(t.abo, 2) + '"></div><div class="fg" style="flex:1"><label class="fl">Date d\'effet</label><input class="fi" type="date" id="ec-from" value="' + t.from + '"></div></div>' +
+      '<div id="ec-hphc" style="display:flex;gap:8px"><div class="fg" style="flex:1"><label class="fl">kWh heures creuses €</label><input class="fi" id="ec-hc" inputmode="decimal" value="' + N(t.hc, 4) + '"></div><div class="fg" style="flex:1"><label class="fl">kWh heures pleines €</label><input class="fi" id="ec-hp" inputmode="decimal" value="' + N(t.hp, 4) + '"></div></div>' +
+      '<div id="ec-bs" class="fg"><label class="fl">Prix du kWh € (tarif unique)</label><input class="fi" id="ec-base" inputmode="decimal" value="' + N(t.hp, 4) + '"></div>' +
+      '<div style="font-weight:700;margin:12px 0 6px">Sous-compteurs</div>' +
+      biens.map(function(b) { return '<div class="fg"><label class="fl">' + E(b.nom) + '</label><select class="fi ec-lot" data-b="' + b.id + '"><option value="hphc"' + (lotMode(c, b.id) === 'hphc' ? ' selected' : '') + '>2 index (heures pleines et creuses)</option><option value="single"' + (lotMode(c, b.id) === 'single' ? ' selected' : '') + '>1 seul index</option></select></div>'; }).join('') +
+      '<div class="fg"><label class="fl">Pour un compteur à 1 index : part estimée d\'heures creuses (%)</label><input class="fi" id="ec-share" inputmode="numeric" value="' + Math.round((c.hc_share == null ? 0.33 : c.hc_share) * 100) + '"></div>' +
+      '<label style="display:flex;gap:8px;align-items:center;font-size:14px;margin:10px 0"><input type="checkbox" id="ec-send"' + (c.auto_send !== false ? ' checked' : '') + '> Envoyer automatiquement le montant aux locataires à la validation</label>' +
+      '<label style="display:flex;gap:8px;align-items:center;font-size:14px;margin:10px 0"><input type="checkbox" id="ec-upd"' + (c.auto_update !== false ? ' checked' : '') + '> Mettre à jour les tarifs automatiquement (EDF)</label>' +
+      '<div style="display:flex;gap:10px;margin-top:14px"><button class="btn btng" id="ec-no" style="flex:1">Annuler</button><button class="btn btnp" id="ec-ok" style="flex:1">Enregistrer</button></div>';
+    var ov = sheet(h);
+    var tog = function() { var base = ov.querySelector('#ec-opt').value === 'Base'; ov.querySelector('#ec-hphc').style.display = base ? 'none' : 'flex'; ov.querySelector('#ec-bs').style.display = base ? '' : 'none'; ov.querySelectorAll('.ec-lot').forEach(function(s) { if (!c.lots || !c.lots[s.dataset.b]) s.value = base ? 'single' : 'hphc'; }); }; ov.querySelector('#ec-opt').onchange = tog; tog();
+    ov.querySelector('#ec-no').onclick = function() { ov.remove(); };
+    ov.querySelector('#ec-ok').onclick = async function() {
+      var v = function(i) { return ov.querySelector('#' + i).value; };
+      var isBase = v('ec-opt') === 'Base', abo = num(v('ec-abo')), hc = isBase ? num(v('ec-base')) : num(v('ec-hc')), hp = isBase ? hc : num(v('ec-hp')), from = v('ec-from');
+      if (abo == null || hc == null || hp == null || !from) { toast('Tarif', 'Renseignez l\'abonnement, le prix du kWh et la date d\'effet.'); return; }
+      c.mode = v('ec-mode'); c.option = v('ec-opt'); c.kva = num(v('ec-kva')) || 18; c.parts = Math.max(1, parseInt(v('ec-parts'), 10) || biens.length);
+      c.hc_share = Math.min(1, Math.max(0, (num(v('ec-share')) || 33) / 100)); c.auto_send = ov.querySelector('#ec-send').checked; c.auto_update = ov.querySelector('#ec-upd').checked;
+      c.lots = c.lots || {}; ov.querySelectorAll('.ec-lot').forEach(function(s) { c.lots[s.dataset.b] = {mode: s.value}; });
+      c.tarifs = (c.tarifs || []).filter(function(x) { return x.from !== from; }); c.tarifs.push({from: from, abo: abo, hc: hc, hp: hp, src: 'manuel'}); c.tarifs.sort(function(a, b) { return a.from < b.from ? -1 : 1; });
+      try { await saveCfg(imm, c); ov.remove(); toast('Enregistré', ''); window.loadElec(); } catch (e) { toast('Erreur', e.message); }
+    };
+  }
 })();
 
 </script>
