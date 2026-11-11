@@ -5021,6 +5021,26 @@ DOCS.EdlUI = (function() {
   getBiens = async function() { await syncRents(); return gb.apply(this, arguments); };
 })();
 
+/* Accès partagé : un compte invité (table partages, par e-mail) travaille sur les données du propriétaire */
+(function() {
+  var orig = showApp, cache = {};
+  showApp = async function(user) {
+    var owner = cache[user.id];
+    if (owner === undefined) {
+      owner = null;
+      try {
+        var r = await SB.from('partages').select('owner_id,member_email');
+        var rows = (r && r.data || []).filter(function(x) { return x.owner_id !== user.id && String(x.member_email || '').toLowerCase() === String(user.email || '').toLowerCase(); });
+        if (rows.length) owner = rows[0].owner_id;
+      } catch (e) {}
+      cache[user.id] = owner;
+    }
+    if (!owner) return orig(user);
+    var u = Object.assign({}, user); u.auth_id = user.id; u.id = owner; u.shared = true;
+    return orig(u);
+  };
+})();
+
 /* ===== Électricité : relevés des sous-compteurs, refacturation aux locataires ===== */
 (function() {
   var E = DOCS.esc, F = DOCS.fmtE, FD = DOCS.fmtDate;
