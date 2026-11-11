@@ -3392,9 +3392,13 @@ async function saveFacture() {
   // Upload photo to Supabase Storage
   if (_factureFile) {
     try {
-      var fileName = 'factures/' + CU.id + '/' + Date.now() + '_' + _factureFile.name.replace(/[^a-zA-Z0-9.]/g, '_');
-      var upload = await SB.storage.from('factures').upload(fileName, _factureFile, {
-        contentType: _factureFile.type,
+      var upFile = _factureFile, upName = _factureFile.name.replace(/[^a-zA-Z0-9.]/g, '_');
+      if (/^image\//.test(upFile.type)) {
+        try { var small = await DOCS.resizeImage(upFile, 1600, 0.7); upFile = DOCS.dataUrlToBlob(small); upName = upName.replace(/\.[a-zA-Z0-9]+$/, '') + '.jpg'; } catch (e) {}
+      } else if (upFile.size > 3 * 1024 * 1024) { toast('Facture volumineuse', 'Ce PDF pèse ' + (upFile.size / 1048576).toFixed(1).replace('.', ',') + ' Mo : préférez une photo, qui est compressée automatiquement.'); }
+      var fileName = 'factures/' + CU.id + '/' + Date.now() + '_' + upName;
+      var upload = await SB.storage.from('factures').upload(fileName, upFile, {
+        contentType: upFile.type || 'image/jpeg',
         upsert: false
       });
       if (!upload.error) {
@@ -4072,6 +4076,14 @@ var DOCS = (function() {
     while (n--) a[n] = bin.charCodeAt(n);
     return new Blob([a], {type: mime});
   };
+  D.pathFromUrl = function(u) { var m = String(u || '').match(/\/object\/public\/factures\/(.+)$/); return m ? decodeURIComponent(m[1].split('?')[0]) : null; };
+  D.removeFiles = async function(urls) {
+    var paths = (urls || []).map(D.pathFromUrl).filter(Boolean); if (!paths.length) return;
+    try { await SB.storage.from('factures').remove(paths); } catch (e) {}
+  };
+  D.photoUrls = function(data) {
+    var out = []; ((data && data.pieces) || []).forEach(function(p) { (p.photos || []).concat(p.photos_entree || []).forEach(function(ph) { if (ph.url) out.push(ph.url); }); }); return out;
+  };
   D.uploadDataUrl = async function(u, path) {
     try {
       var up = await SB.storage.from('factures').upload(path, D.dataUrlToBlob(u), {contentType: 'image/jpeg', upsert: true});
@@ -4130,7 +4142,14 @@ var DOCS = (function() {
     document.body.appendChild(host);
     try {
       var imgs = host.querySelectorAll('img');
+      /* les photos hébergées sont rapatriées en local avant la capture, pour être sûrs qu'elles figurent dans le PDF */
+      await Promise.all([].map.call(imgs, async function(im) {
+        var src = im.getAttribute('src') || ''; if (!/^https?:/.test(src)) return;
+        try { var r = await fetch(src, {mode: 'cors'}); if (r.ok) { var b = await r.blob(); im.removeAttribute('crossorigin'); im.src = await new Promise(function(res) { var fr = new FileReader(); fr.onload = function() { res(fr.result); }; fr.readAsDataURL(b); }); } } catch (e) {}
+      }));
       await Promise.all([].map.call(imgs, function(im) { return im.complete ? 0 : new Promise(function(r) { im.onload = im.onerror = r; }); }));
+      var broken = [].filter.call(host.querySelectorAll('img'), function(im) { return im.complete && im.naturalWidth === 0; }).length;
+      if (broken) throw new Error(broken + ' photo(s) n\'ont pas pu être chargées : vérifiez votre connexion et réessayez, le PDF serait incomplet.');
       var blob = await html2pdf().set({
         margin: [12, 10, 14, 10], filename: filename,
         image: {type: 'jpeg', quality: 0.9},
@@ -4158,7 +4177,7 @@ var DOCS = (function() {
     return j;
   };
 
-  D.PDF_CSS = "*{box-sizing:border-box}.pdfdoc{font-family:Arial,Helvetica,sans-serif;color:#111;font-size:11.5px;line-height:1.5;width:auto;padding:0}.pdfdoc h1{font-size:19px;text-align:center;margin:0 0 4px;letter-spacing:.3px}.pdfdoc h2{font-size:13px;margin:12px 0 5px;padding:5px 8px;background:#efece6;border-left:4px solid #c8502a;text-transform:uppercase;letter-spacing:.3px}.pdfdoc h3{font-size:12px;margin:10px 0 4px}.pdfdoc p{margin:3px 0}.pdfdoc .sub{text-align:center;color:#555;margin-bottom:10px}.pdfdoc .ck{display:inline-block;width:11px;height:11px;border:1.2px solid #111;margin-right:4px;vertical-align:-1px;position:relative}.pdfdoc .ck.on::after{content:'';position:absolute;left:1px;top:-3px;width:4px;height:9px;border:solid #c8502a;border-width:0 2.4px 2.4px 0;transform:rotate(40deg)}.pdfdoc .fv{border-bottom:1px dotted #777;padding:0 3px;font-weight:600}.pdfdoc .small{font-size:10px;color:#444}.pdfdoc .box{border:1px solid #bbb;padding:7px 9px;margin:6px 0;border-radius:3px}.pdfdoc table{width:100%;border-collapse:collapse;margin:6px 0}.pdfdoc td,.pdfdoc th{border:1px solid #bbb;padding:3px 6px;font-size:10.5px;vertical-align:top;text-align:left}.pdfdoc th{background:#efece6}.pdfdoc .sigrow{display:flex;gap:14px;margin-top:14px}.pdfdoc .sigbox{flex:1;border:1px solid #999;border-radius:3px;padding:8px;min-height:130px}.pdfdoc .sigbox img{max-height:70px;max-width:100%;display:block;margin:6px 0}.pdfdoc .sigbox .lu{font-size:10px;font-style:italic;color:#333}.pdfdoc .sigbox .ts{font-size:9px;color:#666}.pdfdoc .st{font-weight:700;display:inline-block;min-width:26px;text-align:center;padding:1px 4px;border-radius:3px;font-size:10px}.pdfdoc .st.TB,.pdfdoc .st.B{background:#dff1e5;color:#1d6b3a}.pdfdoc .st.C{background:#fbf0d0;color:#8a5c00}.pdfdoc .st.M,.pdfdoc .st.HS{background:#f8d9d6;color:#9b1c1c}.pdfdoc .st.NV{background:#eee;color:#555}.pdfdoc .ph{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.pdfdoc .ph img{width:176px;height:132px;object-fit:cover;border:1px solid #bbb}.pdfdoc .pb{page-break-before:always}.pdfdoc .nb{page-break-inside:avoid}.pdfdoc .diff{background:#fff3e6}";
+  D.PDF_CSS = "*{box-sizing:border-box}.pdfdoc{font-family:Arial,Helvetica,sans-serif;color:#111;font-size:11.5px;line-height:1.5;width:auto;padding:0}.pdfdoc h1{font-size:19px;text-align:center;margin:0 0 4px;letter-spacing:.3px}.pdfdoc h2{font-size:13px;margin:12px 0 5px;padding:5px 8px;background:#efece6;border-left:4px solid #c8502a;text-transform:uppercase;letter-spacing:.3px}.pdfdoc h3{font-size:12px;margin:10px 0 4px}.pdfdoc p{margin:3px 0}.pdfdoc .sub{text-align:center;color:#555;margin-bottom:10px}.pdfdoc .ck{display:inline-block;width:11px;height:11px;border:1.2px solid #111;margin-right:4px;vertical-align:-1px;position:relative}.pdfdoc .ck.on::after{content:'';position:absolute;left:1px;top:-3px;width:4px;height:9px;border:solid #c8502a;border-width:0 2.4px 2.4px 0;transform:rotate(40deg)}.pdfdoc .fv{border-bottom:1px dotted #777;padding:0 3px;font-weight:600}.pdfdoc .small{font-size:10px;color:#444}.pdfdoc .box{border:1px solid #bbb;padding:7px 9px;margin:6px 0;border-radius:3px}.pdfdoc table{width:100%;border-collapse:collapse;margin:6px 0}.pdfdoc td,.pdfdoc th{border:1px solid #bbb;padding:3px 6px;font-size:10.5px;vertical-align:top;text-align:left}.pdfdoc th{background:#efece6}.pdfdoc .sigrow{display:flex;gap:14px;margin-top:14px}.pdfdoc .sigbox{flex:1;border:1px solid #999;border-radius:3px;padding:8px;min-height:130px}.pdfdoc .sigbox img{max-height:70px;max-width:100%;display:block;margin:6px 0}.pdfdoc .sigbox .lu{font-size:10px;font-style:italic;color:#333}.pdfdoc .sigbox .ts{font-size:9px;color:#666}.pdfdoc .st{font-weight:700;display:inline-block;min-width:26px;text-align:center;padding:1px 4px;border-radius:3px;font-size:10px}.pdfdoc .st.TB,.pdfdoc .st.B{background:#dff1e5;color:#1d6b3a}.pdfdoc .st.C{background:#fbf0d0;color:#8a5c00}.pdfdoc .st.M,.pdfdoc .st.HS{background:#f8d9d6;color:#9b1c1c}.pdfdoc .st.NV{background:#eee;color:#555}.pdfdoc .ph{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.pdfdoc .ph img{width:226px;height:170px;object-fit:cover;border:1px solid #bbb}.pdfdoc .pb{page-break-before:always}.pdfdoc .nb{page-break-inside:avoid}.pdfdoc .diff{background:#fff3e6}";
   return D;
 })();
 
@@ -4688,10 +4707,10 @@ DOCS.EdlUI = (function() {
       toast('Photos', files.length + ' en cours de traitement…');
       for (var i = 0; i < files.length; i++) {
         try {
-          var data = await DOCS.resizeImage(files[i], 1280, 0.72), ph = {data: data};
+          var data = await DOCS.resizeImage(files[i], 1024, 0.6), ph = {data: data};
           p.photos.push(ph); W.rerender();
           var url = await DOCS.uploadDataUrl(data, 'dossiers/' + CU.id + '/' + (cur.id || 'tmp') + '/' + Date.now() + '_' + i + '.jpg');
-          if (url) { ph.url = url; delete ph.data; }
+          if (url) { ph.url = url; delete ph.data; } else { ph.data = await DOCS.resizeImage(files[i], 640, 0.5); }
         } catch (e) {}
       }
       await save(true); W.rerender();
@@ -4705,7 +4724,7 @@ DOCS.EdlUI = (function() {
     if (a[0] === 'addmob') { var n = prompt && null; d.inventaire.push({id: DOCS.uid(), nom: 'Nouvel élément', qte: 1, e: '', s: '', comm: ''}); return W.rerender(); }
     if (a[0] === 'allB') { var f = d.kind === 'sortie' ? 's' : 'e'; d.pieces[+a[1]].items.forEach(function(it) { if (!it[f]) it[f] = 'B'; }); await save(true); return W.rerender(); }
     if (a[0] === 'addphoto') return addPhotos(+a[1]);
-    if (a[0] === 'delphoto') { d.pieces[+a[1]].photos.splice(+a[2], 1); await save(true); return W.rerender(); }
+    if (a[0] === 'delphoto') { var gone = d.pieces[+a[1]].photos.splice(+a[2], 1)[0]; if (gone && gone.url) DOCS.removeFiles([gone.url]); await save(true); return W.rerender(); }
     if (a[0] === 'sign') {
       var who = a[1], url = await DOCS.signPad(who === 'bailleur' ? 'Signature du bailleur' : 'Signature du locataire', 'Je certifie l\'exactitude de cet état des lieux.');
       if (!url) return;
@@ -4781,7 +4800,7 @@ DOCS.EdlUI = (function() {
     if (a === 'copy') { try { await navigator.clipboard.writeText(DOCS.SQL); toast('Copié', 'Collez-le dans le SQL Editor de Supabase.'); } catch (x) { var pre = box.querySelector('.sqlbox'); var r = document.createRange(); r.selectNodeContents(pre); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); toast('Sélectionné', 'Copiez le texte sélectionné.'); } return; }
     if (a === 'recheck') return loadDocuments();
     var refresh = function() { loadDocuments(); };
-    if (a === 'del') { if (confirm('Supprimer ce document ? Cette action est définitive.')) { await DOCS.remove(el.getAttribute('data-id')); refresh(); } return; }
+    if (a === 'del') { if (confirm('Supprimer ce document ? Cette action est définitive.')) { var did = el.getAttribute('data-id'); try { var rr = await SB.from('dossiers').select('data').eq('id', did).single(); if (rr.data) await DOCS.removeFiles(DOCS.photoUrls(rr.data.data)); } catch (e) {} await DOCS.remove(did); refresh(); } return; }
     var ds = box._ds || [], locs = box._locs || [], biens = box._biens || [];
     if (a === 'open') {
       var d = ds.find(function(x) { return x.id === el.getAttribute('data-id'); }); if (!d) return;
