@@ -4990,6 +4990,37 @@ DOCS.EdlUI = (function() {
   };
 })();
 
+/* Loyer du bien = bail signé/envoyé du locataire en place > fiche locataire > fiche du bien (bien vacant : inchangé) */
+(function() {
+  var done = false, running = false;
+  async function syncRents() {
+    if (done || running || !CU) return; running = true;
+    try {
+      var rb = await SB.from('biens').select('id,loyer').eq('user_id', CU.id);
+      var rl = await SB.from('locataires').select('id,bien_id,loyer').eq('user_id', CU.id);
+      var rd = await SB.from('dossiers').select('type,locataire_id,statut,data,updated_at').eq('user_id', CU.id).in('type', ['bail', 'archive']);
+      if (rb.error || rl.error || rd.error) return;
+      var docs = rd.data || [], arch = {};
+      docs.filter(function(x) { return x.type === 'archive'; }).forEach(function(x) { arch[x.locataire_id] = 1; });
+      var bails = docs.filter(function(x) { return x.type === 'bail' && (x.statut === 'signe' || x.statut === 'envoye') && x.data && x.data.fin && parseFloat(x.data.fin.loyer) > 0; })
+        .sort(function(a, b) { return String(b.updated_at || '').localeCompare(String(a.updated_at || '')); });
+      var locs = (rl.data || []).filter(function(l) { return l.bien_id && !arch[l.id]; });
+      for (var i = 0; i < (rb.data || []).length; i++) {
+        var b = rb.data[i], mine = locs.filter(function(l) { return l.bien_id === b.id; });
+        if (!mine.length) continue;
+        var ids = mine.map(function(l) { return l.id; }), target = null;
+        var bail = bails.find(function(x) { return ids.indexOf(x.locataire_id) >= 0; });
+        if (bail) target = parseFloat(bail.data.fin.loyer);
+        else if (mine.length === 1 && parseFloat(mine[0].loyer) > 0) target = parseFloat(mine[0].loyer);
+        if (target && Math.abs(target - (parseFloat(b.loyer) || 0)) > 0.005) await SB.from('biens').update({loyer: target}).eq('id', b.id);
+      }
+      done = true;
+    } catch (e) {} finally { running = false; }
+  }
+  var gb = getBiens;
+  getBiens = async function() { await syncRents(); return gb.apply(this, arguments); };
+})();
+
 /* ===== Électricité : relevés des sous-compteurs, refacturation aux locataires ===== */
 (function() {
   var E = DOCS.esc, F = DOCS.fmtE, FD = DOCS.fmtDate;
