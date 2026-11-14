@@ -2789,19 +2789,14 @@ function formatMois(val) {
 
 function buildQuittanceHTML(locNom, mois, loyer, charges) {
   var bailleur = ge('user-name').textContent;
-  var total = loyer + charges;
-  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Quittance</title><style>body{font-family:Arial,sans-serif;max-width:600px;margin:40px auto;color:#333;font-size:14px;}h1{font-size:20px;text-align:center;margin-bottom:4px;}h2{font-size:14px;text-align:center;color:#666;margin-bottom:30px;font-weight:normal;}table{width:100%;border-collapse:collapse;margin:20px 0;}td{padding:10px 14px;border:1px solid #ddd;}td:first-child{font-weight:600;width:60%;}td:last-child{text-align:right;}.total{font-weight:700;font-size:16px;}.total td{background:#f5f5f5;}.sig{margin-top:50px;display:flex;justify-content:space-between;}.sig-box{text-align:center;width:45%;}.sig-line{border-top:1px solid #333;margin-top:60px;padding-top:6px;font-size:12px;}</style></head><body>'
-    + '<h1>QUITTANCE DE LOYER</h1>'
-    + '<h2>' + mois + '</h2>'
-    + '<p><strong>Bailleur :</strong> ' + bailleur + '</p>'
-    + '<p style="margin-top:6px"><strong>Locataire :</strong> ' + locNom + '</p>'
-    + '<p style="margin-top:6px">Je soussigne, ' + bailleur + ', bailleur, reconnais avoir recu de ' + locNom + ', locataire, la somme de <strong>' + total.toFixed(2) + ' euros</strong> au titre du loyer du mois de ' + mois + ', se decomposant comme suit :</p>'
-    + '<table><tr><td>Loyer hors charges</td><td>' + loyer.toFixed(2) + ' €</td></tr>'
-    + '<tr><td>Provisions pour charges</td><td>' + charges.toFixed(2) + ' €</td></tr>'
-    + '<tr class="total"><td>TOTAL</td><td>' + total.toFixed(2) + ' €</td></tr></table>'
-    + '<p style="font-size:12px;color:#666">Cette quittance est delivree sous reserve de tous droits et encaissements de la somme indiquee.</p>'
-    + '<div class="sig"><div class="sig-box"><div class="sig-line">Signature du bailleur<br>' + bailleur + '</div></div><div class="sig-box"><div class="sig-line">Date<br>' + new Date().toLocaleDateString('fr-FR') + '</div></div></div>'
-    + '</body></html>';
+  var total = loyer + charges, eur = function(n){ return n.toFixed(2).replace('.', ',') + ' €'; };
+  var body = '<p style="margin:0 0 6px"><strong>Bailleur :</strong> ' + bailleur + '</p>'
+    + '<p style="margin:0 0 14px"><strong>Locataire :</strong> ' + locNom + '</p>'
+    + '<p style="margin:0 0 6px">Je soussigné(e) ' + bailleur + ', bailleur, reconnais avoir reçu de ' + locNom + ', locataire, la somme de <strong>' + eur(total) + '</strong> au titre du loyer et des charges du mois de ' + mois + '.</p>'
+    + DOCS.mailTable(['Désignation', 'Montant'], [['Loyer hors charges', eur(loyer)], ['Provisions pour charges', eur(charges)]], ['Total acquitté', eur(total)])
+    + '<p style="margin:0 0 18px;font-size:12px;color:#6b645b">Cette quittance est délivrée sous réserve de tous droits et de l’encaissement de la somme indiquée. Elle annule tout reçu antérieur pour la même période.</p>'
+    + '<p style="margin:0">Fait le ' + new Date().toLocaleDateString('fr-FR') + '<br><strong>' + bailleur + '</strong></p>';
+  return DOCS.mailHtml({title: 'Quittance de loyer – ' + mois, body: body, sender: bailleur});
 }
 
 function openPrintWindow(html, filename) {
@@ -4110,6 +4105,30 @@ var DOCS = (function() {
     var u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = name; document.body.appendChild(a); a.click();
     setTimeout(function() { document.body.removeChild(a); URL.revokeObjectURL(u); }, 4000);
   };
+  D.mailHtml = function(o) { /* o: title, body (html), sender (nom), note */
+    var T = '#c8502a', F = 'Helvetica,Arial,sans-serif';
+    var esc = function(x) { return String(x == null ? '' : x).replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
+    return '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"></head>' +
+      '<body style="margin:0;padding:0;background:#f6f1ea" bgcolor="#f6f1ea"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f6f1ea" style="background:#f6f1ea"><tr><td align="center" style="padding:24px 12px">' +
+      '<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;font-family:' + F + '">' +
+      '<tr><td bgcolor="' + T + '" style="background:' + T + ';border-radius:10px 10px 0 0;padding:18px 24px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>' +
+      '<td style="font-family:' + F + ';font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-.3px">&#127968;&nbsp;BailSmart</td>' +
+      '<td align="right" style="font-family:' + F + ';font-size:11px;color:#f8d9cc;letter-spacing:.6px;text-transform:uppercase">Gestion locative</td></tr></table></td></tr>' +
+      '<tr><td bgcolor="#fcfaf7" style="background:#fcfaf7;border:1px solid #e4ddd2;border-top:0;padding:26px 24px 22px;font-family:' + F + ';font-size:14.5px;line-height:1.6;color:#1c1a17">' +
+      (o.title ? '<div style="font-size:21px;font-weight:800;line-height:1.25;color:#1c1a17;margin:0 0 4px">' + esc(o.title) + '</div><div style="height:3px;width:48px;background:' + T + ';margin:8px 0 18px"></div>' : '') +
+      o.body + '</td></tr>' +
+      '<tr><td bgcolor="#f6f1ea" style="background:#f6f1ea;border-radius:0 0 10px 10px;padding:14px 24px;font-family:' + F + ';font-size:11.5px;color:#8a8176;text-align:center;line-height:1.5">Envoyé avec <strong style="color:' + T + '">BailSmart</strong>' + (o.sender ? ' · ' + esc(o.sender) : '') + '</td></tr>' +
+      '</table></td></tr></table></body></html>';
+  };
+  D.mailTable = function(head, rows, totalRow) { /* head:[labels], rows:[[cells]], totalRow:[cells]; last col right-aligned */
+    var td = 'padding:8px 10px;border-bottom:1px solid #e4ddd2;font-size:13px;color:#1c1a17;';
+    var n = head.length, out = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin:14px 0;border:1px solid #ddd5ca"><tr>';
+    head.forEach(function(h, i) { out += '<th align="' + (i === n - 1 ? 'right' : 'left') + '" bgcolor="#f3ece2" style="background:#f3ece2;padding:8px 10px;font-size:11.5px;color:#5a4a3a;text-align:' + (i === n - 1 ? 'right' : 'left') + '">' + h + '</th>'; });
+    out += '</tr>';
+    rows.forEach(function(r, k) { out += '<tr>'; r.forEach(function(c, i) { out += '<td align="' + (i === n - 1 ? 'right' : 'left') + '" bgcolor="' + (k % 2 ? '#fcfaf7' : '#ffffff') + '" style="' + td + (i ? 'white-space:nowrap;' : '') + 'background:' + (k % 2 ? '#fcfaf7' : '#ffffff') + ';text-align:' + (i === n - 1 ? 'right' : 'left') + '">' + c + '</td>'; }); out += '</tr>'; });
+    if (totalRow) { out += '<tr><td colspan="' + (n - 1) + '" bgcolor="#f6e3da" style="background:#f6e3da;padding:11px 10px;font-size:14px;font-weight:800;color:#8f3516">' + totalRow[0] + '</td><td align="right" bgcolor="#f6e3da" style="background:#f6e3da;padding:11px 10px;font-size:16px;font-weight:800;color:#8f3516;text-align:right;white-space:nowrap">' + totalRow[1] + '</td></tr>'; }
+    return out + '</table>';
+  };
   D.sendMail = async function(opts) { /* opts: to, bcc, subject, html, attachments:[{filename, blob}] */
     var att = [];
     for (var i = 0; i < (opts.attachments || []).length; i++) att.push({filename: opts.attachments[i].filename, content: await D.blobToB64(opts.attachments[i].blob)});
@@ -4430,7 +4449,7 @@ DOCS.BailUI = (function() {
           el.textContent = 'Envoi…';
           var nom = (d.loc1.prenom + ' ' + d.loc1.nom).trim();
           await DOCS.sendMail({to: d.loc1.email, bcc: d.bailleur.email, reply_to: d.bailleur.email, subject: 'Votre contrat de location — ' + d.logement.adresse,
-            html: '<div style="font-family:Arial,sans-serif;font-size:14px;color:#222;line-height:1.6"><p>Bonjour ' + E(nom) + ',</p><p>Veuillez trouver ci-joint votre contrat de location signé' + (d.garant.actif ? ' ainsi que l\'acte de cautionnement' : '') + ', pour le logement situé ' + E(d.logement.adresse) + '.</p><p>Conservez ce document : il fait foi de vos droits et obligations.</p><p>Cordialement,<br>' + E(d.bailleur.nom) + '</p></div>',
+            html: DOCS.mailHtml({title: 'Votre contrat de location', sender: d.bailleur.nom, body: '<p>Bonjour ' + E(nom) + ',</p><p>Veuillez trouver ci-joint votre contrat de location signé' + (d.garant.actif ? ' ainsi que l\'acte de cautionnement' : '') + ', pour le logement situé ' + E(d.logement.adresse) + '.</p><p>Conservez ce document : il fait foi de vos droits et obligations.</p><p>Cordialement,<br><strong>' + E(d.bailleur.nom) + '</strong></p>'}),
             attachments: [{filename: fname(d), blob: blob}]});
           cur.statut = 'envoye'; d.envoi_le = stamp(); await save(); toast('Email envoyé', d.loc1.email); W.rerender();
         }
@@ -4692,7 +4711,7 @@ DOCS.EdlUI = (function() {
           el.textContent = 'Envoi…';
           var nom = (d.loc.prenom + ' ' + d.loc.nom).trim();
           await DOCS.sendMail({to: d.loc.email, bcc: d.bailleur.email, reply_to: d.bailleur.email, subject: 'État des lieux ' + (d.kind === 'sortie' ? 'de sortie' : 'd\'entrée') + ' — ' + d.logement.adresse,
-            html: '<div style="font-family:Arial,sans-serif;font-size:14px;color:#222;line-height:1.6"><p>Bonjour ' + E(nom) + ',</p><p>Veuillez trouver ci-joint l\'état des lieux ' + (d.kind === 'sortie' ? 'de sortie' : 'd\'entrée') + ' du logement situé ' + E(d.logement.adresse) + ', signé le ' + E(DOCS.fmtDate(d.date)) + '.</p>' + (d.kind === 'entree' ? '<p>Vous disposez de 10 jours pour demander qu\'il soit complété (et jusqu\'au premier mois de la période de chauffe pour l\'état des équipements de chauffage).</p>' : '') + '<p>Cordialement,<br>' + E(d.bailleur.nom) + '</p></div>',
+            html: DOCS.mailHtml({title: 'État des lieux ' + (d.kind === 'sortie' ? 'de sortie' : 'd\'entrée'), sender: d.bailleur.nom, body: '<p>Bonjour ' + E(nom) + ',</p><p>Veuillez trouver ci-joint l\'état des lieux ' + (d.kind === 'sortie' ? 'de sortie' : 'd\'entrée') + ' du logement situé ' + E(d.logement.adresse) + ', signé le ' + E(DOCS.fmtDate(d.date)) + '.</p>' + (d.kind === 'entree' ? '<p>Vous disposez de 10 jours pour demander qu\'il soit complété (et jusqu\'au premier mois de la période de chauffe pour l\'état des équipements de chauffage).</p>' : '') + '<p>Cordialement,<br><strong>' + E(d.bailleur.nom) + '</strong></p>'}),
             attachments: [{filename: fname(d), blob: blob}]});
           cur.statut = 'envoye'; await save(); toast('Email envoyé', d.loc.email); W.rerender();
         }
@@ -5286,12 +5305,13 @@ DOCS.EdlUI = (function() {
     out.innerHTML = r.err ? '<span style="color:var(--dg);font-size:13px">' + E(r.err) + '</span>' : '<span style="font-size:13.5px">' + r.lines.map(function(l) { return N(l.kwh, 0) + ' kWh ' + l.label.toLowerCase(); }).join(' + ') + ' · <strong>' + F(r.total) + '</strong> TTC</span>';
   }
   function emailHtml(imm, b, loc, d, r, c) {
-    var bl = DOCS.bailleur(), rows = d.calc.lines.map(function(l) { return '<tr><td style="padding:6px 8px;border:1px solid #ddd">' + l.label + '</td><td style="padding:6px 8px;border:1px solid #ddd">' + N(l.from, 0) + ' → ' + N(l.to, 0) + '</td><td style="padding:6px 8px;border:1px solid #ddd">' + N(l.kwh, 0) + ' kWh × ' + N(l.pu, 4) + ' €</td><td style="padding:6px 8px;border:1px solid #ddd;text-align:right">' + F(l.amt) + '</td></tr>'; }).join('');
-    return '<div style="font-family:Arial,sans-serif;font-size:14px;color:#222;max-width:560px"><p>Bonjour ' + E(loc.prenom) + ',</p><p>Voici votre consommation d\'électricité pour ' + E(b.nom) + ', du ' + FD(d.prev_date) + ' au ' + FD(d.date) + ' (' + d.calc.days + ' jours).</p>' +
-      '<table style="border-collapse:collapse;width:100%;font-size:13px"><tr style="background:#f2efe9"><th style="padding:6px 8px;border:1px solid #ddd;text-align:left">Poste</th><th style="padding:6px 8px;border:1px solid #ddd;text-align:left">Index</th><th style="padding:6px 8px;border:1px solid #ddd;text-align:left">Détail</th><th style="padding:6px 8px;border:1px solid #ddd;text-align:right">Montant TTC</th></tr>' + rows +
-      '<tr><td colspan="3" style="padding:6px 8px;border:1px solid #ddd">' + E(d.calc.fixed.label) + '</td><td style="padding:6px 8px;border:1px solid #ddd;text-align:right">' + F(d.calc.fixed.amt) + '</td></tr>' +
-      '<tr style="background:#f2efe9"><td colspan="3" style="padding:8px;border:1px solid #ddd"><strong>Total à régler</strong></td><td style="padding:8px;border:1px solid #ddd;text-align:right"><strong>' + F(d.total) + '</strong></td></tr></table>' +
-      '<p>Merci de régler ce montant par virement, séparément du loyer.</p><p>Cordialement,<br>' + E(bl.nom || '') + '</p></div>';
+    var bl = DOCS.bailleur(), P = 'margin:0 0 12px';
+    var rows = d.calc.lines.map(function(l) { return [E(l.label), N(l.from, 0) + ' → ' + N(l.to, 0), N(l.kwh, 0) + ' kWh × ' + N(l.pu, 4) + ' €', F(l.amt)]; });
+    rows.push([E(d.calc.fixed.label), '', '', F(d.calc.fixed.amt)]);
+    var body = '<p style="' + P + '">Bonjour ' + E(loc.prenom) + ',</p><p style="' + P + '">Voici votre consommation d\'électricité pour <strong>' + E(b.nom) + '</strong>, du ' + FD(d.prev_date) + ' au ' + FD(d.date) + ' (' + d.calc.days + ' jours).</p>' +
+      DOCS.mailTable(['Poste', 'Index', 'Détail', 'Montant TTC'], rows, ['Total à régler', F(d.total)]) +
+      '<p style="' + P + '">Merci de régler ce montant par virement, séparément du loyer.</p><p style="margin:16px 0 0">Cordialement,<br><strong>' + E(bl.nom || '') + '</strong></p>';
+    return DOCS.mailHtml({title: d.kind === 'cloture' ? 'Facture de clôture – électricité' : 'Votre consommation d\'électricité', body: body, sender: bl.nom});
   }
   async function send(imm, c, rel, biens, locs) {
     var d = rel.data, b = biens.find(function(x) { return x.id === rel.bien_id; }), loc = allLocs(locs).find(function(l) { return l.id === rel.locataire_id; });
